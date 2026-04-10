@@ -84,3 +84,5 @@
 - [x] Testes de CRUD de entradas financeiras (acesso bloqueado sem plano)
 - [x] Testes de cálculo 50/30/20
 - [x] Testes de projeção de aposentadoria
+- [x] Aplicar paleta de cores violeta/sidebar escura
+- [x] Reorganizar sidebar com grupos colapsáveis (Gestão de Tempo, Orçamento Doméstico)

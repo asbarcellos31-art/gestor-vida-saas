@@ -11,11 +11,13 @@ import {
   Lock,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Menu,
   X,
   TrendingUp,
   CreditCard,
   Settings2,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -54,6 +56,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
 
+  // Grupos colapsáveis
+  const [budgetOpen, setBudgetOpen] = useState(
+    location.startsWith("/orcamento") || location === "/parcelados" || location === "/aposentadoria"
+  );
+
   function isMonthActive(m: number) {
     return location === `/orcamento/${selectedYear}/${m}` ||
       (location === "/orcamento" && selectedYear === currentYear && m === currentMonth);
@@ -61,148 +68,178 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   const go = (path: string) => { navigate(path); onNavigate?.(); };
 
+  const navItem = (
+    path: string,
+    label: string,
+    Icon: React.ElementType,
+    locked = false,
+    active = false
+  ) => (
+    <button
+      key={path}
+      onClick={() => {
+        if (locked) { toast.error("Seu plano não inclui este módulo"); go("/planos"); return; }
+        go(path);
+      }}
+      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+        active
+          ? "bg-sidebar-primary text-sidebar-primary-foreground"
+          : locked
+          ? "text-sidebar-foreground/30 cursor-not-allowed"
+          : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      }`}
+    >
+      <Icon className="w-4 h-4 flex-shrink-0" />
+      <span className="flex-1 text-left">{label}</span>
+      {locked && <Lock className="w-3 h-3" />}
+    </button>
+  );
+
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* Logo */}
       <div className="px-4 py-4 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-sidebar-primary rounded flex items-center justify-center">
-            <Wallet className="w-4 h-4 text-sidebar-primary-foreground" />
+          <div className="w-7 h-7 bg-sidebar-primary rounded-lg flex items-center justify-center">
+            <Zap className="w-4 h-4 text-sidebar-primary-foreground" />
           </div>
-          <span className="font-bold text-sidebar-foreground text-sm">Gestor de Vida</span>
+          <span className="font-bold text-sidebar-foreground text-sm tracking-tight">Gestor de Vida</span>
         </div>
       </div>
 
-      {/* Main nav */}
-      <nav className="px-3 pt-3 pb-2 space-y-0.5">
-        {[
-          { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard, module: undefined as undefined },
-          { label: "Gestão de Tempo", path: "/gestao-tempo", icon: Clock, module: "time_management" as const },
-        ].map((item) => {
-          const locked = item.module && !hasModuleAccess(plan, item.module);
-          const active = location === item.path || location.startsWith(item.path + "/");
-          return (
-            <button
-              key={item.path}
-              onClick={() => {
-                if (locked) { toast.error("Seu plano não inclui este módulo"); go("/planos"); return; }
-                go(item.path);
-              }}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                active
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                  : locked
-                  ? "text-sidebar-foreground/30"
-                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              }`}
-            >
-              <item.icon className="w-4 h-4 flex-shrink-0" />
-              <span className="flex-1 text-left">{item.label}</span>
-              {locked && <Lock className="w-3 h-3" />}
-            </button>
-          );
-        })}
-      </nav>
+      <nav className="flex-1 px-3 pt-4 pb-3 space-y-1 overflow-y-auto">
 
-      {/* Orçamento section */}
-      <div className="px-3 pb-2">
-        <div className="border-t border-sidebar-border pt-3">
+        {/* Dashboard */}
+        {navItem("/dashboard", "Dashboard", LayoutDashboard, false, location === "/dashboard")}
+
+        {/* ── Gestão de Tempo ── */}
+        <div className="pt-2">
+          <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
+            Gestão de Tempo
+          </p>
+          {hasTime
+            ? navItem("/gestao-tempo", "Tríade do Tempo", Clock, false,
+                location === "/gestao-tempo" || location.startsWith("/gestao-tempo"))
+            : navItem("/planos", "Tríade do Tempo", Clock, true, false)
+          }
+        </div>
+
+        {/* ── Orçamento Doméstico ── */}
+        <div className="pt-2">
+          <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
+            Orçamento Doméstico
+          </p>
+
           {hasBudget ? (
             <>
-              {/* Budget sub-nav */}
-              <div className="space-y-0.5 mb-3">
-                {[
-                  { label: "Dashboard Anual", path: "/orcamento/dashboard", icon: LayoutDashboard },
-                  { label: "Parcelados", path: "/parcelados", icon: CreditCard },
-                  { label: "Aposentadoria", path: "/aposentadoria", icon: TrendingUp },
-                ].map((item) => (
-                  <button
-                    key={item.path}
-                    onClick={() => go(item.path)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      location === item.path
-                        ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                        : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                    }`}
-                  >
-                    <item.icon className="w-4 h-4 flex-shrink-0" />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
+              {/* Cabeçalho colapsável */}
+              <button
+                onClick={() => setBudgetOpen((o) => !o)}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+              >
+                <Wallet className="w-4 h-4 flex-shrink-0" />
+                <span className="flex-1 text-left">Orçamento</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${budgetOpen ? "rotate-180" : ""}`} />
+              </button>
 
-              {/* Month picker */}
-              <div className="flex items-center justify-between mb-2 px-1">
-                <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
-                  Orçamento Mensal
-                </p>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => setSelectedYear((y) => y - 1)} className="w-5 h-5 flex items-center justify-center rounded text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
-                    <ChevronLeft className="w-3 h-3" />
-                  </button>
-                  <span className="text-xs font-bold text-sidebar-foreground">{selectedYear}</span>
-                  <button onClick={() => setSelectedYear((y) => y + 1)} className="w-5 h-5 flex items-center justify-center rounded text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
-                    <ChevronRight className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-1">
-                {MONTHS.map((m, i) => (
+              {budgetOpen && (
+                <div className="ml-3 pl-3 border-l border-sidebar-border mt-1 space-y-0.5">
+                  {/* Mês atual rápido */}
                   <button
-                    key={i}
-                    onClick={() => go(`/orcamento/${selectedYear}/${i + 1}`)}
-                    className={`px-2 py-1.5 rounded text-xs font-medium transition-colors ${
-                      isMonthActive(i + 1)
+                    onClick={() => go(`/orcamento/${currentYear}/${currentMonth}`)}
+                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                      isMonthActive(currentMonth) && selectedYear === currentYear
                         ? "bg-sidebar-primary text-sidebar-primary-foreground"
                         : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     }`}
                   >
-                    {m}
+                    Mês Atual
                   </button>
-                ))}
-              </div>
+
+                  {/* Sub-itens */}
+                  {[
+                    { label: "Dashboard Anual", path: "/orcamento/dashboard", Icon: LayoutDashboard },
+                    { label: "Parcelados", path: "/parcelados", Icon: CreditCard },
+                    { label: "Aposentadoria", path: "/aposentadoria", Icon: TrendingUp },
+                  ].map(({ label, path, Icon }) => (
+                    <button
+                      key={path}
+                      onClick={() => go(path)}
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                        location === path
+                          ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                          : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                      {label}
+                    </button>
+                  ))}
+
+                  {/* Seletor de mês */}
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between mb-1.5 px-1">
+                      <span className="text-[10px] font-semibold text-sidebar-foreground/40 uppercase tracking-wider">Mês</span>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => setSelectedYear((y) => y - 1)} className="w-5 h-5 flex items-center justify-center rounded text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
+                          <ChevronLeft className="w-3 h-3" />
+                        </button>
+                        <span className="text-[11px] font-bold text-sidebar-foreground">{selectedYear}</span>
+                        <button onClick={() => setSelectedYear((y) => y + 1)} className="w-5 h-5 flex items-center justify-center rounded text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
+                          <ChevronRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      {MONTHS.map((m, i) => (
+                        <button
+                          key={i}
+                          onClick={() => go(`/orcamento/${selectedYear}/${i + 1}`)}
+                          className={`px-1 py-1.5 rounded text-[11px] font-medium transition-colors ${
+                            isMonthActive(i + 1)
+                              ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                              : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </>
           ) : (
-            <button
-              onClick={() => go("/planos")}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/30 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-            >
-              <Wallet className="w-4 h-4 flex-shrink-0" />
-              <span className="flex-1 text-left">Orçamento</span>
-              <Lock className="w-3 h-3" />
-            </button>
+            navItem("/planos", "Orçamento", Wallet, true, false)
           )}
         </div>
-      </div>
 
-      {/* Planos */}
-      <div className="px-3 pb-2">
-        <button
-          onClick={() => go("/planos")}
-          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-            location === "/planos"
-              ? "bg-sidebar-primary text-sidebar-primary-foreground"
-              : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          }`}
-        >
-          <Settings2 className="w-4 h-4 flex-shrink-0" />
-          Meu Plano
-        </button>
-      </div>
+        {/* ── Conta ── */}
+        <div className="pt-2">
+          <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
+            Conta
+          </p>
+          {navItem("/planos", "Meu Plano", Settings2, false, location === "/planos")}
+        </div>
+      </nav>
 
       {/* User info */}
-      <div className="mt-auto p-3 border-t border-sidebar-border">
+      <div className="p-3 border-t border-sidebar-border">
         <div className="flex items-center gap-3 px-2 py-2 rounded-lg">
-          <div className="w-8 h-8 bg-sidebar-accent rounded-full flex items-center justify-center">
-            <span className="text-xs font-bold text-sidebar-accent-foreground">
+          <div className="w-8 h-8 bg-sidebar-primary/20 rounded-full flex items-center justify-center">
+            <span className="text-xs font-bold text-sidebar-primary">
               {user?.name?.charAt(0)?.toUpperCase() || "U"}
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-sidebar-foreground truncate">{user?.name || "Usuário"}</p>
-            <p className="text-xs text-sidebar-foreground/50 truncate">{user?.email || ""}</p>
+            <p className="text-[10px] text-sidebar-foreground/50 truncate">{user?.email || ""}</p>
           </div>
-          <button onClick={() => logoutMutation.mutate()} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors" title="Sair">
+          <button
+            onClick={() => logoutMutation.mutate()}
+            className="text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors"
+            title="Sair"
+          >
             <LogOut className="w-4 h-4" />
           </button>
         </div>
@@ -233,16 +270,18 @@ export default function AppLayout({ children, title }: AppLayoutProps) {
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
+      {/* Sidebar desktop */}
       <aside className="hidden lg:flex w-60 flex-col bg-sidebar border-r border-sidebar-border flex-shrink-0">
         <SidebarContent />
       </aside>
 
+      {/* Sidebar mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <div className="absolute inset-0 bg-black/60" onClick={() => setSidebarOpen(false)} />
           <aside className="absolute left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
-            <div className="flex items-center justify-end p-3">
-              <button onClick={() => setSidebarOpen(false)} className="text-sidebar-foreground/60 hover:text-sidebar-foreground">
+            <div className="flex items-center justify-end p-3 border-b border-sidebar-border">
+              <button onClick={() => setSidebarOpen(false)} className="text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -253,9 +292,13 @@ export default function AppLayout({ children, title }: AppLayoutProps) {
         </div>
       )}
 
+      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-14 border-b border-border bg-card flex items-center px-4 gap-3 flex-shrink-0">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-muted-foreground hover:text-foreground">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden text-muted-foreground hover:text-foreground transition-colors"
+          >
             <Menu className="w-5 h-5" />
           </button>
           <h1 className="font-semibold text-foreground text-base">{title || "Gestor de Vida"}</h1>
