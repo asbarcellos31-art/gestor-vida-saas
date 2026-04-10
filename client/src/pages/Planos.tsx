@@ -75,13 +75,13 @@ export default function Planos() {
   const [, navigate] = useLocation();
   const { data: subscription } = trpc.subscription.get.useQuery();
 
-  const createSubscription = trpc.subscription.create.useMutation({
+  const createSubscription = trpc.subscription.activate.useMutation({
     onSuccess: () => {
       utils.subscription.get.invalidate();
       toast.success("Plano ativado com sucesso! Bem-vindo ao Gestor de Vida! 🎉");
       navigate("/dashboard");
     },
-    onError: (e) => toast.error(e.message),
+    onError: (e: { message: string }) => toast.error(e.message),
   });
 
   const cancelSubscription = trpc.subscription.cancel.useMutation({

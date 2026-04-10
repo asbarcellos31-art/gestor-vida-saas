@@ -7,7 +7,10 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import GestaoTempo from "./pages/GestaoTempo";
-import Orcamento from "./pages/Orcamento";
+import MonthlyBudget from "./pages/MonthlyBudget";
+import Installments from "./pages/Installments";
+import Retirement from "./pages/Retirement";
+import OrcamentoDashboard from "./pages/OrcamentoDashboard";
 import Planos from "./pages/Planos";
 
 function Router() {
@@ -16,7 +19,13 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/gestao-tempo" component={GestaoTempo} />
-      <Route path="/orcamento" component={Orcamento} />
+      <Route path="/orcamento/dashboard" component={OrcamentoDashboard} />
+      <Route path="/orcamento/:year/:month">
+        {(params) => <MonthlyBudget key={`${params.year}-${params.month}`} />}
+      </Route>
+      <Route path="/orcamento" component={MonthlyBudget} />
+      <Route path="/parcelados" component={Installments} />
+      <Route path="/aposentadoria" component={Retirement} />
       <Route path="/planos" component={Planos} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

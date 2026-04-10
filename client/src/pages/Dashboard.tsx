@@ -13,20 +13,12 @@ import {
   ArrowRight,
   Lock,
   Zap,
-  Target,
   BarChart3,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
-}
-
-function getCurrentMonth() {
-  const now = new Date();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const y = now.getFullYear();
-  return `${m}/${y}`;
 }
 
 function getTodayStr() {
@@ -37,7 +29,9 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
   const today = useMemo(() => getTodayStr(), []);
-  const currentMonth = useMemo(() => getCurrentMonth(), []);
+  const now = useMemo(() => new Date(), []);
+  const currentYear = now.getFullYear();
+  const currentMonthNum = now.getMonth() + 1;
 
   const { data: subscription } = trpc.subscription.get.useQuery();
   const plan = subscription?.plan;
@@ -50,23 +44,29 @@ export default function Dashboard() {
     { enabled: hasTimeAccess }
   );
   const { data: score } = trpc.tasks.score.useQuery(undefined, { enabled: hasTimeAccess });
-  const { data: budgetData } = trpc.budget.byMonth.useQuery(
-    { month: currentMonth },
+
+  const { data: incomeData } = trpc.income.get.useQuery(
+    { year: currentYear, month: currentMonthNum },
     { enabled: hasBudgetAccess }
   );
+  const { data: expensesData } = trpc.expenses.list.useQuery(
+    { year: currentYear, month: currentMonthNum },
+    { enabled: hasBudgetAccess }
+  );
+
+  const budgetSummary = useMemo(() => {
+    if (!hasBudgetAccess) return null;
+    const income = incomeData
+      ? [incomeData.corretora, incomeData.distribuicao, incomeData.carteiraFer, incomeData.angariacao, incomeData.advocacia, incomeData.outros]
+          .reduce((s, v) => s + (parseFloat(String(v ?? "0")) || 0), 0)
+      : 0;
+    const totalExpenses = (expensesData ?? []).reduce((s, e) => s + (parseFloat(String(e.amount)) || 0), 0);
+    return { income, totalExpenses, balance: income - totalExpenses };
+  }, [incomeData, expensesData, hasBudgetAccess]);
 
   const completedToday = todayTasks?.filter((t) => t.status === "completed").length ?? 0;
   const totalToday = todayTasks?.length ?? 0;
   const pendingToday = todayTasks?.filter((t) => t.status === "pending").length ?? 0;
-
-  const planLabel =
-    plan === "time_management"
-      ? "Gestão de Tempo"
-      : plan === "budget"
-      ? "Orçamento Doméstico"
-      : plan === "combo"
-      ? "Combo Completo"
-      : null;
 
   return (
     <AppLayout>
@@ -156,9 +156,7 @@ export default function Dashboard() {
                 {!hasBudgetAccess && <Lock className="w-4 h-4 text-gray-400" />}
               </div>
               <p className="text-2xl font-bold text-gray-900">
-                {hasBudgetAccess
-                  ? formatCurrency(budgetData?.summary?.balance ?? 0)
-                  : "—"}
+                {hasBudgetAccess ? formatCurrency(budgetSummary?.balance ?? 0) : "—"}
               </p>
               <p className="text-sm text-gray-500 mt-1">Saldo do mês</p>
             </CardContent>
@@ -174,9 +172,7 @@ export default function Dashboard() {
                 {!hasBudgetAccess && <Lock className="w-4 h-4 text-gray-400" />}
               </div>
               <p className="text-2xl font-bold text-gray-900">
-                {hasBudgetAccess
-                  ? formatCurrency(budgetData?.summary?.income ?? 0)
-                  : "—"}
+                {hasBudgetAccess ? formatCurrency(budgetSummary?.income ?? 0) : "—"}
               </p>
               <p className="text-sm text-gray-500 mt-1">Receita do mês</p>
             </CardContent>
@@ -278,25 +274,23 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Receitas</span>
                     <span className="font-semibold text-emerald-600">
-                      {formatCurrency(budgetData?.summary?.income ?? 0)}
+                      {formatCurrency(budgetSummary?.income ?? 0)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Despesas</span>
                     <span className="font-semibold text-rose-600">
-                      {formatCurrency(budgetData?.summary?.totalExpenses ?? 0)}
+                      {formatCurrency(budgetSummary?.totalExpenses ?? 0)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm border-t pt-2">
                     <span className="text-gray-700 font-medium">Saldo</span>
                     <span
                       className={`font-bold ${
-                        (budgetData?.summary?.balance ?? 0) >= 0
-                          ? "text-emerald-600"
-                          : "text-rose-600"
+                        (budgetSummary?.balance ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"
                       }`}
                     >
-                      {formatCurrency(budgetData?.summary?.balance ?? 0)}
+                      {formatCurrency(budgetSummary?.balance ?? 0)}
                     </span>
                   </div>
                   <Button
