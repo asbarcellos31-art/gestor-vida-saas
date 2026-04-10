@@ -3,7 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import TrialBanner from "@/components/TrialBanner";
 import { useLocation } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Clock,
   Wallet,
@@ -59,6 +59,39 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
+
+  // Indicador de tarefa ativa (lido do localStorage)
+  const [hasActiveTimer, setHasActiveTimer] = useState(() => {
+    try { return !!localStorage.getItem("gestor_active_timer"); } catch { return false; }
+  });
+  const [timerElapsed, setTimerElapsed] = useState(0);
+  useEffect(() => {
+    const check = () => {
+      try {
+        const saved = localStorage.getItem("gestor_active_timer");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          const startedAt = new Date(parsed.startedAt).getTime();
+          setTimerElapsed(Math.floor((Date.now() - startedAt) / 1000));
+          setHasActiveTimer(true);
+        } else {
+          setHasActiveTimer(false);
+          setTimerElapsed(0);
+        }
+      } catch { setHasActiveTimer(false); }
+    };
+    check();
+    const interval = setInterval(check, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fmtTimer = (s: number) => {
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  };
 
   // Grupos colapsáveis
   const [budgetOpen, setBudgetOpen] = useState(
@@ -121,11 +154,30 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
             Gestão de Tempo
           </p>
-          {hasTime
-            ? navItem("/gestao-tempo", "Tríade do Tempo", Clock, false,
-                location === "/gestao-tempo" || location.startsWith("/gestao-tempo"))
-            : navItem("/planos", "Tríade do Tempo", Clock, true, false)
-          }
+          {hasTime ? (
+            <button
+              onClick={() => go("/gestao-tempo")}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                location === "/gestao-tempo" || location.startsWith("/gestao-tempo")
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              }`}
+            >
+              <Clock className="w-4 h-4 flex-shrink-0" />
+              <span className="flex-1 text-left">Tríade do Tempo</span>
+              {hasActiveTimer && (
+                <span className="flex items-center gap-1">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                  </span>
+                  <span className="text-[10px] font-mono text-green-400 font-bold">{fmtTimer(timerElapsed)}</span>
+                </span>
+              )}
+            </button>
+          ) : (
+            navItem("/planos", "Tríade do Tempo", Clock, true, false)
+          )}
         </div>
 
         {/* ── Orçamento Doméstico ── */}

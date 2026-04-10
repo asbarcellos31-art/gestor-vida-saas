@@ -222,3 +222,8 @@
 - [x] BUG: cartões com nomes genéricos (Cartão 1, 2, 3) pois payment_methods está vazio — redirecionar usuário para configurações
 - [x] BUG: timer de tarefa reseta ao trocar de aba — persistir estado no localStorage
 - [x] BUG: erro ao salvar contas a pagar — investigar e corrigir (banco funciona, problema era nomes hardcoded antigos)
+
+## Bugs Corrigidos (10/04/2026 - Sessão 2)
+- [x] BUG CRÍTICO: erro ao lançar despesas — colunas installmentGroupId, installmentNumber, installmentTotal ausentes no banco (migração aplicada)
+- [x] BUG: timer do GestaoTempo não roda — corrigido closure stale no useEffect (usar startedAtMs local)
+- [x] BUG: indicador de tarefa ativa ausente na sidebar — adicionado ponto pulsante verde + cronômetro ao lado de "Tríade do Tempo"

@@ -35,7 +35,7 @@ import {
   Bell,
   Settings,
 } from "lucide-react";
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 
 type TaskCategory = "important" | "urgent" | "circumstantial";
 
@@ -172,6 +172,7 @@ export default function GestaoTempo() {
   });
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const activeTimerRef = useRef<{ taskId: number; startedAt: Date } | null>(null);
   const [collapsedCompleted, setCollapsedCompleted] = useState<Set<string>>(new Set());
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [reminderEmoji, setReminderEmoji] = useState("📌");
@@ -193,24 +194,42 @@ export default function GestaoTempo() {
   const { data: backlogTasks = [] } = trpc.tasks.backlog.useQuery();
   const { data: taskCategories = [] } = trpc.taskCategories.list.useQuery();
 
-  // Timer persistido no localStorage
+  // Manter ref sincronizada com o estado para evitar closure stale
   useEffect(() => {
+    activeTimerRef.current = activeTimer;
+  }, [activeTimer]);
+
+  // Timer persistido no localStorage — abordagem robusta com ref
+  useEffect(() => {
+    // Limpar intervalo anterior sempre
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
     if (activeTimer) {
       localStorage.setItem("gestor_active_timer", JSON.stringify({
         taskId: activeTimer.taskId,
         startedAt: activeTimer.startedAt.toISOString(),
       }));
-      timerRef.current = setInterval(() => {
-        setElapsed(Math.floor((Date.now() - activeTimer.startedAt.getTime()) / 1000));
-      }, 1000);
-      // Atualizar elapsed imediatamente ao montar
+      // Atualizar imediatamente
       setElapsed(Math.floor((Date.now() - activeTimer.startedAt.getTime()) / 1000));
+      // Usar ref para evitar closure stale
+      const startedAtMs = activeTimer.startedAt.getTime();
+      timerRef.current = setInterval(() => {
+        setElapsed(Math.floor((Date.now() - startedAtMs) / 1000));
+      }, 1000);
     } else {
       localStorage.removeItem("gestor_active_timer");
-      if (timerRef.current) clearInterval(timerRef.current);
       setElapsed(0);
     }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [activeTimer]);
 
   const createTask = trpc.tasks.create.useMutation({
