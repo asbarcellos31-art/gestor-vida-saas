@@ -177,7 +177,7 @@ export default function Home() {
           <Badge className="mb-6 bg-violet-100 text-violet-700 border-violet-200 hover:bg-violet-100">
             ✨ Gestão de Tempo + Orçamento Doméstico
           </Badge>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
             Organize seu{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-purple-600">
               tempo
@@ -187,7 +187,7 @@ export default function Home() {
               finanças
             </span>
           </h1>
-          <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
             A plataforma completa para pequenas e médias empresas e profissionais autônomos que
             precisam de controle real — sem complicação e sem custo alto.
           </p>
@@ -227,7 +227,7 @@ export default function Home() {
               pagar caro por um sistema de gestão.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {FEATURES.map((f) => (
               <div
                 key={f.title}
@@ -255,11 +255,11 @@ export default function Home() {
               Sem surpresas. Preço fixo mensal, cancele quando quiser.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {PLANS.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative bg-white rounded-2xl border-2 p-8 flex flex-col transition-all duration-200 hover:shadow-xl ${
+                className={`relative bg-white rounded-2xl border-2 p-5 sm:p-8 flex flex-col transition-all duration-200 hover:shadow-xl ${
                   plan.badge
                     ? "border-amber-400 shadow-lg shadow-amber-100"
                     : "border-gray-100 hover:border-gray-200"

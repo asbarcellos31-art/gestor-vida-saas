@@ -70,6 +70,11 @@
 - [ ] Portal de gerenciamento de assinatura — pendente Stripe
 
 ## Ajustes Pós-Entrega
+- [x] Responsividade mobile — sidebar, dashboard, landing page
+- [x] Responsividade mobile — módulo Gestão de Tempo
+- [x] Responsividade mobile — módulo Orçamento Doméstico
+- [x] Replicar fielmente módulo Gestão de Tempo (Tríade do Tempo original)
+- [x] Replicar fielmente módulo Orçamento Doméstico (original)
 - [x] Acesso irrestrito para usuário admin (dono) sem necessidade de assinatura
 
 ## Testes

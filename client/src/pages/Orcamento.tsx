@@ -270,7 +270,7 @@ export default function Orcamento() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-6xl mx-auto">
+      <div className="p-3 sm:p-5 max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -280,29 +280,32 @@ export default function Orcamento() {
         </div>
 
         <Tabs defaultValue="orcamento">
-          <TabsList className="mb-6">
-            <TabsTrigger value="orcamento" className="flex items-center gap-1.5">
-              <Wallet className="w-4 h-4" />
-              Orçamento
+          <TabsList className="mb-4 flex flex-wrap gap-1 h-auto">
+            <TabsTrigger value="orcamento" className="flex items-center gap-1 text-xs sm:text-sm">
+              <Wallet className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Orçamento</span>
+              <span className="xs:hidden">Orç.</span>
             </TabsTrigger>
-            <TabsTrigger value="parcelados" className="flex items-center gap-1.5">
-              <CreditCard className="w-4 h-4" />
+            <TabsTrigger value="parcelados" className="flex items-center gap-1 text-xs sm:text-sm">
+              <CreditCard className="w-3.5 h-3.5" />
               Parcelados
             </TabsTrigger>
-            <TabsTrigger value="aposentadoria" className="flex items-center gap-1.5">
-              <PiggyBank className="w-4 h-4" />
-              Aposentadoria
+            <TabsTrigger value="aposentadoria" className="flex items-center gap-1 text-xs sm:text-sm">
+              <PiggyBank className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Aposentadoria</span>
+              <span className="sm:hidden">Aposen.</span>
             </TabsTrigger>
-            <TabsTrigger value="anual" className="flex items-center gap-1.5">
-              <BarChart3 className="w-4 h-4" />
-              Dashboard Anual
+            <TabsTrigger value="anual" className="flex items-center gap-1 text-xs sm:text-sm">
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Dashboard Anual</span>
+              <span className="sm:hidden">Anual</span>
             </TabsTrigger>
           </TabsList>
 
           {/* ─── Orçamento Mensal ─────────────────────────────────────────────── */}
           <TabsContent value="orcamento">
             {/* Month selector + Add button */}
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
               <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                 <SelectTrigger className="w-40">
                   <SelectValue />
@@ -320,7 +323,7 @@ export default function Orcamento() {
                     Nova Entrada
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md mx-4 sm:mx-auto">
                   <DialogHeader>
                     <DialogTitle>{editingEntry ? "Editar Entrada" : "Nova Entrada"}</DialogTitle>
                   </DialogHeader>
@@ -387,7 +390,7 @@ export default function Orcamento() {
             </div>
 
             {/* Summary cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
               <Card>
                 <CardContent className="p-4">
                   <p className="text-xs text-gray-500 mb-1">Receitas</p>
@@ -504,7 +507,7 @@ export default function Orcamento() {
                     Novo Parcelamento
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md mx-4 sm:mx-auto">
                   <DialogHeader>
                     <DialogTitle>Novo Parcelamento</DialogTitle>
                   </DialogHeader>

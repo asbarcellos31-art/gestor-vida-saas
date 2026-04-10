@@ -70,10 +70,10 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-6xl mx-auto">
+      <div className="p-3 sm:p-5 max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
             Olá, {user?.name?.split(" ")[0] ?? "bem-vindo"} 👋
           </h1>
           <p className="text-gray-500 mt-1">
@@ -88,8 +88,8 @@ export default function Dashboard() {
 
         {/* No subscription */}
         {!subscription && (
-          <Card className="mb-8 border-amber-200 bg-amber-50">
-            <CardContent className="p-6 flex items-center justify-between">
+          <Card className="mb-6 border-amber-200 bg-amber-50">
+            <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
                   <Zap className="w-6 h-6 text-amber-600" />
@@ -113,7 +113,7 @@ export default function Dashboard() {
         )}
 
         {/* Stats grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {/* Score */}
           <Card className={!hasTimeAccess ? "opacity-60" : ""}>
             <CardContent className="p-5">
@@ -184,7 +184,7 @@ export default function Dashboard() {
         </div>
 
         {/* Modules */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Time Management */}
           <Card className={!hasTimeAccess ? "border-dashed" : ""}>
             <CardHeader className="pb-3">
