@@ -169,19 +169,31 @@ const subscriptionRouter = router({
     if (await isAdminUser(ctx.user.id)) {
       return { plan: "combo" as const, status: "active" as const, isAdmin: true, trialEndsAt: null as Date | null, trialDaysLeft: null as number | null };
     }
-    const sub = await getUserSubscription(ctx.user.id);
-    if (!sub) return null;
-    let trialDaysLeft: number | null = null;
-    if (sub.status === "trialing" && sub.trialEndsAt) {
-      const msLeft = sub.trialEndsAt.getTime() - Date.now();
-      trialDaysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+    // Usa getActiveSubscription para garantir que trials expirados sejam marcados e não retornados
+    const activeSub = await getActiveSubscription(ctx.user.id);
+    if (activeSub) {
+      let trialDaysLeft: number | null = null;
+      if (activeSub.status === "trialing" && activeSub.trialEndsAt) {
+        const msLeft = activeSub.trialEndsAt.getTime() - Date.now();
+        trialDaysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+      }
+      return { ...activeSub, trialDaysLeft };
     }
-    return { ...sub, trialDaysLeft };
+    // Sem assinatura ativa — verificar se há subscription expirada/cancelada para mostrar status correto
+    const anySub = await getUserSubscription(ctx.user.id);
+    if (!anySub) return null;
+    return { ...anySub, trialDaysLeft: null };
   }),
   startTrial: protectedProcedure.mutation(async ({ ctx }) => {
-    const existing = await getUserSubscription(ctx.user.id);
+    // Verificar se já tem trial ou assinatura ativa (não bloquear por subscriptions expiradas/canceladas)
+    const existing = await getActiveSubscription(ctx.user.id);
     if (existing) {
-      throw new TRPCError({ code: "BAD_REQUEST", message: "Você já possui ou utilizou um período de trial." });
+      throw new TRPCError({ code: "BAD_REQUEST", message: "Você já possui uma assinatura ou trial ativo." });
+    }
+    // Verificar se já usou o trial anteriormente
+    const anyPrevious = await getUserSubscription(ctx.user.id);
+    if (anyPrevious && (anyPrevious.status === "trialing" || anyPrevious.status === "expired")) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "Você já utilizou o período de trial gratuito. Escolha um plano para continuar." });
     }
     const trialEndsAt = new Date();
     trialEndsAt.setDate(trialEndsAt.getDate() + 5);

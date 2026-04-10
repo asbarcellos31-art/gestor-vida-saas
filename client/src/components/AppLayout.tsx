@@ -19,6 +19,7 @@ import {
   CreditCard,
   Settings2,
   Zap,
+  BookOpen,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -221,6 +222,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             Conta
           </p>
           {navItem("/planos", "Meu Plano", Settings2, false, location === "/planos")}
+          {navItem("/aprender", "Aprender", BookOpen, false, location === "/aprender")}
         </div>
       </nav>
 

@@ -8,6 +8,8 @@
 - [x] Tabela de contas parceladas (installments)
 - [x] Tabela de projeção de aposentadoria (retirement_projections)
 - [x] Migrar schema com pnpm db:push
+- [x] BUG CRÍTICO: colunas Stripe e trialEndsAt ausentes no banco de produção — migração manual aplicada
+- [x] Criar tabelas novas (income_entries, fixed_bills, expense_entries, installment_bills, retirement_config, bill_entries, categories, family_members, payment_methods, fixed_bill_labels, reminders)
 
 ## Backend - Assinaturas e Stripe
 - [ ] Integração Stripe (checkout, webhooks, portal) — pendente configuração de chaves
@@ -90,3 +92,18 @@
 - [x] Trial gratuito de 5 dias — banner com contador regressivo no dashboard
 - [x] Trial gratuito de 5 dias — bloqueio suave ao expirar com CTA para assinar
 - [x] Landing page — destacar trial gratuito no hero e nos planos
+- [x] Módulo de tutoriais — página central com guias passo a passo
+- [x] Tutorial Gestão de Tempo — 6 passos detalhados com imagens/ícones
+- [x] Tutorial Orçamento Doméstico — 6 passos detalhados com imagens/ícones
+- [ ] Tour interativo de onboarding no primeiro acesso (tooltip guiado)
+- [ ] Botão "Ver Tutorial" em cada módulo
+- [x] Módulo Aprender — página central com trilhas de aprendizado
+- [x] Trilha Gestão de Tempo: o que é a Tríade, quando usar Importante/Urgente/Circunstancial, exemplos práticos
+- [x] Trilha Gestão de Tempo: como planejar por mês, semana e dia
+- [x] Trilha Gestão de Tempo: backlog sem data — capturar e distribuir tarefas
+- [x] Trilha Orçamento: o que é a regra 50/30/20, como categorizar cada gasto
+- [x] Trilha Orçamento: como funcionam os vínculos e parcelamentos
+- [x] Trilha Orçamento: como usar a projeção de aposentadoria (3 cenários)
+- [x] Botão "Aprender" na sidebar com ícone de livro
+- [x] BUG: usuários em trial com módulos bloqueados — corrigido (subscription.get usa getActiveSubscription)
+- [x] Adicionar "Aprender" na sidebar com ícone de livro

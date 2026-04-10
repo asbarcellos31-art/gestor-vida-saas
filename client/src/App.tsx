@@ -13,6 +13,7 @@ import Retirement from "./pages/Retirement";
 import OrcamentoDashboard from "./pages/OrcamentoDashboard";
 import Planos from "./pages/Planos";
 import TrialExpired from "./pages/TrialExpired";
+import Aprender from "./pages/Aprender";
 
 function Router() {
   return (
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/aposentadoria" component={Retirement} />
       <Route path="/planos" component={Planos} />
       <Route path="/trial-expirado" component={TrialExpired} />
+      <Route path="/aprender" component={Aprender} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
