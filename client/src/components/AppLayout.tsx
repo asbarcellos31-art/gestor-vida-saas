@@ -20,6 +20,7 @@ import {
   Settings2,
   Zap,
   BookOpen,
+  Crown,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -223,6 +224,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </p>
           {navItem("/planos", "Meu Plano", Settings2, false, location === "/planos")}
           {navItem("/aprender", "Aprender", BookOpen, false, location === "/aprender")}
+          {(user as any)?.role === "admin" && navItem("/admin", "Admin", Crown, false, location === "/admin")}
         </div>
       </nav>
 

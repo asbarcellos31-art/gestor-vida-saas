@@ -827,3 +827,75 @@ export async function upsertFixedBillLabel(userId: number, billKey: string, labe
     await db.insert(fixedBillLabels).values({ userId, billKey, label, hidden: hidden ? 1 : 0 });
   }
 }
+
+// ── Admin functions ───────────────────────────────────────────────────────────
+export async function getAllUsersWithSubscriptions() {
+  const db = await getDb();
+  if (!db) return [];
+  const rows = await db
+    .select({
+      userId: users.id,
+      name: users.name,
+      email: users.email,
+      role: users.role,
+      createdAt: users.createdAt,
+      lastSignedIn: users.lastSignedIn,
+      subId: subscriptions.id,
+      plan: subscriptions.plan,
+      status: subscriptions.status,
+      trialEndsAt: subscriptions.trialEndsAt,
+      subCreatedAt: subscriptions.createdAt,
+    })
+    .from(users)
+    .leftJoin(subscriptions, eq(subscriptions.userId, users.id))
+    .orderBy(desc(users.createdAt));
+  return rows;
+}
+
+export async function getAdminMetrics() {
+  const db = await getDb();
+  if (!db) return null;
+  const allSubs = await db.select().from(subscriptions);
+  const allUsers = await db.select({ id: users.id, role: users.role }).from(users);
+  const now = new Date();
+  const activeSubs = allSubs.filter(s => s.status === "active");
+  const activeTrials = allSubs.filter(s => s.status === "trialing" && s.trialEndsAt && new Date(s.trialEndsAt) > now);
+  const expiredTrials = allSubs.filter(s => s.status === "expired" || (s.status === "trialing" && s.trialEndsAt && new Date(s.trialEndsAt) <= now));
+  const cancelled = allSubs.filter(s => s.status === "cancelled");
+  const PRICES: Record<string, number> = { time_management: 1990, budget: 1990, combo: 3490 };
+  const mrr = activeSubs.reduce((sum, s) => sum + (PRICES[s.plan] || 0), 0);
+  const byPlan = {
+    time_management: activeSubs.filter(s => s.plan === "time_management").length,
+    budget: activeSubs.filter(s => s.plan === "budget").length,
+    combo: activeSubs.filter(s => s.plan === "combo").length,
+  };
+  const totalWithSub = allSubs.length;
+  const conversionRate = totalWithSub > 0 ? Math.round((activeSubs.length / totalWithSub) * 100) : 0;
+  return {
+    totalUsers: allUsers.length,
+    activeSubscribers: activeSubs.length,
+    activeTrials: activeTrials.length,
+    expiredTrials: expiredTrials.length,
+    cancelled: cancelled.length,
+    mrrCents: mrr,
+    byPlan,
+    conversionRate,
+  };
+}
+
+export async function adminSetUserPlan(userId: number, plan: "time_management" | "budget" | "combo" | null) {
+  const db = await getDb();
+  if (!db) return;
+  const existing = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1);
+  if (plan === null) {
+    if (existing[0]) {
+      await db.update(subscriptions).set({ status: "cancelled" }).where(eq(subscriptions.userId, userId));
+    }
+    return;
+  }
+  if (existing[0]) {
+    await db.update(subscriptions).set({ plan, status: "active", trialEndsAt: null }).where(eq(subscriptions.userId, userId));
+  } else {
+    await db.insert(subscriptions).values({ userId, plan, status: "active" });
+  }
+}

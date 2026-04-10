@@ -13,6 +13,8 @@ import {
   ArrowRight,
   Zap,
   Gift,
+  ExternalLink,
+  CreditCard,
 } from "lucide-react";
 
 const PLANS = [
@@ -75,15 +77,6 @@ export default function Planos() {
   const [, navigate] = useLocation();
   const { data: subscription } = trpc.subscription.get.useQuery();
 
-  const createSubscription = trpc.subscription.activate.useMutation({
-    onSuccess: () => {
-      utils.subscription.get.invalidate();
-      toast.success("Plano ativado com sucesso! Bem-vindo ao Gestor de Vida! 🎉");
-      navigate("/dashboard");
-    },
-    onError: (e: { message: string }) => toast.error(e.message),
-  });
-
   const startTrial = trpc.subscription.startTrial.useMutation({
     onSuccess: () => {
       utils.subscription.get.invalidate();
@@ -101,11 +94,39 @@ export default function Planos() {
     onError: (e) => toast.error(e.message),
   });
 
-  const sub = subscription as { plan?: string; status?: string; trialDaysLeft?: number | null; isAdmin?: boolean } | null;
+  const createCheckout = trpc.stripe.createCheckoutSession.useMutation({
+    onSuccess: (data) => {
+      if (data.url) {
+        toast.info("Redirecionando para o checkout seguro...");
+        window.open(data.url, "_blank");
+      }
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const createPortal = trpc.stripe.createPortalSession.useMutation({
+    onSuccess: (data) => {
+      if (data.url) {
+        toast.info("Abrindo portal de assinatura...");
+        window.open(data.url, "_blank");
+      }
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const sub = subscription as {
+    plan?: string;
+    status?: string;
+    trialDaysLeft?: number | null;
+    isAdmin?: boolean;
+    stripeCustomerId?: string | null;
+  } | null;
+
   const currentPlan = sub?.plan;
   const isTrialing = sub?.status === "trialing";
   const trialDaysLeft = sub?.trialDaysLeft ?? 0;
   const hasNoSubscription = !subscription;
+  const hasStripeSubscription = !!(sub as any)?.stripeCustomerId;
 
   return (
     <AppLayout>
@@ -159,18 +180,34 @@ export default function Planos() {
                 </p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                if (confirm("Tem certeza que deseja cancelar sua assinatura?")) {
-                  cancelSubscription.mutate();
-                }
-              }}
-              className="border-rose-200 text-rose-600 hover:bg-rose-50"
-            >
-              Cancelar assinatura
-            </Button>
+            <div className="flex gap-2 flex-wrap">
+              {hasStripeSubscription ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => createPortal.mutate({ origin: window.location.origin })}
+                  disabled={createPortal.isPending}
+                  className="border-violet-200 text-violet-600 hover:bg-violet-50"
+                >
+                  <CreditCard className="w-4 h-4 mr-1" />
+                  Gerenciar assinatura
+                  <ExternalLink className="w-3 h-3 ml-1" />
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (confirm("Tem certeza que deseja cancelar sua assinatura?")) {
+                      cancelSubscription.mutate();
+                    }
+                  }}
+                  className="border-rose-200 text-rose-600 hover:bg-rose-50"
+                >
+                  Cancelar assinatura
+                </Button>
+              )}
+            </div>
           </div>
         )}
 
@@ -258,8 +295,10 @@ export default function Planos() {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => createSubscription.mutate({ plan: plan.id })}
-                    disabled={createSubscription.isPending}
+                    onClick={() =>
+                      createCheckout.mutate({ plan: plan.id, origin: window.location.origin })
+                    }
+                    disabled={createCheckout.isPending}
                     className={`w-full rounded-xl font-semibold ${
                       plan.badge
                         ? "bg-amber-500 hover:bg-amber-600 text-white"
@@ -276,7 +315,7 @@ export default function Planos() {
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          Cancele quando quiser. Sem fidelidade. Suporte por email.
+          Pagamento seguro via Stripe. Cancele quando quiser. Sem fidelidade.
         </p>
       </div>
     </AppLayout>

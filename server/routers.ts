@@ -5,6 +5,8 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
+import Stripe from "stripe";
+import { STRIPE_PRICES } from "./stripe_products";
 import {
   getActiveSubscription,
   getUserSubscription,
@@ -12,6 +14,9 @@ import {
   updateSubscription,
   upsertSubscriptionByStripeId,
   getSubscriptionByStripeId,
+  getAllUsersWithSubscriptions,
+  getAdminMetrics,
+  adminSetUserPlan,
   getTasksByDate,
   getTasksByDateRange,
   getBacklogTasks,
@@ -1106,6 +1111,78 @@ const billEntriesRouter = router({
     }),
 });
 
+// ─── Stripe Router ──────────────────────────────────────────────────────────
+const stripeRouter = router({
+  createCheckoutSession: protectedProcedure
+    .input(z.object({
+      plan: z.enum(["time_management", "budget", "combo"]),
+      origin: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+      const priceId = STRIPE_PRICES[input.plan];
+      const session = await stripe.checkout.sessions.create({
+        mode: "subscription",
+        payment_method_types: ["card"],
+        line_items: [{ price: priceId, quantity: 1 }],
+        customer_email: ctx.user.email ?? undefined,
+        client_reference_id: ctx.user.id.toString(),
+        metadata: {
+          user_id: ctx.user.id.toString(),
+          plan: input.plan,
+          customer_email: ctx.user.email ?? "",
+          customer_name: ctx.user.name ?? "",
+        },
+        allow_promotion_codes: true,
+        success_url: `${input.origin}/assinatura/sucesso?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${input.origin}/planos`,
+      });
+      return { url: session.url };
+    }),
+  createPortalSession: protectedProcedure
+    .input(z.object({ origin: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+      const sub = await getUserSubscription(ctx.user.id);
+      if (!sub?.stripeCustomerId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Nenhuma assinatura Stripe encontrada." });
+      }
+      const session = await stripe.billingPortal.sessions.create({
+        customer: sub.stripeCustomerId,
+        return_url: `${input.origin}/planos`,
+      });
+      return { url: session.url };
+    }),
+});
+
+// ─── Admin Router ─────────────────────────────────────────────────────────────
+const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const { users } = await import("../drizzle/schema");
+  const conn = await getDb();
+  if (!conn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+  const result = await conn.select({ role: users.role }).from(users).where(eq(users.id, ctx.user.id)).limit(1);
+  if (result[0]?.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Acesso restrito a administradores." });
+  return next({ ctx });
+});
+
+const adminRouter = router({
+  metrics: adminProcedure.query(async () => {
+    return await getAdminMetrics();
+  }),
+  users: adminProcedure.query(async () => {
+    return await getAllUsersWithSubscriptions();
+  }),
+  setUserPlan: adminProcedure
+    .input(z.object({
+      userId: z.number(),
+      plan: z.enum(["time_management", "budget", "combo"]).nullable(),
+    }))
+    .mutation(async ({ input }) => {
+      await adminSetUserPlan(input.userId, input.plan);
+      return { success: true };
+    }),
+});
+
 // ─── App Router ───────────────────────────────────────────────────────────────
 export const appRouter = router({
   system: systemRouter,
@@ -1130,7 +1207,8 @@ export const appRouter = router({
   paymentMethods: paymentMethodsRouter,
   members: membersRouter,
   dashboard: dashboardRouter,
-  billEntries: billEntriesRouter,
+   billEntries: billEntriesRouter,
+  stripe: stripeRouter,
+  admin: adminRouter,
 });
-
 export type AppRouter = typeof appRouter;

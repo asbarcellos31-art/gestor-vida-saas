@@ -14,6 +14,8 @@ import OrcamentoDashboard from "./pages/OrcamentoDashboard";
 import Planos from "./pages/Planos";
 import TrialExpired from "./pages/TrialExpired";
 import Aprender from "./pages/Aprender";
+import Admin from "./pages/Admin";
+import AssinaturaSucesso from "./pages/AssinaturaSucesso";
 
 function Router() {
   return (
@@ -31,6 +33,8 @@ function Router() {
       <Route path="/planos" component={Planos} />
       <Route path="/trial-expirado" component={TrialExpired} />
       <Route path="/aprender" component={Aprender} />
+      <Route path="/admin" component={Admin} />
+      <Route path="/assinatura/sucesso" component={AssinaturaSucesso} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
