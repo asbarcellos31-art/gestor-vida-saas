@@ -69,6 +69,9 @@
 - [ ] Página de sucesso pós-assinatura — pendente Stripe
 - [ ] Portal de gerenciamento de assinatura — pendente Stripe
 
+## Ajustes Pós-Entrega
+- [x] Acesso irrestrito para usuário admin (dono) sem necessidade de assinatura
+
 ## Testes
 - [x] Testes de autenticação
 - [x] Testes de controle de acesso por plano

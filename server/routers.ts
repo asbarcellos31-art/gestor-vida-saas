@@ -41,7 +41,20 @@ function hasBudgetAccess(plan: PlanType) {
   return plan === "budget" || plan === "combo";
 }
 
+// Admin (dono) tem acesso irrestrito a todos os módulos sem precisar de assinatura
+async function isAdminUser(userId: number): Promise<boolean> {
+  const db = await import("./db");
+  const { getDb } = db;
+  const { users } = await import("../drizzle/schema");
+  const { eq } = await import("drizzle-orm");
+  const conn = await getDb();
+  if (!conn) return false;
+  const result = await conn.select({ role: users.role }).from(users).where(eq(users.id, userId)).limit(1);
+  return result[0]?.role === "admin";
+}
+
 async function requireTimeAccess(userId: number) {
+  if (await isAdminUser(userId)) return null; // admin tem acesso total
   const sub = await getActiveSubscription(userId);
   if (!sub || !hasTimeAccess(sub.plan)) {
     throw new TRPCError({
@@ -53,6 +66,7 @@ async function requireTimeAccess(userId: number) {
 }
 
 async function requireBudgetAccess(userId: number) {
+  if (await isAdminUser(userId)) return null; // admin tem acesso total
   const sub = await getActiveSubscription(userId);
   if (!sub || !hasBudgetAccess(sub.plan)) {
     throw new TRPCError({
@@ -105,11 +119,27 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
-  }),
-
-  // ─── Subscriptions ──────────────────────────────────────────────────────────
+  }),  // ─── Subscriptions ──────────────────────────────────────────────────────────────────
   subscription: router({
     get: protectedProcedure.query(async ({ ctx }) => {
+      // Admin (dono) sempre tem acesso total ao Combo sem precisar assinar
+      if (ctx.user.role === "admin") {
+        const existing = await getUserSubscription(ctx.user.id);
+        if (existing) return existing;
+        // Retorna um plano virtual combo para o admin sem criar no banco
+        return {
+          id: -1,
+          userId: ctx.user.id,
+          plan: "combo" as const,
+          status: "active" as const,
+          stripeCustomerId: null,
+          stripeSubscriptionId: null,
+          stripePriceId: null,
+          cancelAtPeriodEnd: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+      }
       return getUserSubscription(ctx.user.id);
     }),
 
