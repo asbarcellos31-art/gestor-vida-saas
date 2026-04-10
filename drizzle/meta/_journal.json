@@ -1,5 +1,27 @@
 {
   "version": "7",
   "dialect": "mysql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1775816917579,
+      "tag": "0000_optimal_purple_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1775817027748,
+      "tag": "0001_friendly_epoch",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1775817086126,
+      "tag": "0002_slippery_supernaut",
+      "breakpoints": true
+    }
+  ]
 }

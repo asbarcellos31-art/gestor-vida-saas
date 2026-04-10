@@ -1,0 +1,1 @@
+ALTER TABLE `tasks` MODIFY COLUMN `scheduledDate` varchar(10) NOT NULL;
