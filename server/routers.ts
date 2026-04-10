@@ -27,10 +27,16 @@ import {
   getRemindersByDate,
   createReminder,
   deleteReminder,
-  getIncome,
-  upsertIncome,
+  getIncomeEntries,
+  addIncomeEntry,
+  updateIncomeEntry,
+  deleteIncomeEntry,
   getFixedBills,
-  upsertFixedBills,
+  upsertFixedBill,
+  toggleFixedBillPaid,
+  deleteFixedBillLabel,
+  initDefaultPaymentMethods,
+  initDefaultFixedBillLabels,
   getExpenseEntries,
   addExpenseEntryFull,
   updateExpenseEntry,
@@ -68,6 +74,10 @@ import {
   getMemberBreakdownAnnual,
   getExpensesEndingNextMonth,
   clearAllInstallments,
+  getTaskCategories,
+  createTaskCategory,
+  updateTaskCategory,
+  deleteTaskCategory,
 } from "./db";
 
 // ─── Access control helpers ───────────────────────────────────────────────────
@@ -254,12 +264,23 @@ const tasksRouter = router({
       title: z.string().min(1).max(255),
       durationMinutes: z.number().min(1).max(480).default(30),
       category: z.enum(["important", "urgent", "circumstantial"]).default("important"),
-      scheduledDate: z.string(),
+      taskCategoryId: z.number().optional().nullable(),
+      scheduledDate: z.string().optional().nullable(),
+      scheduledTime: z.string().optional().nullable(),
+      isRecurring: z.boolean().optional().default(false),
       notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       await requireTimeAccess(ctx.user.id);
-      await createTask({ ...input, userId: ctx.user.id, status: "pending", executedMinutes: 0 });
+      await createTask({
+        ...input,
+        scheduledDate: input.scheduledDate || undefined,
+        scheduledTime: input.scheduledTime || undefined,
+        taskCategoryId: input.taskCategoryId ?? undefined,
+        userId: ctx.user.id,
+        status: "pending",
+        executedMinutes: 0,
+      });
       return { success: true };
     }),
 
@@ -269,8 +290,11 @@ const tasksRouter = router({
       title: z.string().min(1).max(255).optional(),
       durationMinutes: z.number().min(1).max(480).optional(),
       category: z.enum(["important", "urgent", "circumstantial"]).optional(),
+      taskCategoryId: z.number().optional().nullable(),
       status: z.enum(["pending", "started", "completed"]).optional(),
-      scheduledDate: z.string().optional(),
+      scheduledDate: z.string().optional().nullable(),
+      scheduledTime: z.string().optional().nullable(),
+      isRecurring: z.boolean().optional(),
       executedMinutes: z.number().optional(),
       notes: z.string().optional(),
       startedAt: z.date().optional(),
@@ -328,89 +352,134 @@ const remindersRouter = router({
     }),
 });
 
+// ─── Task Categories Router ─────────────────────────────────────────────────
+const taskCategoriesRouter = router({
+  list: protectedProcedure.query(async ({ ctx }) => {
+    await requireTimeAccess(ctx.user.id);
+    return getTaskCategories(ctx.user.id);
+  }),
+
+  create: protectedProcedure
+    .input(z.object({
+      name: z.string().min(1).max(64),
+      emoji: z.string().max(8).default("📋"),
+      color: z.string().max(32).default("#6366f1"),
+      sortOrder: z.number().default(0),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await requireTimeAccess(ctx.user.id);
+      await createTaskCategory({ ...input, userId: ctx.user.id });
+      return { success: true };
+    }),
+
+  update: protectedProcedure
+    .input(z.object({
+      id: z.number(),
+      name: z.string().min(1).max(64).optional(),
+      emoji: z.string().max(8).optional(),
+      color: z.string().max(32).optional(),
+      sortOrder: z.number().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await requireTimeAccess(ctx.user.id);
+      const { id, ...data } = input;
+      await updateTaskCategory(id, ctx.user.id, data);
+      return { success: true };
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await requireTimeAccess(ctx.user.id);
+      await deleteTaskCategory(input.id, ctx.user.id);
+      return { success: true };
+    }),
+});
+
 // ─── Income Router ────────────────────────────────────────────────────────────
 const incomeRouter = router({
-  get: protectedProcedure
+  list: protectedProcedure
     .input(z.object({ year: z.number(), month: z.number().min(1).max(12) }))
     .query(async ({ ctx, input }) => {
       await requireBudgetAccess(ctx.user.id);
-      return getIncome(ctx.user.id, input.year, input.month);
+      return getIncomeEntries(ctx.user.id, input.year, input.month);
     }),
-
-  save: protectedProcedure
+  add: protectedProcedure
     .input(z.object({
       year: z.number(),
       month: z.number().min(1).max(12),
-      corretora: z.string().default("0"),
-      distribuicao: z.string().default("0"),
-      carteiraFer: z.string().default("0"),
-      angariacao: z.string().default("0"),
-      advocacia: z.string().default("0"),
-      outros: z.string().default("0"),
+      description: z.string().min(1),
+      amount: z.string(),
+      category: z.string().optional().nullable(),
+      memberId: z.number().optional().nullable(),
     }))
     .mutation(async ({ ctx, input }) => {
       await requireBudgetAccess(ctx.user.id);
-      const { year, month, ...data } = input;
-      await upsertIncome(ctx.user.id, year, month, data);
+      await addIncomeEntry(ctx.user.id, input.year, input.month, input.description, input.amount, input.category, input.memberId);
+      return { success: true };
+    }),
+  update: protectedProcedure
+    .input(z.object({
+      id: z.number(),
+      description: z.string().optional(),
+      amount: z.string().optional(),
+      category: z.string().optional().nullable(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await requireBudgetAccess(ctx.user.id);
+      const { id, ...data } = input;
+      await updateIncomeEntry(id, ctx.user.id, data);
+      return { success: true };
+    }),
+  delete: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await requireBudgetAccess(ctx.user.id);
+      await deleteIncomeEntry(input.id, ctx.user.id);
       return { success: true };
     }),
 });
 
 // ─── Fixed Bills Router ───────────────────────────────────────────────────────
 const fixedBillsRouter = router({
-  get: protectedProcedure
+  list: protectedProcedure
     .input(z.object({ year: z.number(), month: z.number().min(1).max(12) }))
     .query(async ({ ctx, input }) => {
       await requireBudgetAccess(ctx.user.id);
       return getFixedBills(ctx.user.id, input.year, input.month);
     }),
-
-  save: protectedProcedure
+  upsert: protectedProcedure
     .input(z.object({
       year: z.number(),
       month: z.number().min(1).max(12),
-      seguroVida: z.string().default("0"),
-      gas: z.string().default("0"),
-      agua: z.string().default("0"),
-      luz: z.string().default("0"),
-      seguroPai: z.string().default("0"),
-      celularNet: z.string().default("0"),
-      cartoes: z.string().default("0"),
-      condominio: z.string().default("0"),
-      faxina: z.string().default("0"),
-      maconaria: z.string().default("0"),
-      pet: z.string().default("0"),
-      veiculo: z.string().default("0"),
-      musica: z.string().default("0"),
-      colegio: z.string().default("0"),
-      cantina: z.string().default("0"),
-      manicure: z.string().default("0"),
-      seguroVeiculo: z.string().default("0"),
-      pilates: z.string().default("0"),
-      inglesLivia: z.string().default("0"),
-      ambiental1: z.string().default("0"),
-      publiOnline: z.string().default("0"),
-      ambiental2: z.string().default("0"),
-      iptu: z.string().default("0"),
-      billsObs: z.string().optional(),
-      billsDueDay: z.string().optional(),
-      billsCategory: z.string().optional(),
-      billsMember: z.string().optional(),
-      billsPaid: z.string().optional(),
-      billsLabels: z.string().optional(),
+      billKey: z.string().min(1),
+      amount: z.string(),
+      paid: z.boolean().optional(),
+      paidDate: z.string().optional().nullable(),
     }))
     .mutation(async ({ ctx, input }) => {
       await requireBudgetAccess(ctx.user.id);
-      const { year, month, billsObs, billsDueDay, billsCategory, billsMember, billsPaid, billsLabels, ...numericFields } = input;
-      const numericKeys = ["seguroVida","gas","agua","luz","seguroPai","celularNet","cartoes","condominio","faxina","maconaria","pet","veiculo","musica","colegio","cantina","manicure","seguroVeiculo","pilates","inglesLivia","ambiental1","publiOnline","ambiental2","iptu"] as const;
-      const sanitized: Record<string, string> = {};
-      for (const key of numericKeys) {
-        const val = (numericFields as Record<string, string>)[key];
-        const parsed = parseFloat(String(val ?? "0").replace(",", "."));
-        sanitized[key] = isNaN(parsed) ? "0" : String(parsed);
-      }
-      const data = { ...sanitized, billsObs, billsDueDay, billsCategory, billsMember, billsPaid, billsLabels };
-      await upsertFixedBills(ctx.user.id, year, month, data);
+      await upsertFixedBill(ctx.user.id, input.year, input.month, input.billKey, input.amount, input.paid, input.paidDate);
+      return { success: true };
+    }),
+  togglePaid: protectedProcedure
+    .input(z.object({
+      year: z.number(),
+      month: z.number().min(1).max(12),
+      billKey: z.string(),
+      paid: z.boolean(),
+      paidDate: z.string().optional().nullable(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await requireBudgetAccess(ctx.user.id);
+      await toggleFixedBillPaid(ctx.user.id, input.year, input.month, input.billKey, input.paid, input.paidDate);
+      return { success: true };
+    }),
+  deleteLabel: protectedProcedure
+    .input(z.object({ billKey: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await requireBudgetAccess(ctx.user.id);
+      await deleteFixedBillLabel(ctx.user.id, input.billKey);
       return { success: true };
     }),
 
@@ -421,7 +490,7 @@ const fixedBillsRouter = router({
       const { year, month } = input;
       const expenses = await getExpenseEntries(ctx.user.id, year, month);
       const userPayMethods = await getUserPaymentMethods(ctx.user.id);
-      const DEFAULT_CARD_KEYS = ["itau_infinite", "c6_carbon", "xp"];
+      const DEFAULT_CARD_KEYS = ["cartao_1", "cartao_2", "cartao_3", "cartao_4", "cartao_5"];
       const cardKeys = userPayMethods.length > 0
         ? userPayMethods.filter((p) => p.isCard).map((p) => p.key)
         : DEFAULT_CARD_KEYS;
@@ -446,7 +515,7 @@ const fixedBillsRouter = router({
         if (!isActive) continue;
         const val = parseFloat(inst.installmentAmount as string) || 0;
         installmentsTotal += val;
-        const pm = (inst as Record<string, unknown>).paymentMethod as string || "itau_infinite";
+        const pm = (inst as Record<string, unknown>).paymentMethod as string || "cartao_1";
         if (cardKeys.includes(pm)) {
           byCard[pm] = (byCard[pm] || 0) + val;
         }
@@ -459,6 +528,7 @@ const fixedBillsRouter = router({
 const fixedBillLabelsRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
     await requireBudgetAccess(ctx.user.id);
+    await initDefaultFixedBillLabels(ctx.user.id);
     const { fixedBillLabels } = await import("../drizzle/schema");
     const db = await getDb();
     if (!db) return [];
@@ -610,7 +680,7 @@ const installmentsRouter = router({
       startYear: z.number(),
       startMonth: z.number().min(1).max(12),
       category: z.string().default("Parcelados"),
-      paymentMethod: z.string().default("itau_infinite"),
+      paymentMethod: z.string().default("cartao_1"),
       isRecurring: z.boolean().default(false),
       memberId: z.number().nullable().optional(),
     }))
@@ -744,7 +814,7 @@ const retirementRouter = router({
         getUserPaymentMethods(ctx.user.id),
       ]);
       const { incomes, bills, expenses, installments } = allData;
-      const DEFAULT_CARD_KEYS = ["itau_infinite", "c6_carbon", "xp"];
+      const DEFAULT_CARD_KEYS = ["cartao_1", "cartao_2", "cartao_3", "cartao_4", "cartao_5"];
       const cardKeys: string[] = userPayMethods.length > 0
         ? userPayMethods.filter((p) => p.isCard).map((p) => p.key)
         : DEFAULT_CARD_KEYS;
@@ -752,19 +822,13 @@ const retirementRouter = router({
       const allYears = Array.from(new Set(incomes.map((i) => i.year))).sort();
       for (const yr of allYears) {
         for (let m = 1; m <= 12; m++) {
-          const monthIncome = incomes.find((i) => i.year === yr && i.month === m);
-          const monthBills = bills.find((b) => b.year === yr && b.month === m);
+          const monthIncomeEntries = incomes.filter((i) => i.year === yr && i.month === m);
+          const monthBillRows = bills.filter((b) => b.year === yr && b.month === m);
           const monthExpenses = expenses.filter((e) => e.year === yr && e.month === m);
-          const totalIncome = monthIncome
-            ? [monthIncome.corretora, monthIncome.distribuicao, monthIncome.carteiraFer, monthIncome.angariacao, monthIncome.advocacia, monthIncome.outros]
-                .reduce((s, v) => s + (parseFloat(v as string) || 0), 0)
-            : 0;
+          const totalIncome = monthIncomeEntries.reduce((s, e) => s + (parseFloat(e.amount as string) || 0), 0);
           const monthBillEntries = await getBillEntries(ctx.user.id, yr, m);
           const totalBillEntries = monthBillEntries.reduce((s, e) => s + (parseFloat(e.amount as string) || 0), 0);
-          const BILLS_SKIP = new Set(['id','userId','year','month','createdAt','updatedAt','billsObs','billsDueDay','billsCategory','billsMember','cartoes']);
-          const billsSemCartoes = (monthBills
-            ? Object.entries(monthBills).filter(([k]) => !BILLS_SKIP.has(k)).reduce((s, [, v]) => s + (parseFloat(v as string) || 0), 0)
-            : 0) + totalBillEntries;
+          const billsSemCartoes = monthBillRows.reduce((s, b) => s + (parseFloat(b.amount as string) || 0), 0) + totalBillEntries;
           const monthCardExpenses = monthExpenses
             .filter((e) => e.paymentMethod != null && cardKeys.includes(e.paymentMethod as string))
             .reduce((s, e) => s + (parseFloat(e.amount as string) || 0), 0);
@@ -855,6 +919,7 @@ const categoriesRouter = router({
 const paymentMethodsRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
     await requireBudgetAccess(ctx.user.id);
+    await initDefaultPaymentMethods(ctx.user.id);
     return getUserPaymentMethods(ctx.user.id);
   }),
 
@@ -952,7 +1017,7 @@ const dashboardRouter = router({
         getInstallmentBills(ctx.user.id),
         getUserPaymentMethods(ctx.user.id),
       ]);
-      const DEFAULT_CARD_KEYS = ["itau_infinite", "c6_carbon", "xp"];
+      const DEFAULT_CARD_KEYS = ["cartao_1", "cartao_2", "cartao_3", "cartao_4", "cartao_5"];
       const cardKeys = userPayMethods.length > 0
         ? userPayMethods.filter((p) => p.isCard).map((p) => p.key)
         : DEFAULT_CARD_KEYS;
@@ -967,13 +1032,10 @@ const dashboardRouter = router({
       const maxMonth = input.year < currentYear ? 12 : input.year === currentYear ? currentMonth : 0;
       const months = [];
       for (let m = 1; m <= maxMonth; m++) {
-        const monthIncome = incomes.find((i) => i.month === m);
-        const monthBills = bills.find((b) => b.month === m);
+        const monthBillRows = bills.filter((b) => b.month === m);
         const monthExpenses = expenses.filter((e) => e.month === m);
-        const totalIncome = monthIncome
-          ? [monthIncome.corretora, monthIncome.distribuicao, monthIncome.carteiraFer, monthIncome.angariacao, monthIncome.advocacia, monthIncome.outros]
-              .reduce((s, v) => s + (parseFloat(v as string) || 0), 0)
-          : 0;
+        const monthIncomeEntries = await getIncomeEntries(ctx.user.id, input.year, m);
+        const totalIncome = monthIncomeEntries.reduce((s, e) => s + (parseFloat(e.amount as string) || 0), 0);
         const monthBillEntriesData = await getBillEntries(ctx.user.id, input.year, m);
         const totalBillEntriesData = monthBillEntriesData.reduce((s, e) => s + (parseFloat(e.amount as string) || 0), 0);
         const monthCardExpenses = monthExpenses
@@ -989,10 +1051,7 @@ const dashboardRouter = router({
         });
         const monthInstallmentsTotal = monthActiveInstallments.reduce((s, i) => s + (parseFloat(i.installmentAmount as string) || 0), 0);
         const cartoesRealtime = monthCardExpenses + monthInstallmentsTotal;
-        const SKIP_BILLS = ['id','userId','year','month','createdAt','updatedAt','billsObs','billsDueDay','billsCategory','billsMember','cartoes','billsPaid','billsLabels'];
-        const totalBills = (monthBills
-          ? Object.entries(monthBills).filter(([k]) => !SKIP_BILLS.includes(k)).reduce((s, [, v]) => s + (parseFloat(v as string) || 0), 0)
-          : 0) + totalBillEntriesData + cartoesRealtime;
+        const totalBills = monthBillRows.reduce((s, b) => s + (parseFloat(b.amount as string) || 0), 0) + totalBillEntriesData + cartoesRealtime;
         const totalExpenses = monthExpenses.reduce((s, e) => s + (parseFloat(e.amount as string) || 0), 0);
         const monthInstallments = (allInstallments || []).filter((inst) => {
           const startDate = inst.startYear * 12 + inst.startMonth;
@@ -1029,21 +1088,13 @@ const dashboardRouter = router({
     .input(z.object({ year: z.number(), month: z.number().min(1).max(12) }))
     .query(async ({ ctx, input }) => {
       await requireBudgetAccess(ctx.user.id);
-      const [income, bills, expenses] = await Promise.all([
-        getIncome(ctx.user.id, input.year, input.month),
+      const [incomeList, billsList, expenses] = await Promise.all([
+        getIncomeEntries(ctx.user.id, input.year, input.month),
         getFixedBills(ctx.user.id, input.year, input.month),
         getExpenseEntries(ctx.user.id, input.year, input.month),
       ]);
-      const totalIncome = income
-        ? [income.corretora, income.distribuicao, income.carteiraFer, income.angariacao, income.advocacia, income.outros]
-            .reduce((s, v) => s + (parseFloat(v as string) || 0), 0)
-        : 0;
-      const monthlyBillEntries = await getBillEntries(ctx.user.id, input.year, input.month);
-      const totalMonthlyBillEntries = monthlyBillEntries.reduce((s, e) => s + (parseFloat(e.amount as string) || 0), 0);
-      const SKIP_BILLS_MONTHLY = ['id','userId','year','month','createdAt','updatedAt','billsObs','billsDueDay','billsCategory','billsMember','billsPaid','billsLabels'];
-      const totalBills = (bills
-        ? Object.entries(bills).filter(([k]) => !SKIP_BILLS_MONTHLY.includes(k)).reduce((s, [, v]) => s + (parseFloat(v as string) || 0), 0)
-        : 0) + totalMonthlyBillEntries;
+      const totalIncome = incomeList.reduce((s, e) => s + (parseFloat(e.amount as string) || 0), 0);
+      const totalBills = billsList.reduce((s, b) => s + (parseFloat(b.amount as string) || 0), 0);
       const totalExpenses = expenses.reduce((s, e) => s + (parseFloat(e.amount as string) || 0), 0);
       const saldoFinal = totalIncome - totalBills;
       const pctGuardado = totalIncome > 0 ? (saldoFinal / totalIncome) * 100 : 0;
@@ -1053,7 +1104,7 @@ const dashboardRouter = router({
         categoryTotals[e.category] = (categoryTotals[e.category] || 0) + amt;
       }
       return {
-        income, bills, expenses, categoryTotals,
+        income: incomeList, bills: billsList, expenses, categoryTotals,
         metrics: { totalIncome, totalBills, totalExpenses, saldoFinal, pctGuardado, meta20Atingida: pctGuardado >= 20 },
       };
     }),
@@ -1082,7 +1133,8 @@ const billEntriesRouter = router({
     .mutation(async ({ ctx, input }) => {
       await requireBudgetAccess(ctx.user.id);
       const { year, month, description, amount, paymentMethod, billDate, obs, memberId } = input;
-      await addBillEntry(ctx.user.id, year, month, { description, amount, paymentMethod, billDate, obs, memberId });
+      // bill_entries usa billKey (nome da conta) e amount
+      await addBillEntry(ctx.user.id, year, month, description, amount);
       return { success: true };
     }),
 
@@ -1196,6 +1248,7 @@ export const appRouter = router({
   }),
   subscription: subscriptionRouter,
   tasks: tasksRouter,
+  taskCategories: taskCategoriesRouter,
   reminders: remindersRouter,
   income: incomeRouter,
   fixedBills: fixedBillsRouter,

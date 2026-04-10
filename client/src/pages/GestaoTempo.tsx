@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import {
   Plus,
@@ -30,17 +31,42 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Bell,
+  Settings,
 } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
 
 type TaskCategory = "important" | "urgent" | "circumstantial";
-type TaskStatus = "pending" | "started" | "completed";
 
-const CATEGORY_CONFIG = {
-  important: { label: "Importante", dot: "bg-green-500", text: "text-green-700", bg: "bg-green-50", border: "border-green-200" },
-  urgent: { label: "Urgente", dot: "bg-red-500", text: "text-red-700", bg: "bg-red-50", border: "border-red-200" },
-  circumstantial: { label: "Circunstancial", dot: "bg-amber-500", text: "text-amber-700", bg: "bg-amber-50", border: "border-amber-200" },
+const TRIADE_CONFIG = {
+  important: {
+    label: "Importante",
+    dot: "bg-green-500",
+    text: "text-green-700",
+    bg: "bg-green-50",
+    activeBg: "bg-green-50",
+    activeText: "text-green-700",
+    activeBorder: "border-green-400",
+  },
+  urgent: {
+    label: "Urgente",
+    dot: "bg-red-500",
+    text: "text-red-700",
+    bg: "bg-red-50",
+    activeBg: "bg-red-50",
+    activeText: "text-red-700",
+    activeBorder: "border-red-400",
+  },
+  circumstantial: {
+    label: "Circunstancial",
+    dot: "bg-amber-500",
+    text: "text-amber-700",
+    bg: "bg-amber-50",
+    activeBg: "bg-amber-50",
+    activeText: "text-amber-700",
+    activeBorder: "border-amber-400",
+  },
 } as const;
 
 const REMINDER_EMOJIS = ["📌", "🎂", "🍴", "📞", "💼", "🏥", "✈️", "🎯"];
@@ -62,18 +88,24 @@ function getWeekDates(baseDate: string) {
 }
 
 function formatFullDate(dateStr: string) {
-  return new Date(dateStr + "T12:00:00").toLocaleDateString("pt-BR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    weekday: "long",
-  });
+  const d = new Date(dateStr + "T12:00:00");
+  const day = d.getDate();
+  const month = d.toLocaleDateString("pt-BR", { month: "long" });
+  const year = d.getFullYear();
+  const weekday = d.toLocaleDateString("pt-BR", { weekday: "long" });
+  return {
+    full: `${day} ${month.charAt(0).toUpperCase() + month.slice(1)}, ${year}`,
+    weekday: weekday.charAt(0).toUpperCase() + weekday.slice(1),
+  };
 }
 
 function formatShortDate(dateStr: string) {
   const d = new Date(dateStr + "T12:00:00");
   return {
-    weekday: d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "").toUpperCase(),
+    weekday: d
+      .toLocaleDateString("pt-BR", { weekday: "short" })
+      .replace(".", "")
+      .toUpperCase(),
     day: d.getDate(),
     month: d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
   };
@@ -83,15 +115,14 @@ function formatTime(totalSeconds: number) {
   const h = Math.floor(totalSeconds / 3600);
   const m = Math.floor((totalSeconds % 3600) / 60);
   const s = totalSeconds % 60;
-  if (h > 0) return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
 function formatMinutes(mins: number) {
   if (mins >= 60) {
     const h = Math.floor(mins / 60);
     const m = mins % 60;
-    return m > 0 ? `${h}h${String(m).padStart(2, "0")}min` : `${h}h`;
+    return m > 0 ? `${h}h${String(m).padStart(2, "0")}` : `${h}h`;
   }
   return `${mins}min`;
 }
@@ -100,7 +131,10 @@ interface TaskFormData {
   title: string;
   durationMinutes: number;
   category: TaskCategory;
+  taskCategoryId: number | null;
   scheduledDate: string;
+  scheduledTime: string;
+  isRecurring: boolean;
   notes: string;
 }
 
@@ -108,7 +142,10 @@ const DEFAULT_FORM = (date: string): TaskFormData => ({
   title: "",
   durationMinutes: 30,
   category: "important",
+  taskCategoryId: null,
   scheduledDate: date,
+  scheduledTime: "",
+  isRecurring: false,
   notes: "",
 });
 
@@ -122,14 +159,28 @@ export default function GestaoTempo() {
   const [editingTask, setEditingTask] = useState<number | null>(null);
   const [form, setForm] = useState<TaskFormData>(DEFAULT_FORM(today));
   const [quickTitle, setQuickTitle] = useState("");
-  const [activeTimer, setActiveTimer] = useState<{ taskId: number; startedAt: Date } | null>(null);
+  // Timer persistido no localStorage para sobreviver a troca de aba
+  const [activeTimer, setActiveTimer] = useState<{ taskId: number; startedAt: Date } | null>(() => {
+    try {
+      const saved = localStorage.getItem("gestor_active_timer");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { taskId: parsed.taskId, startedAt: new Date(parsed.startedAt) };
+      }
+    } catch {}
+    return null;
+  });
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [collapsedCompleted, setCollapsedCompleted] = useState<Set<string>>(new Set());
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [reminderEmoji, setReminderEmoji] = useState("📌");
   const [reminderText, setReminderText] = useState("");
   const [reminderTime, setReminderTime] = useState("");
   const [reminders, setReminders] = useState<{ emoji: string; text: string; time: string }[]>([]);
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatEmoji, setNewCatEmoji] = useState("📋");
 
   const weekDates = useMemo(() => getWeekDates(selectedDate), [selectedDate]);
 
@@ -139,14 +190,23 @@ export default function GestaoTempo() {
     endDate: weekDates[6],
   });
   const { data: score } = trpc.tasks.score.useQuery();
+  const { data: backlogTasks = [] } = trpc.tasks.backlog.useQuery();
+  const { data: taskCategories = [] } = trpc.taskCategories.list.useQuery();
 
-  // Timer
+  // Timer persistido no localStorage
   useEffect(() => {
     if (activeTimer) {
+      localStorage.setItem("gestor_active_timer", JSON.stringify({
+        taskId: activeTimer.taskId,
+        startedAt: activeTimer.startedAt.toISOString(),
+      }));
       timerRef.current = setInterval(() => {
         setElapsed(Math.floor((Date.now() - activeTimer.startedAt.getTime()) / 1000));
       }, 1000);
+      // Atualizar elapsed imediatamente ao montar
+      setElapsed(Math.floor((Date.now() - activeTimer.startedAt.getTime()) / 1000));
     } else {
+      localStorage.removeItem("gestor_active_timer");
       if (timerRef.current) clearInterval(timerRef.current);
       setElapsed(0);
     }
@@ -157,6 +217,7 @@ export default function GestaoTempo() {
     onSuccess: () => {
       utils.tasks.byDate.invalidate();
       utils.tasks.byDateRange.invalidate();
+      utils.tasks.backlog.invalidate();
       utils.tasks.score.invalidate();
       setDialogOpen(false);
       setForm(DEFAULT_FORM(selectedDate));
@@ -170,6 +231,7 @@ export default function GestaoTempo() {
       utils.tasks.byDate.invalidate();
       utils.tasks.byDateRange.invalidate();
       utils.tasks.score.invalidate();
+      utils.tasks.backlog.invalidate();
       setDialogOpen(false);
       setEditingTask(null);
       setForm(DEFAULT_FORM(selectedDate));
@@ -182,13 +244,35 @@ export default function GestaoTempo() {
       utils.tasks.byDate.invalidate();
       utils.tasks.byDateRange.invalidate();
       utils.tasks.score.invalidate();
+      utils.tasks.backlog.invalidate();
     },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const createCategory = trpc.taskCategories.create.useMutation({
+    onSuccess: () => {
+      utils.taskCategories.list.invalidate();
+      setNewCatName("");
+      setNewCatEmoji("📋");
+      toast.success("Categoria criada!");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const deleteCategory = trpc.taskCategories.delete.useMutation({
+    onSuccess: () => utils.taskCategories.list.invalidate(),
     onError: (e) => toast.error(e.message),
   });
 
   const handleQuickCreate = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && quickTitle.trim()) {
-      createTask.mutate({ title: quickTitle.trim(), durationMinutes: 30, category: "important", scheduledDate: selectedDate, notes: "" });
+      createTask.mutate({
+        title: quickTitle.trim(),
+        durationMinutes: 30,
+        category: "important",
+        scheduledDate: selectedDate,
+        notes: "",
+      });
       setQuickTitle("");
     }
   };
@@ -212,16 +296,31 @@ export default function GestaoTempo() {
 
   const handleSubmit = () => {
     if (!form.title.trim()) return toast.error("Informe o título da tarefa.");
+    const payload = {
+      ...form,
+      scheduledDate: form.scheduledDate?.trim() || undefined,
+      scheduledTime: form.scheduledTime?.trim() || undefined,
+      taskCategoryId: form.taskCategoryId ?? undefined,
+    };
     if (editingTask) {
-      updateTask.mutate({ id: editingTask, ...form });
+      updateTask.mutate({ id: editingTask, ...payload });
     } else {
-      createTask.mutate(form);
+      createTask.mutate(payload);
     }
   };
 
   const openEdit = (task: (typeof tasks)[0]) => {
     setEditingTask(task.id);
-    setForm({ title: task.title, durationMinutes: task.durationMinutes, category: task.category as TaskCategory, scheduledDate: task.scheduledDate, notes: task.notes ?? "" });
+    setForm({
+      title: task.title,
+      durationMinutes: task.durationMinutes,
+      category: task.category as TaskCategory,
+      taskCategoryId: (task as any).taskCategoryId ?? null,
+      scheduledDate: task.scheduledDate ?? "",
+      scheduledTime: (task as any).scheduledTime ?? "",
+      isRecurring: (task as any).isRecurring ?? false,
+      notes: task.notes ?? "",
+    });
     setDialogOpen(true);
   };
 
@@ -237,33 +336,54 @@ export default function GestaoTempo() {
     setSelectedDate(d.toISOString().split("T")[0]);
   };
 
-  const toggleGroup = (cat: string) => {
-    setCollapsedGroups(prev => {
+  const toggleCompletedSection = (groupKey: string) => {
+    setCollapsedCompleted((prev) => {
       const next = new Set(prev);
-      next.has(cat) ? next.delete(cat) : next.add(cat);
+      next.has(groupKey) ? next.delete(groupKey) : next.add(groupKey);
+      return next;
+    });
+  };
+
+  const toggleGroup = (groupKey: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      next.has(groupKey) ? next.delete(groupKey) : next.add(groupKey);
       return next;
     });
   };
 
   const addReminder = () => {
     if (!reminderText.trim()) return;
-    setReminders(prev => [...prev, { emoji: reminderEmoji, text: reminderText, time: reminderTime }]);
+    setReminders((prev) => [...prev, { emoji: reminderEmoji, text: reminderText, time: reminderTime }]);
     setReminderText("");
     setReminderTime("");
   };
 
-  // Group tasks by category
-  const tasksByCategory = useMemo(() => {
-    const cats: Record<TaskCategory, typeof tasks> = { important: [], urgent: [], circumstantial: [] };
-    tasks.forEach((t) => cats[t.category as TaskCategory].push(t));
-    return cats;
-  }, [tasks]);
+  // Group tasks by user category (taskCategoryId), fallback to "__none__"
+  const tasksByUserCategory = useMemo(() => {
+    const groups: Record<string, { label: string; emoji: string; tasks: typeof tasks }> = {};
+    groups["__none__"] = { label: "Sem categoria", emoji: "📋", tasks: [] };
+    taskCategories.forEach((cat) => {
+      groups[String(cat.id)] = { label: cat.name, emoji: cat.emoji, tasks: [] };
+    });
+    tasks.forEach((t) => {
+      const catId = (t as any).taskCategoryId;
+      const key = catId ? String(catId) : "__none__";
+      if (groups[key]) {
+        groups[key].tasks.push(t);
+      } else {
+        groups["__none__"].tasks.push(t);
+      }
+    });
+    return Object.entries(groups).filter(([, g]) => g.tasks.length > 0);
+  }, [tasks, taskCategories]);
 
   // Stats
   const totalPlanned = tasks.reduce((s, t) => s + t.durationMinutes, 0);
   const totalExecuted = tasks.reduce((s, t) => s + (t.executedMinutes ?? 0), 0);
   const totalRemaining = Math.max(0, totalPlanned - totalExecuted);
-  const completedCount = tasks.filter(t => t.status === "completed").length;
+  const completedCount = tasks.filter((t) => t.status === "completed").length;
+  const completionPct = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
 
   // Score breakdown
   const scoreData = score ?? { score: 0, completed: 0, total: 0, importantPct: 0, urgentPct: 0, circumstantialPct: 0 };
@@ -271,21 +391,55 @@ export default function GestaoTempo() {
   const urgPct = scoreData.urgentPct ?? 0;
   const circPct = scoreData.circumstantialPct ?? 0;
   const scoreBarPct = scoreData.score ?? 0;
-
+  const dateInfo = formatFullDate(selectedDate);
 
   return (
     <AppLayout>
-      <div className="p-3 sm:p-5 max-w-6xl mx-auto">
+      <div className="p-3 sm:p-5 max-w-5xl mx-auto">
+
+        {/* ─── Header: Data + Navegação ─────────────────────────────────────── */}
+        <div className="flex items-center gap-2 mb-1">
+          <button
+            onClick={() => navigateDay(-1)}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              {dateInfo.full}
+              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                <Calendar className="w-4 h-4" />
+              </button>
+            </h1>
+            <p className="text-sm text-gray-500">{dateInfo.weekday}</p>
+          </div>
+          <button
+            onClick={() => navigateDay(1)}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+          <div className="ml-auto">
+            <button
+              onClick={() => setShowCategoryManager(true)}
+              className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              Categorias
+            </button>
+          </div>
+        </div>
 
         {/* ─── Tab Bar ─────────────────────────────────────────────────────── */}
-        <div className="flex items-center gap-1 mb-4 border-b border-gray-200">
+        <div className="flex items-center gap-0 mb-4 border-b border-gray-200">
           {(["meu-dia", "planejamento", "relatorio"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
                 activeTab === tab
-                  ? "border-violet-600 text-violet-700"
+                  ? "border-blue-600 text-blue-700"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -295,209 +449,171 @@ export default function GestaoTempo() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* MEU DIA                                                            */}
+        {/* ABA MEU DIA */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {activeTab === "meu-dia" && (
-          <div>
-            {/* Date navigation */}
-            <div className="flex items-center justify-between mb-4">
-              <button onClick={() => navigateDay(-1)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <div className="text-center">
-                <p className="text-base sm:text-lg font-bold text-gray-900 capitalize">
-                  {formatFullDate(selectedDate)}
-                </p>
+          <div className="space-y-3">
+            {/* Stats bar */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-sm font-semibold text-gray-700">
+                {tasks.length} {tasks.length === 1 ? "atividade" : "atividades"}
+              </span>
+              <span className="flex items-center gap-1 text-sm text-gray-500">
+                <Clock className="w-3.5 h-3.5 text-gray-400" />
+                {formatMinutes(totalPlanned)} plan.
+              </span>
+              <span className="flex items-center gap-1 text-sm text-green-600">
+                <Clock className="w-3.5 h-3.5" />
+                {formatMinutes(totalExecuted)} exec.
+              </span>
+              <span className="flex items-center gap-1 text-sm text-amber-600">
+                <Clock className="w-3.5 h-3.5" />
+                {formatMinutes(totalRemaining)} rest.
+              </span>
+              <div className="ml-auto flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                  {completedCount}
+                </div>
+                <div className="w-28 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-600 rounded-full transition-all" style={{ width: `${completionPct}%` }} />
+                </div>
+                <span className="text-sm font-semibold text-gray-700">{completionPct}%</span>
               </div>
-              <button onClick={() => navigateDay(1)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
-                <ChevronRight className="w-5 h-5" />
-              </button>
             </div>
 
-            {/* Week mini-nav */}
-            <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1 scrollbar-none">
-              {weekDates.map((d) => {
-                const isToday = d === today;
-                const isSelected = d === selectedDate;
-                const fmt = formatShortDate(d);
-                return (
-                  <button
-                    key={d}
-                    onClick={() => setSelectedDate(d)}
-                    className={`flex-shrink-0 flex flex-col items-center px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors min-w-[44px] ${
-                      isSelected ? "bg-violet-600 text-white" : isToday ? "bg-violet-100 text-violet-700 border border-violet-200" : "bg-white text-gray-600 border border-gray-200 hover:border-violet-200"
-                    }`}
-                  >
-                    <span className="text-[10px] uppercase">{fmt.weekday.slice(0, 3)}</span>
-                    <span className="text-sm font-bold">{fmt.day}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Day stats bar */}
-            <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-4 px-1 text-sm text-gray-600">
-              <span className="font-semibold text-gray-800">{tasks.length} atividades</span>
-              <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-gray-400" />{formatMinutes(totalPlanned)} plan.</span>
-              <span className="flex items-center gap-1"><Play className="w-3.5 h-3.5 text-green-500" />{formatMinutes(totalExecuted)} exec.</span>
-              <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-amber-500" />{formatMinutes(totalRemaining)} rest.</span>
-              <span className="ml-auto font-bold text-gray-800">{completedCount}/{tasks.length}</span>
-            </div>
-
-            {/* Score 30 days */}
-            <div className="mb-4 p-3 rounded-xl bg-white border border-gray-100">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-gray-500 font-medium flex items-center gap-1.5">
-                  <BarChart3 className="w-3.5 h-3.5" />
-                  Score 30 dias ({scoreData.total} tarefas)
+            {/* Score 30 dias */}
+            {scoreData.total > 0 && (
+              <div className="bg-gray-900 rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap">
+                <BarChart3 className="w-4 h-4 text-gray-400 shrink-0" />
+                <span className="text-sm text-gray-300 shrink-0">
+                  Score 30 dias ({scoreData.completed} concluídas)
                 </span>
-                <span className="text-xs font-bold text-gray-700">{scoreBarPct}%</span>
+                <div className="flex-1 h-2.5 bg-gray-700 rounded-full overflow-hidden min-w-[80px]">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${scoreBarPct}%`,
+                      background: "linear-gradient(90deg, #22c55e 0%, #22c55e 80%, #f59e0b 100%)",
+                    }}
+                  />
+                </div>
+                <span className="text-sm font-semibold text-green-400 shrink-0">{impPct}% Imp.</span>
+                <span className="text-sm font-semibold text-red-400 shrink-0">{urgPct}% Urg.</span>
+                <span className="text-sm font-semibold text-amber-400 shrink-0">{circPct}% Circ.</span>
               </div>
-              <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden flex">
-                <div className="h-full bg-green-500 transition-all" style={{ width: `${impPct}%` }} />
-                <div className="h-full bg-red-500 transition-all" style={{ width: `${urgPct}%` }} />
-                <div className="h-full bg-amber-400 transition-all" style={{ width: `${circPct}%` }} />
-              </div>
-              <div className="flex gap-3 mt-1.5 text-[10px] text-gray-500">
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" />{impPct}% Imp.</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500 inline-block" />{urgPct}% Urg.</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />{circPct}% Circ.</span>
-              </div>
-            </div>
+            )}
 
             {/* Quick create */}
-            <div className="flex gap-2 mb-5">
-              <Input
+            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 shadow-sm">
+              <span className="text-amber-400 text-base">⚡</span>
+              <input
                 value={quickTitle}
                 onChange={(e) => setQuickTitle(e.target.value)}
                 onKeyDown={handleQuickCreate}
                 placeholder="Criar nova tarefa rápida (Enter para salvar)"
-                className="flex-1 bg-white border-gray-200 text-sm"
+                className="flex-1 text-sm bg-transparent outline-none text-gray-700 placeholder-gray-400"
               />
-              <Button onClick={() => openNew()} className="bg-violet-600 hover:bg-violet-700 shrink-0 text-sm px-3">
-                <Plus className="w-4 h-4 mr-1" />
-                Nova
+              <Button
+                size="sm"
+                onClick={() => openNew()}
+                className="bg-blue-600 hover:bg-blue-700 text-white gap-1 h-8 px-3"
+              >
+                <Plus className="w-3.5 h-3.5" /> Nova
               </Button>
             </div>
 
-            {/* Active timer banner */}
-            {activeTimer && (
-              <div className="mb-4 p-3 rounded-xl bg-violet-50 border border-violet-200 flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
-                <span className="text-sm text-violet-700 font-medium flex-1">
-                  Tarefa em andamento
-                </span>
-                <span className="font-mono text-violet-700 font-bold text-sm">{formatTime(elapsed)}</span>
-              </div>
-            )}
-
-            {/* Tasks grouped by category */}
+            {/* Tasks grouped by user category */}
             {isLoading ? (
-              <div className="text-center py-12 text-gray-400">Carregando...</div>
+              <div className="text-center py-8 text-gray-400 text-sm">Carregando...</div>
             ) : tasks.length === 0 ? (
-              <div className="text-center py-16">
-                <Clock className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                <p className="text-gray-500 font-medium">Nenhuma tarefa para este dia</p>
-                <p className="text-gray-400 text-sm mt-1">Use o campo acima para criar uma tarefa rápida</p>
+              <div className="text-center py-12 text-gray-400">
+                <Calendar className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                <p className="text-sm">Nenhuma atividade para este dia</p>
+                <Button size="sm" onClick={() => openNew()} className="mt-3 bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Adicionar tarefa
+                </Button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {(Object.entries(tasksByCategory) as [TaskCategory, typeof tasks][]).map(([cat, catTasks]) => {
-                  if (catTasks.length === 0) return null;
-                  const cfg = CATEGORY_CONFIG[cat];
-                  const totalMins = catTasks.reduce((s, t) => s + t.durationMinutes, 0);
-                  const executedMins = catTasks.reduce((s, t) => s + (t.executedMinutes ?? 0), 0);
-                  const collapsed = collapsedGroups.has(cat);
+              tasksByUserCategory.map(([groupKey, group]) => {
+                const pending = group.tasks.filter((t) => t.status !== "completed");
+                const completed = group.tasks.filter((t) => t.status === "completed");
+                const groupTotalMins = group.tasks.reduce((s, t) => s + t.durationMinutes, 0);
+                const groupExecMins = group.tasks.reduce((s, t) => s + (t.executedMinutes ?? 0), 0);
+                const isGroupCollapsed = collapsedGroups.has(groupKey);
+                const isCompletedCollapsed = collapsedCompleted.has(groupKey);
 
-                  return (
-                    <div key={cat} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                      {/* Group header */}
-                      <div
-                        className="flex items-center gap-2 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onClick={() => toggleGroup(cat)}
-                      >
-                        <span className={`w-2.5 h-2.5 rounded-full ${cfg.dot} flex-shrink-0`} />
-                        <span className="font-semibold text-gray-800 text-sm flex-1">{cfg.label}</span>
-                        <span className="text-xs text-gray-400">{catTasks.length}</span>
-                        <span className="text-xs text-gray-400">{formatMinutes(executedMins)}/{formatMinutes(totalMins)}</span>
+                return (
+                  <div key={groupKey} className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
+                    {/* Group header */}
+                    <div
+                      className="flex items-center gap-2 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors select-none"
+                      onClick={() => toggleGroup(groupKey)}
+                    >
+                      <span className="text-base">{group.emoji}</span>
+                      <span className="font-semibold text-gray-800 text-sm">{group.label}</span>
+                      <span className="text-xs text-gray-400 font-medium ml-1">{group.tasks.length}</span>
+                      <span className="text-xs text-gray-400 ml-1">
+                        {formatMinutes(groupExecMins)}/{formatMinutes(groupTotalMins)}
+                      </span>
+                      <div className="ml-auto flex items-center gap-1">
                         <button
-                          onClick={(e) => { e.stopPropagation(); openNew(cat); }}
-                          className="ml-1 w-6 h-6 rounded-full flex items-center justify-center text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
-                          title={`Nova tarefa em ${cfg.label}`}
+                          onClick={(e) => { e.stopPropagation(); openNew(); }}
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
-                        <ChevronRight className={`w-4 h-4 text-gray-300 transition-transform ${collapsed ? "" : "rotate-90"}`} />
+                        <ChevronDown
+                          className={`w-4 h-4 text-gray-300 transition-transform ${isGroupCollapsed ? "-rotate-90" : ""}`}
+                        />
                       </div>
+                    </div>
 
-                      {/* Task list */}
-                      {!collapsed && (
+                    {!isGroupCollapsed && (
+                      <>
+                        {/* Column headers */}
+                        <div className="flex items-center gap-2 px-4 py-1.5 bg-gray-50 border-t border-gray-100 text-[10px] uppercase tracking-wide text-gray-400 font-medium">
+                          <span className="w-5 shrink-0" />
+                          <span className="w-2.5 shrink-0" />
+                          <span className="flex-1">Nome</span>
+                          <span className="w-16 text-right hidden sm:block">Duração</span>
+                          <span className="w-20 text-right hidden sm:block">Timer</span>
+                          <span className="w-20 shrink-0" />
+                        </div>
+
+                        {/* Pending tasks */}
                         <div className="divide-y divide-gray-50">
-                          {/* Column headers */}
-                          <div className="flex items-center gap-2 px-4 py-1.5 bg-gray-50 text-[10px] uppercase tracking-wide text-gray-400 font-medium">
-                            <span className="flex-1">Nome</span>
-                            <span className="w-16 text-right hidden sm:block">Duração</span>
-                            <span className="w-20 text-right hidden sm:block">Timer</span>
-                            <span className="w-24" />
-                          </div>
-                          {catTasks.map((task) => {
+                          {pending.map((task) => {
                             const isRunning = activeTimer?.taskId === task.id;
-                            const isDone = task.status === "completed";
+                            const triade = TRIADE_CONFIG[task.category as TaskCategory];
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-2 sm:gap-3 px-4 py-3 transition-colors ${
-                                  isDone ? "bg-gray-50/50" : isRunning ? "bg-violet-50/50" : "hover:bg-gray-50/50"
-                                }`}
+                                className={`flex items-center gap-2 sm:gap-3 px-4 py-3 transition-colors ${isRunning ? "bg-blue-50/50" : "hover:bg-gray-50/30"}`}
                               >
-                                {/* Complete button */}
                                 <button
                                   onClick={() => handleCompleteTask(task.id)}
-                                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                                    isDone ? "bg-green-500 border-green-500" : "border-gray-300 hover:border-green-400"
-                                  }`}
-                                  title="Concluir tarefa"
-                                >
-                                  {isDone && <CheckCircle2 className="w-3 h-3 text-white" />}
-                                </button>
-
-                                {/* Title */}
-                                <span className={`flex-1 text-sm min-w-0 truncate ${isDone ? "line-through text-gray-400" : "text-gray-800"}`}>
-                                  {task.title}
-                                </span>
-
-                                {/* Duration */}
+                                  className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0 hover:border-green-400 transition-colors"
+                                />
+                                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${triade.dot}`} />
+                                <span className="flex-1 text-sm text-gray-800 min-w-0 truncate">{task.title}</span>
                                 <span className="text-xs text-gray-400 w-16 text-right hidden sm:block shrink-0">
                                   <Clock className="w-3 h-3 inline mr-0.5" />{task.durationMinutes}min
                                 </span>
-
-                                {/* Timer display */}
-                                <span className="font-mono text-xs text-gray-400 w-20 text-right hidden sm:block shrink-0">
+                                <span className="font-mono text-xs w-20 text-right hidden sm:block shrink-0">
                                   {isRunning ? (
-                                    <span className="text-violet-600 font-bold">{formatTime(elapsed)}</span>
+                                    <span className="text-blue-600 font-bold">{formatTime(elapsed)}</span>
                                   ) : (
-                                    formatTime((task.executedMinutes ?? 0) * 60)
+                                    <span className="text-gray-400">{formatTime((task.executedMinutes ?? 0) * 60)}</span>
                                   )}
                                 </span>
-
-                                {/* Action buttons */}
-                                <div className="flex items-center gap-0.5 shrink-0">
+                                <div className="flex items-center gap-0.5 shrink-0 w-20 justify-end">
                                   <button
-                                    onClick={() => handleCompleteTask(task.id)}
-                                    className={`p-1.5 rounded-lg text-xs transition-colors ${isDone ? "text-green-500" : "text-gray-400 hover:text-green-600 hover:bg-green-50"}`}
-                                    title="Concluir tarefa"
+                                    onClick={() => handleStartTask(task.id)}
+                                    className={`p-1.5 rounded-lg transition-colors ${isRunning ? "text-blue-600 bg-blue-100" : "text-gray-400 hover:text-blue-600 hover:bg-blue-50"}`}
+                                    title={isRunning ? "Pausar" : "Iniciar"}
                                   >
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                                   </button>
-                                  {!isDone && (
-                                    <button
-                                      onClick={() => handleStartTask(task.id)}
-                                      className={`p-1.5 rounded-lg transition-colors ${isRunning ? "text-violet-600 bg-violet-100" : "text-gray-400 hover:text-violet-600 hover:bg-violet-50"}`}
-                                      title={isRunning ? "Pausar" : "Iniciar"}
-                                    >
-                                      {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                                    </button>
-                                  )}
                                   <button
                                     onClick={() => openEdit(task)}
                                     className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
@@ -517,15 +633,64 @@ export default function GestaoTempo() {
                             );
                           })}
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+
+                        {/* Completed section */}
+                        {completed.length > 0 && (
+                          <>
+                            <button
+                              onClick={() => toggleCompletedSection(groupKey)}
+                              className="w-full flex items-center gap-2 px-4 py-2 bg-green-50/50 text-green-700 text-xs font-medium hover:bg-green-50 transition-colors"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              Concluídas ({completed.length})
+                              <ChevronDown
+                                className={`w-3.5 h-3.5 ml-auto transition-transform ${isCompletedCollapsed ? "-rotate-90" : ""}`}
+                              />
+                            </button>
+                            {!isCompletedCollapsed && (
+                              <div className="divide-y divide-gray-50">
+                                {completed.map((task) => {
+                                  const triade = TRIADE_CONFIG[task.category as TaskCategory];
+                                  return (
+                                    <div key={task.id} className="flex items-center gap-2 sm:gap-3 px-4 py-3 bg-gray-50/30">
+                                      <button
+                                        onClick={() => updateTask.mutate({ id: task.id, status: "pending" })}
+                                        className="w-5 h-5 rounded-full bg-green-500 border-2 border-green-500 flex items-center justify-center shrink-0"
+                                      >
+                                        <CheckCircle2 className="w-3 h-3 text-white" />
+                                      </button>
+                                      <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${triade.dot}`} />
+                                      <span className="flex-1 text-sm text-gray-400 line-through min-w-0 truncate">{task.title}</span>
+                                      <span className="text-xs text-gray-400 w-16 text-right hidden sm:block shrink-0">
+                                        <Clock className="w-3 h-3 inline mr-0.5" />{task.durationMinutes}min
+                                      </span>
+                                      <span className="font-mono text-xs text-green-600 w-20 text-right hidden sm:block shrink-0">
+                                        {formatTime((task.executedMinutes ?? 0) * 60)}
+                                      </span>
+                                      <div className="w-20 flex justify-end">
+                                        <button
+                                          onClick={() => deleteTask.mutate({ id: task.id })}
+                                          className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-50 transition-colors"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              })
             )}
 
             {/* Lembretes */}
-            <div className="mt-6 bg-white rounded-xl border border-gray-100 overflow-hidden">
+            <div className="mt-4 bg-white rounded-xl border border-gray-100 overflow-hidden">
               <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-50">
                 <Bell className="w-4 h-4 text-gray-400" />
                 <span className="font-semibold text-gray-700 text-sm">Lembretes</span>
@@ -537,7 +702,9 @@ export default function GestaoTempo() {
                     onChange={(e) => setReminderEmoji(e.target.value)}
                     className="border border-gray-200 rounded-lg px-2 py-2 text-sm bg-white"
                   >
-                    {REMINDER_EMOJIS.map(e => <option key={e} value={e}>{e}</option>)}
+                    {REMINDER_EMOJIS.map((e) => (
+                      <option key={e} value={e}>{e}</option>
+                    ))}
                   </select>
                   <Input
                     value={reminderText}
@@ -565,7 +732,10 @@ export default function GestaoTempo() {
                         <span>{r.emoji}</span>
                         <span className="flex-1">{r.text}</span>
                         {r.time && <span className="text-gray-400 text-xs">{r.time}</span>}
-                        <button onClick={() => setReminders(prev => prev.filter((_, j) => j !== i))} className="text-gray-300 hover:text-red-400 transition-colors">
+                        <button
+                          onClick={() => setReminders((prev) => prev.filter((_, j) => j !== i))}
+                          className="text-gray-300 hover:text-red-400 transition-colors"
+                        >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -578,7 +748,7 @@ export default function GestaoTempo() {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* PLANEJAMENTO SEMANAL                                               */}
+        {/* ABA PLANEJAMENTO */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {activeTab === "planejamento" && (
           <div>
@@ -595,7 +765,9 @@ export default function GestaoTempo() {
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <p className="text-sm font-semibold text-gray-700">
-                {new Date(weekDates[0] + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })} — {new Date(weekDates[6] + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                {new Date(weekDates[0] + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+                {" — "}
+                {new Date(weekDates[6] + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
               </p>
               <button
                 onClick={() => {
@@ -615,19 +787,25 @@ export default function GestaoTempo() {
                 <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
                   <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-50 bg-gray-50">
                     <span className="text-xs font-semibold text-gray-600">Tarefas pendentes</span>
-                    <button onClick={() => openNew()} className="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center hover:bg-violet-700 transition-colors">
+                    <button
+                      onClick={() => openNew()}
+                      className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors"
+                    >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
                   </div>
                   <div className="p-2 space-y-1.5 max-h-[500px] overflow-y-auto">
-                    {weekTasks.filter(t => t.status !== "completed").length === 0 ? (
-                      <p className="text-xs text-gray-400 text-center py-4">Nenhuma tarefa pendente</p>
+                    {backlogTasks.filter((t) => t.status !== "completed").length === 0 ? (
+                      <p className="text-xs text-gray-400 text-center py-4">Nenhuma tarefa no backlog</p>
                     ) : (
-                      weekTasks.filter(t => t.status !== "completed").map(t => {
-                        const cfg = CATEGORY_CONFIG[t.category as TaskCategory];
+                      backlogTasks.filter((t) => t.status !== "completed").map((t) => {
+                        const triade = TRIADE_CONFIG[t.category as TaskCategory];
                         return (
-                          <div key={t.id} className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs ${cfg.bg} ${cfg.text} cursor-pointer hover:opacity-80`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot} flex-shrink-0`} />
+                          <div
+                            key={t.id}
+                            className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs ${triade.bg} ${triade.text} cursor-pointer hover:opacity-80`}
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full ${triade.dot} flex-shrink-0`} />
                             <span className="truncate flex-1">{t.title}</span>
                             <span className="text-[10px] opacity-60">{t.durationMinutes}min</span>
                           </div>
@@ -643,38 +821,38 @@ export default function GestaoTempo() {
                 <div className="flex gap-2 min-w-[560px]">
                   {weekDates.map((d) => {
                     const dayTasks = weekTasks.filter((t) => t.scheduledDate === d);
-                    const completed = dayTasks.filter((t) => t.status === "completed").length;
+                    const completedDay = dayTasks.filter((t) => t.status === "completed").length;
                     const isToday = d === today;
                     const fmt = formatShortDate(d);
                     return (
                       <div
                         key={d}
-                        className={`flex-1 rounded-xl border overflow-hidden ${isToday ? "border-violet-300" : "border-gray-100"}`}
+                        className={`flex-1 rounded-xl border overflow-hidden ${isToday ? "border-blue-300" : "border-gray-100"}`}
                       >
-                        <div className={`text-center py-2 border-b ${isToday ? "bg-violet-50 border-violet-100" : "bg-gray-50 border-gray-50"}`}>
+                        <div className={`text-center py-2 border-b ${isToday ? "bg-blue-50 border-blue-100" : "bg-gray-50 border-gray-50"}`}>
                           <p className="text-[10px] text-gray-400 uppercase font-medium">{fmt.weekday}</p>
-                          <p className={`text-base font-bold ${isToday ? "text-violet-700" : "text-gray-800"}`}>{fmt.day}/{fmt.month}</p>
+                          <p className={`text-base font-bold ${isToday ? "text-blue-700" : "text-gray-800"}`}>{fmt.day}/{fmt.month}</p>
                           {dayTasks.length > 0 && (
-                            <p className="text-[10px] text-gray-400">✅ {completed}/{dayTasks.length}</p>
+                            <p className="text-[10px] text-gray-400">✅ {completedDay}/{dayTasks.length}</p>
                           )}
                         </div>
                         <div className="p-1.5 space-y-1 min-h-[160px] bg-white">
                           {dayTasks.map((t) => {
-                            const cfg = CATEGORY_CONFIG[t.category as TaskCategory];
+                            const triade = TRIADE_CONFIG[t.category as TaskCategory];
                             return (
                               <div
                                 key={t.id}
-                                className={`text-[11px] px-1.5 py-1 rounded flex items-center gap-1 ${cfg.bg} ${cfg.text} ${t.status === "completed" ? "opacity-40 line-through" : ""}`}
+                                className={`text-[11px] px-1.5 py-1 rounded flex items-center gap-1 ${triade.bg} ${triade.text} ${t.status === "completed" ? "opacity-40 line-through" : ""}`}
                                 title={t.title}
                               >
-                                <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot} flex-shrink-0`} />
+                                <span className={`w-1.5 h-1.5 rounded-full ${triade.dot} flex-shrink-0`} />
                                 <span className="truncate">{t.title}</span>
                               </div>
                             );
                           })}
                           <button
                             onClick={() => { setSelectedDate(d); openNew(); }}
-                            className="w-full text-[11px] text-gray-400 hover:text-violet-600 py-1 text-center hover:bg-violet-50 rounded transition-colors"
+                            className="w-full text-[11px] text-gray-400 hover:text-blue-600 py-1 text-center hover:bg-blue-50 rounded transition-colors"
                           >
                             + add
                           </button>
@@ -688,7 +866,7 @@ export default function GestaoTempo() {
 
             {/* Legend */}
             <div className="flex gap-4 mt-4 text-xs text-gray-500">
-              {(Object.entries(CATEGORY_CONFIG) as [TaskCategory, typeof CATEGORY_CONFIG[TaskCategory]][]).map(([key, cfg]) => (
+              {(Object.entries(TRIADE_CONFIG) as [TaskCategory, (typeof TRIADE_CONFIG)[TaskCategory]][]).map(([key, cfg]) => (
                 <span key={key} className="flex items-center gap-1.5">
                   <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
                   {cfg.label}
@@ -699,28 +877,28 @@ export default function GestaoTempo() {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* RELATÓRIO                                                          */}
+        {/* ABA RELATÓRIO */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {activeTab === "relatorio" && (
-          <div>
+          <div className="space-y-4">
             {/* Date navigation */}
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between">
               <button onClick={() => navigateDay(-1)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <p className="text-base font-bold text-gray-900 capitalize">{formatFullDate(selectedDate)}</p>
+              <p className="text-base font-bold text-gray-900 capitalize">{dateInfo.full}</p>
               <button onClick={() => navigateDay(1)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
 
             {/* 4 stat cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 { label: "Total de tarefas", value: tasks.length, color: "text-gray-800" },
                 { label: "Concluídas", value: completedCount, color: "text-green-600" },
-                { label: "Tempo total", value: `${Math.floor(totalExecuted / 60)}h${String(totalExecuted % 60).padStart(2, "0")}m`, color: "text-violet-700" },
-                { label: "Taxa de conclusão", value: `${tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0}%`, color: "text-blue-600" },
+                { label: "Horas planejadas", value: formatMinutes(totalPlanned), color: "text-blue-600" },
+                { label: "Horas executadas", value: formatMinutes(totalExecuted), color: "text-violet-600" },
               ].map((s) => (
                 <div key={s.label} className="bg-white rounded-xl border border-gray-100 p-4 text-center">
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
@@ -729,12 +907,12 @@ export default function GestaoTempo() {
               ))}
             </div>
 
-            {/* Tempo por categoria */}
-            <div className="bg-white rounded-xl border border-gray-100 p-4 mb-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Tempo por Categoria</h3>
-              {(Object.entries(tasksByCategory) as [TaskCategory, typeof tasks][]).map(([cat, catTasks]) => {
+            {/* Resumo por Tríade */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Resumo por Categoria (Tríade)</h3>
+              {(Object.entries(TRIADE_CONFIG) as [TaskCategory, (typeof TRIADE_CONFIG)[TaskCategory]][]).map(([cat, cfg]) => {
+                const catTasks = tasks.filter((t) => t.category === cat);
                 if (catTasks.length === 0) return null;
-                const cfg = CATEGORY_CONFIG[cat];
                 const totalSecs = catTasks.reduce((s, t) => s + (t.executedMinutes ?? 0) * 60, 0);
                 return (
                   <div key={cat} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
@@ -757,7 +935,7 @@ export default function GestaoTempo() {
               ) : (
                 <div className="space-y-2">
                   {tasks.map((t) => {
-                    const cfg = CATEGORY_CONFIG[t.category as TaskCategory];
+                    const cfg = TRIADE_CONFIG[t.category as TaskCategory];
                     return (
                       <div key={t.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
                         <span className={`w-2 h-2 rounded-full ${cfg.dot} flex-shrink-0`} />
@@ -774,51 +952,209 @@ export default function GestaoTempo() {
       </div>
 
       {/* ─── Task Dialog ─────────────────────────────────────────────────────── */}
-      <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) { setEditingTask(null); setForm(DEFAULT_FORM(selectedDate)); } }}>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(o) => {
+          setDialogOpen(o);
+          if (!o) { setEditingTask(null); setForm(DEFAULT_FORM(selectedDate)); }
+        }}
+      >
         <DialogContent className="max-w-md mx-4 sm:mx-auto">
           <DialogHeader>
             <DialogTitle>{editingTask ? "Editar Tarefa" : "Nova Tarefa"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-2">
+            {/* Título */}
             <div>
-              <Label>Título</Label>
-              <Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="O que você precisa fazer?" className="mt-1" />
+              <Label>Título *</Label>
+              <Input
+                value={form.title}
+                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                placeholder="O que precisa ser feito?"
+                className="mt-1"
+                autoFocus
+              />
             </div>
+
+            {/* Classificação (Tríade) - botões grandes */}
+            <div>
+              <Label>Classificação (Tríade)</Label>
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {(Object.entries(TRIADE_CONFIG) as [TaskCategory, (typeof TRIADE_CONFIG)[TaskCategory]][]).map(([key, cfg]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, category: key }))}
+                    className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all ${
+                      form.category === key
+                        ? `${cfg.activeBg} ${cfg.activeBorder} ${cfg.activeText}`
+                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                    }`}
+                  >
+                    <span className={`w-4 h-4 rounded-full ${cfg.dot}`} />
+                    <span className="text-xs font-medium">{cfg.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Categoria do usuário */}
+            {taskCategories.length > 0 && (
+              <div>
+                <Label>Categoria</Label>
+                <Select
+                  value={form.taskCategoryId ? String(form.taskCategoryId) : "__none__"}
+                  onValueChange={(v) => setForm((f) => ({ ...f, taskCategoryId: v === "__none__" ? null : Number(v) }))}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">📋 Sem categoria</SelectItem>
+                    {taskCategories.map((cat) => (
+                      <SelectItem key={cat.id} value={String(cat.id)}>
+                        {cat.emoji} {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Duração + Data lado a lado */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Duração (min)</Label>
-                <Input type="number" min={1} max={480} value={form.durationMinutes} onChange={(e) => setForm((f) => ({ ...f, durationMinutes: Number(e.target.value) }))} className="mt-1" />
+                <Input
+                  type="number"
+                  min={1}
+                  max={480}
+                  value={form.durationMinutes}
+                  onChange={(e) => setForm((f) => ({ ...f, durationMinutes: Number(e.target.value) }))}
+                  className="mt-1"
+                />
               </div>
               <div>
-                <Label>Data</Label>
-                <Input type="date" value={form.scheduledDate} onChange={(e) => setForm((f) => ({ ...f, scheduledDate: e.target.value }))} className="mt-1" />
+                <Label>Data <span className="text-gray-400 text-xs">(vazio = backlog)</span></Label>
+                <Input
+                  type="date"
+                  value={form.scheduledDate}
+                  onChange={(e) => setForm((f) => ({ ...f, scheduledDate: e.target.value }))}
+                  className="mt-1"
+                />
               </div>
             </div>
+
+            {/* Hora */}
             <div>
-              <Label>Categoria (Tríade)</Label>
-              <Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v as TaskCategory }))}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.entries(CATEGORY_CONFIG) as [TaskCategory, typeof CATEGORY_CONFIG[TaskCategory]][]).map(([key, cfg]) => (
-                    <SelectItem key={key} value={key}>
-                      <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
-                        <span>{cfg.label}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Hora</Label>
+              <Input
+                type="time"
+                value={form.scheduledTime}
+                onChange={(e) => setForm((f) => ({ ...f, scheduledTime: e.target.value }))}
+                className="mt-1"
+              />
             </div>
+
+            {/* Tarefa recorrente */}
+            <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl">
+              <Checkbox
+                id="isRecurring"
+                checked={form.isRecurring}
+                onCheckedChange={(v) => setForm((f) => ({ ...f, isRecurring: !!v }))}
+              />
+              <label htmlFor="isRecurring" className="text-sm text-gray-700 cursor-pointer select-none">
+                Tarefa recorrente
+              </label>
+            </div>
+
+            {/* Descrição */}
             <div>
-              <Label>Observações</Label>
-              <Textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder="Detalhes opcionais..." className="mt-1 resize-none" rows={2} />
+              <Label>Descrição</Label>
+              <Textarea
+                value={form.notes}
+                onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+                placeholder="Detalhes opcionais..."
+                className="mt-1 resize-none"
+                rows={2}
+              />
             </div>
-            <Button onClick={handleSubmit} disabled={createTask.isPending || updateTask.isPending} className="w-full bg-violet-600 hover:bg-violet-700">
-              {editingTask ? "Salvar alterações" : "Criar tarefa"}
-            </Button>
+
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={createTask.isPending || updateTask.isPending}
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+              >
+                {editingTask ? "Salvar alterações" : "Criar Tarefa"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Category Manager Dialog ─────────────────────────────────────────── */}
+      <Dialog open={showCategoryManager} onOpenChange={setShowCategoryManager}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Gerenciar Categorias</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <p className="text-xs text-gray-500">
+              Crie categorias personalizadas para agrupar suas tarefas (ex: 💼 Comercial, 🏥 Saúde, 📚 Estudos).
+            </p>
+            <div className="flex gap-2">
+              <Input
+                value={newCatEmoji}
+                onChange={(e) => setNewCatEmoji(e.target.value)}
+                placeholder="Emoji"
+                className="w-16 text-center"
+                maxLength={2}
+              />
+              <Input
+                value={newCatName}
+                onChange={(e) => setNewCatName(e.target.value)}
+                placeholder="Nome da categoria"
+                className="flex-1"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newCatName.trim()) {
+                    createCategory.mutate({ name: newCatName.trim(), emoji: newCatEmoji });
+                  }
+                }}
+              />
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (!newCatName.trim()) return;
+                  createCategory.mutate({ name: newCatName.trim(), emoji: newCatEmoji });
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={createCategory.isPending}
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              {taskCategories.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-4">Nenhuma categoria criada</p>
+              ) : (
+                taskCategories.map((cat) => (
+                  <div key={cat.id} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+                    <span>{cat.emoji}</span>
+                    <span className="flex-1 text-sm text-gray-700">{cat.name}</span>
+                    <button
+                      onClick={() => deleteCategory.mutate({ id: cat.id })}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>

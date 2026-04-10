@@ -54,7 +54,7 @@ const emptyForm = () => ({
   startYear: String(new Date().getFullYear()),
   startMonth: String(new Date().getMonth() + 1),
   category: "Parcelados",
-  paymentMethod: "itau_infinite",
+  paymentMethod: "cartao_1",
   isRecurring: false,
   memberId: null as number | null,
 });
@@ -329,9 +329,9 @@ export default function Installments() {
                 ))}
                 {cardOptions.length === 0 && (
                   <>
-                    <SelectItem value="itau_infinite">🔵 Itaú Azul Infinite</SelectItem>
-                    <SelectItem value="c6_carbon">⚫ C6 Carbon</SelectItem>
-                    <SelectItem value="pix_boleto">🟢 PIX / Boleto</SelectItem>
+                    <SelectItem value="cartao_1">💳 Cartão 1</SelectItem>
+                    <SelectItem value="cartao_2">💳 Cartão 2</SelectItem>
+                    <SelectItem value="pix_boleto">💸 Pix / Boleto</SelectItem>
                   </>
                 )}
               </SelectContent>
@@ -495,9 +495,9 @@ export default function Installments() {
                       ))}
                       {cardOptions.length === 0 && (
                         <>
-                          <SelectItem value="itau_infinite">🔵 Itaú Azul Infinite</SelectItem>
-                          <SelectItem value="c6_carbon">⚫ C6 Carbon</SelectItem>
-                          <SelectItem value="pix_boleto">🟢 PIX / Boleto</SelectItem>
+                          <SelectItem value="cartao_1">💳 Cartão 1</SelectItem>
+                          <SelectItem value="cartao_2">💳 Cartão 2</SelectItem>
+                          <SelectItem value="pix_boleto">💸 Pix / Boleto</SelectItem>
                         </>
                       )}
                     </SelectContent>
@@ -627,7 +627,7 @@ export default function Installments() {
                           installmentAmount: String(parseNum(inst.installmentAmount)),
                           totalInstallments: String(inst.totalInstallments),
                           category: inst.category || "Assinaturas",
-                          paymentMethod: (inst as any).paymentMethod || "itau_infinite",
+                          paymentMethod: (inst as any).paymentMethod || "cartao_1",
                           isRecurring: true,
                           memberId: (inst as any).memberId ?? null,
                         });
@@ -731,7 +731,7 @@ export default function Installments() {
                               installmentAmount: String(parseNum(inst.installmentAmount)),
                               totalInstallments: String(inst.totalInstallments),
                               category: inst.category || "Parcelados",
-                              paymentMethod: (inst as any).paymentMethod || "itau_infinite",
+                              paymentMethod: (inst as any).paymentMethod || "cartao_1",
                               isRecurring: false,
                               memberId: (inst as any).memberId ?? null,
                             });

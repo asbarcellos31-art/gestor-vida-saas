@@ -129,3 +129,96 @@
 - [x] Dashboard admin: tabela de usuários com filtros por plano/status
 - [x] Dashboard admin: ação de ativar/cancelar plano manualmente
 - [x] Link "Admin" na sidebar (visível apenas para role=admin)
+
+## Replicação Fiel - Módulo Gestão de Tempo (Original)
+- [ ] Tela Meu Dia: cabeçalho com data navegável (< >) e dia da semana
+- [ ] Tela Meu Dia: resumo "N atividades | Xh plan. | Xh exec. | Xmin rest." + score circular + barra %
+- [ ] Tela Meu Dia: barra score 30 dias em fundo escuro com % por categoria (Imp/Urg/Circ)
+- [ ] Tela Meu Dia: campo de criação rápida inline + botão "+ Nova"
+- [ ] Tela Meu Dia: tarefas agrupadas por categoria com emoji, contador e tempo total
+- [ ] Tela Meu Dia: colunas NOME | DURAÇÃO | TIMER (tempo executado em verde)
+- [ ] Tela Meu Dia: seção "Concluídas (n)" colapsável com tarefas tachadas
+- [ ] Modal Nova Tarefa: classificação Tríade com botões grandes (bolinhas coloridas)
+- [ ] Modal Nova Tarefa: campo Categoria com dropdown + emoji
+- [ ] Modal Nova Tarefa: campos Data e Hora lado a lado
+- [ ] Modal Nova Tarefa: checkbox "Tarefa recorrente"
+- [ ] Modal Nova Tarefa: botão "Criar Tarefa" azul
+
+## Correções Urgentes - Gestão de Tempo
+- [ ] BUG: tarefa sem data (backlog) não aparece na tela — criar aba/seção Backlog
+- [ ] Reescrever tela Meu Dia idêntica ao original: agrupamento por categoria com emoji (💼 Comercial, etc.)
+- [ ] Reescrever tela Meu Dia: colunas NOME | DURAÇÃO | TIMER com tempo executado em verde (00:05:00)
+- [ ] Reescrever tela Meu Dia: seção "Concluídas (n)" colapsável com tarefas tachadas
+- [ ] Reescrever tela Meu Dia: barra score 30 dias em fundo escuro com % por categoria
+- [ ] Reescrever modal Nova Tarefa: Tríade como botões grandes com bolinhas coloridas
+- [ ] Reescrever modal Nova Tarefa: campo Categoria com dropdown + emoji
+- [ ] Reescrever modal Nova Tarefa: campos Data e Hora lado a lado
+- [ ] Reescrever modal Nova Tarefa: checkbox "Tarefa recorrente"
+- [ ] Adicionar campos scheduledTime e isRecurring no schema da tabela tasks
+
+## Configurações Genéricas do Orçamento (URGENTE)
+- [ ] Tela de Configurações: categorias de receita configuráveis (nome + ativo/inativo)
+- [ ] Tela de Configurações: formas de pagamento configuráveis (nome + se é cartão ou não)
+- [ ] Tela de Configurações: contas fixas configuráveis (nome + categoria padrão)
+- [ ] Tela de Configurações: categorias de despesa configuráveis (nome + bucket 50/30/20)
+- [ ] Remover todos os nomes pessoais hardcoded (Itaú Azul Infinite, C6 Carbon, XP, Carteira Fer, etc.)
+- [ ] MonthlyBudget: receitas dinâmicas baseadas nas configurações do usuário
+- [ ] MonthlyBudget: contas fixas dinâmicas baseadas nas configurações do usuário
+- [ ] MonthlyBudget: formas de pagamento dinâmicas baseadas nas configurações do usuário
+- [ ] MonthlyBudget: categorias de despesa dinâmicas baseadas nas configurações do usuário
+- [ ] Corrigir bug: erro ao salvar receitas
+- [ ] Link "Configurações" na sidebar do módulo Orçamento
+
+## Planos Anuais + Política de Cancelamento
+- [ ] Criar preços anuais no Stripe (12x com ~17% desconto): Tempo R$199/ano, Orçamento R$199/ano, Combo R$349/ano
+- [ ] Atualizar stripe_products.ts com price IDs anuais
+- [ ] Atualizar página Planos.tsx com toggle Mensal/Anual e preços corretos
+- [ ] Criar página /politica-cancelamento com regras conforme CDC
+- [ ] Link para política de cancelamento na página de Planos e no rodapé
+- [ ] Atualizar checkout Stripe para suportar billing_period anual
+
+## Orçamento Genérico (campos configuráveis)
+- [ ] Adicionar tabelas income_fields e income_values ao schema.ts
+- [ ] Adicionar tabelas fixed_bill_fields e fixed_bill_values ao schema.ts
+- [ ] Executar pnpm db:push para criar as novas tabelas
+- [ ] Adicionar funções db.ts: getIncomeFields, upsertIncomeField, getIncomeValues, upsertIncomeValue
+- [ ] Adicionar funções db.ts: getFixedBillFields, upsertFixedBillField, getFixedBillValues, upsertFixedBillValue
+- [ ] Adicionar routers: incomeFields, fixedBillFields no routers.ts
+- [ ] Atualizar OrcamentoSettings.tsx: seção de fontes de receita configuráveis
+- [ ] Atualizar OrcamentoSettings.tsx: seção de contas fixas configuráveis
+- [ ] Atualizar MonthlyBudget.tsx: receitas dinâmicas (income_fields + income_values)
+- [ ] Atualizar MonthlyBudget.tsx: contas fixas dinâmicas (fixed_bill_fields + fixed_bill_values)
+- [ ] Remover nomes pessoais hardcoded (Itaú, C6, XP, Carteira Fer, etc.)
+- [ ] Adicionar rota /orcamento/configuracoes no App.tsx
+- [ ] Adicionar link Configurações na sidebar do orçamento
+
+## Gestão de Tempo - Correções
+- [ ] Corrigir bug: tarefa sem data não aparece no backlog
+- [ ] Adicionar campo scheduledDate opcional (null = backlog) no schema tasks
+- [ ] Reescrever GestaoTempo.tsx idêntico ao original: agrupamento por categoria+emoji
+- [ ] Seção Concluídas colapsável com tarefas tachadas
+- [ ] Coluna TIMER com tempo executado em verde
+- [ ] Modal Nova Tarefa: Tríade como botões grandes, campo Hora, checkbox Recorrente
+- [ ] Barra de score em fundo escuro com % por categoria
+
+## 3 Sugestões Pendentes (prometidas após Stripe)
+- [ ] E-mail automático de boas-vindas ao receber checkout.session.completed no webhook
+- [ ] Configurar webhook Stripe no Dashboard (instruções claras para o usuário)
+- [ ] Promover conta do owner para admin automaticamente no primeiro login
+
+## Replicação Fiel - categoryId nas Tasks
+- [ ] Adicionar campo categoryId (nullable FK para categories) na tabela tasks
+- [ ] Adicionar campo scheduledTime varchar(5) na tabela tasks
+- [ ] Adicionar campo isRecurring boolean na tabela tasks
+- [ ] Migrar banco com pnpm db:push
+- [ ] Atualizar tasks.create/update no routers.ts para incluir categoryId, scheduledTime, isRecurring
+- [ ] Reescrever GestaoTempo.tsx: agrupamento por categoria do usuário (emoji + nome)
+- [ ] Seção Concluídas colapsável dentro de cada grupo de categoria
+- [ ] Modal Nova Tarefa: botões grandes Tríade + dropdown categoria com emoji + campo Hora + checkbox Recorrente
+
+## Bugs Críticos Reportados (10/04/2026)
+- [x] BUG: updateBillEntry no db.ts não aceita campo description (billKey) — corrigir para atualizar o nome do lançamento
+- [x] BUG: OrcamentoSettings não tem rota registrada no App.tsx — adicionar rota e link na sidebar
+- [x] BUG: cartões com nomes genéricos (Cartão 1, 2, 3) pois payment_methods está vazio — redirecionar usuário para configurações
+- [x] BUG: timer de tarefa reseta ao trocar de aba — persistir estado no localStorage
+- [x] BUG: erro ao salvar contas a pagar — investigar e corrigir (banco funciona, problema era nomes hardcoded antigos)

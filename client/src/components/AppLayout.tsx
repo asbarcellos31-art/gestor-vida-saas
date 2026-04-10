@@ -21,6 +21,7 @@ import {
   Zap,
   BookOpen,
   Crown,
+  SlidersHorizontal,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -164,6 +165,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                     { label: "Dashboard Anual", path: "/orcamento/dashboard", Icon: LayoutDashboard },
                     { label: "Parcelados", path: "/parcelados", Icon: CreditCard },
                     { label: "Aposentadoria", path: "/aposentadoria", Icon: TrendingUp },
+                    { label: "Configurações", path: "/orcamento/configuracoes", Icon: SlidersHorizontal },
                   ].map(({ label, path, Icon }) => (
                     <button
                       key={path}

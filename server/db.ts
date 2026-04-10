@@ -1,23 +1,26 @@
-import { and, desc, eq, gte, inArray, lte } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNull, lte, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser,
   InsertTask,
-  InsertReminder,
   InsertSubscription,
+  InsertTaskCategory,
   users,
   subscriptions,
   tasks,
+  taskCategories,
+  timeSessions,
   reminders,
   incomeEntries,
   fixedBills,
+  fixedBillLabels,
+  billEntries,
   expenseEntries,
   installmentBills,
   retirementConfig,
   categories,
   paymentMethods,
   familyMembers,
-  billEntries,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -90,10 +93,8 @@ export async function getActiveSubscription(userId: number) {
     .where(and(eq(subscriptions.userId, userId), inArray(subscriptions.status, ["active", "trialing"])))
     .limit(1);
   const sub = result[0] ?? null;
-  // Se estiver em trial, verificar se ainda não expirou
   if (sub && sub.status === "trialing" && sub.trialEndsAt) {
     if (new Date() > sub.trialEndsAt) {
-      // Trial expirado — atualizar status no banco
       await db.update(subscriptions).set({ status: "expired" }).where(eq(subscriptions.id, sub.id));
       return null;
     }
@@ -137,10 +138,7 @@ export async function upsertSubscriptionByStripeId(
     .where(eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId))
     .limit(1);
   if (existing[0]) {
-    await db
-      .update(subscriptions)
-      .set(data)
-      .where(eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId));
+    await db.update(subscriptions).set(data).where(eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId));
   }
 }
 
@@ -169,10 +167,11 @@ export async function getTasksByDate(userId: number, dateStr: string) {
 export async function getBacklogTasks(userId: number) {
   const db = await getDb();
   if (!db) return [];
+  // Backlog = tarefas sem data (null ou string vazia)
   return db
     .select()
     .from(tasks)
-    .where(and(eq(tasks.userId, userId), eq(tasks.scheduledDate, "")))
+    .where(and(eq(tasks.userId, userId), or(isNull(tasks.scheduledDate), eq(tasks.scheduledDate, ""))))
     .orderBy(tasks.createdAt);
 }
 
@@ -243,6 +242,34 @@ export async function getProductivityScore(userId: number) {
   };
 }
 
+// ── Time Sessions ─────────────────────────────────────────────────────────────
+export async function startTimeSession(taskId: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.insert(timeSessions).values({ taskId, userId, startedAt: new Date() });
+  await db.update(tasks).set({ status: "started", startedAt: new Date(), updatedAt: new Date() }).where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)));
+}
+
+export async function endTimeSession(taskId: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  const openSession = await db
+    .select()
+    .from(timeSessions)
+    .where(and(eq(timeSessions.taskId, taskId), eq(timeSessions.userId, userId), isNull(timeSessions.endedAt)))
+    .limit(1);
+  if (openSession[0]) {
+    const durationMs = new Date().getTime() - openSession[0].startedAt.getTime();
+    const durationMinutes = Math.round(durationMs / 60000);
+    await db.update(timeSessions).set({ endedAt: new Date(), durationMinutes }).where(eq(timeSessions.id, openSession[0].id));
+    // Atualizar executedMinutes na tarefa
+    const task = await db.select().from(tasks).where(and(eq(tasks.id, taskId), eq(tasks.userId, userId))).limit(1);
+    if (task[0]) {
+      await db.update(tasks).set({ executedMinutes: (task[0].executedMinutes ?? 0) + durationMinutes, updatedAt: new Date() }).where(eq(tasks.id, taskId));
+    }
+  }
+}
+
 // ── Reminders ─────────────────────────────────────────────────────────────────
 export async function getRemindersByDate(userId: number, dateStr: string) {
   const db = await getDb();
@@ -254,10 +281,10 @@ export async function getRemindersByDate(userId: number, dateStr: string) {
     .orderBy(reminders.reminderTime);
 }
 
-export async function createReminder(data: InsertReminder) {
+export async function createReminder(data: { userId: number; title: string; description?: string; reminderDate: string; reminderTime: string }) {
   const db = await getDb();
   if (!db) throw new Error("DB unavailable");
-  await db.insert(reminders).values(data);
+  await db.insert(reminders).values({ ...data, description: data.description ?? null });
 }
 
 export async function deleteReminder(id: number, userId: number) {
@@ -266,66 +293,161 @@ export async function deleteReminder(id: number, userId: number) {
   await db.delete(reminders).where(and(eq(reminders.id, id), eq(reminders.userId, userId)));
 }
 
-// ── Income ────────────────────────────────────────────────────────────────────
-export async function getIncome(userId: number, year: number, month: number) {
+// ── Income Entries (Receitas — lançamentos individuais) ───────────────────────
+export async function getIncomeEntries(userId: number, year: number, month: number) {
   const db = await getDb();
-  if (!db) return null;
-  const result = await db
+  if (!db) return [];
+  return db
     .select()
     .from(incomeEntries)
     .where(and(eq(incomeEntries.userId, userId), eq(incomeEntries.year, year), eq(incomeEntries.month, month)))
-    .limit(1);
-  return result[0] ?? null;
+    .orderBy(incomeEntries.createdAt);
 }
 
-export async function upsertIncome(
-  userId: number,
-  year: number,
-  month: number,
-  data: Partial<typeof incomeEntries.$inferInsert>
-) {
+export async function addIncomeEntry(userId: number, year: number, month: number, description: string, amount: string, category?: string | null, memberId?: number | null) {
   const db = await getDb();
   if (!db) return;
-  const existing = await getIncome(userId, year, month);
-  if (existing) {
-    await db
-      .update(incomeEntries)
-      .set(data)
-      .where(and(eq(incomeEntries.userId, userId), eq(incomeEntries.year, year), eq(incomeEntries.month, month)));
-  } else {
-    await db.insert(incomeEntries).values({ userId, year, month, ...data });
-  }
+  await db.insert(incomeEntries).values({ userId, year, month, description, amount, category: category || "Outros", memberId: memberId ?? null });
 }
 
-// ── Fixed Bills ───────────────────────────────────────────────────────────────
+export async function updateIncomeEntry(id: number, userId: number, data: { description?: string; amount?: string; category?: string | null }) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(incomeEntries).set(data).where(and(eq(incomeEntries.id, id), eq(incomeEntries.userId, userId)));
+}
+
+export async function deleteIncomeEntry(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(incomeEntries).where(and(eq(incomeEntries.id, id), eq(incomeEntries.userId, userId)));
+}
+
+// Compatibilidade para relatórios anuais
+export async function getAnnualIncome(userId: number, year: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(incomeEntries).where(and(eq(incomeEntries.userId, userId), eq(incomeEntries.year, year)));
+}
+
+// ── Fixed Bills (Contas Fixas — por billKey) ──────────────────────────────────
 export async function getFixedBills(userId: number, year: number, month: number) {
   const db = await getDb();
-  if (!db) return null;
-  const result = await db
+  if (!db) return [];
+  return db
     .select()
     .from(fixedBills)
     .where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year), eq(fixedBills.month, month)))
-    .limit(1);
-  return result[0] ?? null;
+    .orderBy(fixedBills.billKey);
 }
 
-export async function upsertFixedBills(
-  userId: number,
-  year: number,
-  month: number,
-  data: Partial<typeof fixedBills.$inferInsert>
-) {
+export async function upsertFixedBill(userId: number, year: number, month: number, billKey: string, amount: string, paid?: boolean, paidDate?: string | null) {
   const db = await getDb();
   if (!db) return;
-  const existing = await getFixedBills(userId, year, month);
-  if (existing) {
-    await db
-      .update(fixedBills)
-      .set(data)
-      .where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year), eq(fixedBills.month, month)));
+  const existing = await db
+    .select()
+    .from(fixedBills)
+    .where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year), eq(fixedBills.month, month), eq(fixedBills.billKey, billKey)))
+    .limit(1);
+  if (existing.length > 0) {
+    const upd: Record<string, unknown> = { amount };
+    if (paid !== undefined) upd.paid = paid;
+    if (paidDate !== undefined) upd.paidDate = paidDate;
+    await db.update(fixedBills).set(upd).where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year), eq(fixedBills.month, month), eq(fixedBills.billKey, billKey)));
   } else {
-    await db.insert(fixedBills).values({ userId, year, month, ...data });
+    await db.insert(fixedBills).values({ userId, year, month, billKey, amount, paid: paid ?? false, paidDate: paidDate ?? null });
   }
+}
+
+export async function toggleFixedBillPaid(userId: number, year: number, month: number, billKey: string, paid: boolean, paidDate?: string | null) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(fixedBills).set({ paid, paidDate: paidDate ?? null }).where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year), eq(fixedBills.month, month), eq(fixedBills.billKey, billKey)));
+}
+
+export async function getAnnualFixedBills(userId: number, year: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(fixedBills).where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year)));
+}
+
+// ── Fixed Bill Labels (Rótulos das Contas Fixas) ──────────────────────────────
+const DEFAULT_FIXED_BILL_LABELS = [
+  { key: "conta_1", label: "Conta 1" },
+  { key: "conta_2", label: "Conta 2" },
+  { key: "conta_3", label: "Conta 3" },
+  { key: "conta_4", label: "Conta 4" },
+  { key: "conta_5", label: "Conta 5" },
+  { key: "conta_6", label: "Conta 6" },
+  { key: "conta_7", label: "Conta 7" },
+  { key: "conta_8", label: "Conta 8" },
+  { key: "cartoes", label: "Cartões" },
+];
+
+export async function initDefaultFixedBillLabels(userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  const existing = await db.select().from(fixedBillLabels).where(eq(fixedBillLabels.userId, userId)).limit(1);
+  if (existing.length > 0) return;
+  for (const item of DEFAULT_FIXED_BILL_LABELS) {
+    await db.insert(fixedBillLabels).values({ userId, billKey: item.key, label: item.label, hidden: 0 });
+  }
+}
+
+export async function getFixedBillLabels(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(fixedBillLabels).where(eq(fixedBillLabels.userId, userId));
+}
+
+export async function upsertFixedBillLabel(userId: number, billKey: string, label: string, hidden?: boolean) {
+  const db = await getDb();
+  if (!db) return;
+  const existing = await db.select().from(fixedBillLabels).where(and(eq(fixedBillLabels.userId, userId), eq(fixedBillLabels.billKey, billKey))).limit(1);
+  if (existing[0]) {
+    await db.update(fixedBillLabels).set({ label, hidden: hidden ? 1 : 0 }).where(and(eq(fixedBillLabels.userId, userId), eq(fixedBillLabels.billKey, billKey)));
+  } else {
+    await db.insert(fixedBillLabels).values({ userId, billKey, label, hidden: hidden ? 1 : 0 });
+  }
+}
+
+export async function deleteFixedBillLabel(userId: number, billKey: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(fixedBillLabels).where(and(eq(fixedBillLabels.userId, userId), eq(fixedBillLabels.billKey, billKey)));
+  // Também remove os valores dessa conta fixa
+  await db.delete(fixedBills).where(and(eq(fixedBills.userId, userId), eq(fixedBills.billKey, billKey)));
+}
+
+// ── Bill Entries ──────────────────────────────────────────────────────────────
+export async function getBillEntries(userId: number, year: number, month: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(billEntries)
+    .where(and(eq(billEntries.userId, userId), eq(billEntries.year, year), eq(billEntries.month, month)));
+}
+
+export async function addBillEntry(userId: number, year: number, month: number, billKey: string, amount: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(billEntries).values({ userId, year, month, billKey, amount });
+}
+
+export async function deleteBillEntry(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(billEntries).where(and(eq(billEntries.id, id), eq(billEntries.userId, userId)));
+}
+
+export async function updateBillEntry(id: number, userId: number, data: { paid?: boolean; paidDate?: string | null; amount?: string; description?: string }) {
+  const db = await getDb();
+  if (!db) return;
+  // Mapeia description para billKey (nome do lançamento avulso)
+  const { description, ...rest } = data;
+  const updateData: Record<string, unknown> = { ...rest };
+  if (description !== undefined) updateData.billKey = description;
+  await db.update(billEntries).set(updateData).where(and(eq(billEntries.id, id), eq(billEntries.userId, userId)));
 }
 
 // ── Expense Entries ───────────────────────────────────────────────────────────
@@ -336,19 +458,6 @@ export async function getExpenseEntries(userId: number, year: number, month: num
     .select()
     .from(expenseEntries)
     .where(and(eq(expenseEntries.userId, userId), eq(expenseEntries.year, year), eq(expenseEntries.month, month)));
-}
-
-export async function addExpenseEntry(
-  userId: number,
-  year: number,
-  month: number,
-  category: string,
-  description: string,
-  amount: string
-) {
-  const db = await getDb();
-  if (!db) return;
-  await db.insert(expenseEntries).values({ userId, year, month, category, description, amount });
 }
 
 export async function addExpenseEntryFull(
@@ -407,35 +516,42 @@ export async function deleteExpenseEntriesByGroup(entryId: number, userId: numbe
     .limit(1);
   const groupId = entry[0]?.installmentGroupId;
   if (groupId) {
-    await db
-      .delete(expenseEntries)
-      .where(and(eq(expenseEntries.installmentGroupId, groupId), eq(expenseEntries.userId, userId)));
+    await db.delete(expenseEntries).where(and(eq(expenseEntries.installmentGroupId, groupId), eq(expenseEntries.userId, userId)));
   } else {
     await db.delete(expenseEntries).where(and(eq(expenseEntries.id, entryId), eq(expenseEntries.userId, userId)));
   }
+}
+
+export async function getAnnualExpenses(userId: number, year: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(expenseEntries).where(and(eq(expenseEntries.userId, userId), eq(expenseEntries.year, year)));
 }
 
 // ── Installment Bills ─────────────────────────────────────────────────────────
 export async function getInstallmentBills(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(installmentBills).where(eq(installmentBills.userId, userId));
+  return db.select().from(installmentBills).where(eq(installmentBills.userId, userId)).orderBy(installmentBills.createdAt);
 }
 
-export async function addInstallmentBill(
-  userId: number,
-  data: Omit<typeof installmentBills.$inferInsert, "id" | "userId" | "createdAt" | "updatedAt">
-) {
+export async function addInstallmentBill(userId: number, data: {
+  description: string;
+  totalAmount: string;
+  installmentAmount: string;
+  totalInstallments: number;
+  startYear: number;
+  startMonth: number;
+  category?: string;
+  paymentMethod?: string;
+  memberId?: number | null;
+}) {
   const db = await getDb();
   if (!db) return;
-  await db.insert(installmentBills).values({ userId, ...data });
+  await db.insert(installmentBills).values({ userId, ...data, category: data.category ?? "Parcelados", paymentMethod: data.paymentMethod ?? "cartao_1", memberId: data.memberId ?? null });
 }
 
-export async function updateInstallmentBill(
-  id: number,
-  userId: number,
-  data: Partial<typeof installmentBills.$inferInsert>
-) {
+export async function updateInstallmentBill(id: number, userId: number, data: Partial<typeof installmentBills.$inferInsert>) {
   const db = await getDb();
   if (!db) return;
   await db.update(installmentBills).set(data).where(and(eq(installmentBills.id, id), eq(installmentBills.userId, userId)));
@@ -455,59 +571,29 @@ export async function getRetirementConfig(userId: number) {
   return result[0] ?? null;
 }
 
-export async function upsertRetirementConfig(
-  userId: number,
-  data: Partial<typeof retirementConfig.$inferInsert>
-) {
+export async function upsertRetirementConfig(userId: number, data: {
+  birthDate?: string;
+  retirementAge?: number;
+  yearsUntilRetirement?: number | null;
+  useYearsMode?: boolean;
+  initialAmount?: string;
+  monthlyContribution?: string;
+}) {
   const db = await getDb();
   if (!db) return;
   const existing = await getRetirementConfig(userId);
   if (existing) {
     await db.update(retirementConfig).set(data).where(eq(retirementConfig.userId, userId));
   } else {
-    await db.insert(retirementConfig).values({ userId, ...data });
+    await db.insert(retirementConfig).values({ userId, birthDate: data.birthDate ?? "", retirementAge: data.retirementAge ?? 65, yearsUntilRetirement: data.yearsUntilRetirement ?? null, useYearsMode: data.useYearsMode ?? false, initialAmount: data.initialAmount ?? "0", monthlyContribution: data.monthlyContribution ?? "0" });
   }
-}
-
-// ── Bill Entries ──────────────────────────────────────────────────────────────
-export async function getBillEntries(userId: number, year: number, month: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(billEntries).where(and(eq(billEntries.userId, userId), eq(billEntries.year, year), eq(billEntries.month, month)));
-}
-
-export async function addBillEntry(
-  userId: number,
-  year: number,
-  month: number,
-  data: { description: string; amount: string; paymentMethod?: string; billDate?: string; obs?: string; memberId?: number | null }
-) {
-  const db = await getDb();
-  if (!db) return;
-  await db.insert(billEntries).values({ userId, year, month, ...data });
-}
-
-export async function deleteBillEntry(id: number, userId: number) {
-  const db = await getDb();
-  if (!db) return;
-  await db.delete(billEntries).where(and(eq(billEntries.id, id), eq(billEntries.userId, userId)));
-}
-
-export async function updateBillEntry(
-  id: number,
-  userId: number,
-  data: { description?: string; amount?: string; paymentMethod?: string; billDate?: string; obs?: string; memberId?: number | null }
-) {
-  const db = await getDb();
-  if (!db) return;
-  await db.update(billEntries).set(data).where(and(eq(billEntries.id, id), eq(billEntries.userId, userId)));
 }
 
 // ── Categories ────────────────────────────────────────────────────────────────
 export async function getUserCategories(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(categories).where(eq(categories.userId, userId));
+  return db.select().from(categories).where(eq(categories.userId, userId)).orderBy(categories.sortOrder, categories.name);
 }
 
 export async function initDefaultCategories(userId: number) {
@@ -531,7 +617,6 @@ export async function initDefaultCategories(userId: number) {
     { name: "Faxina", rule: "Essenciais (50%)" as const },
     { name: "Hobby", rule: "Estilo de Vida (30%)" as const },
     { name: "Imposto", rule: "Investimentos/Dívidas (20%)" as const },
-    { name: "Inglês", rule: "Estilo de Vida (30%)" as const },
     { name: "Investimentos", rule: "Investimentos/Dívidas (20%)" as const },
     { name: "Lazer", rule: "Estilo de Vida (30%)" as const },
     { name: "Luz/Água", rule: "Essenciais (50%)" as const },
@@ -540,15 +625,13 @@ export async function initDefaultCategories(userId: number) {
     { name: "Outros", rule: "Estilo de Vida (30%)" as const },
     { name: "Parcelados", rule: "Essenciais (50%)" as const },
     { name: "Pet", rule: "Essenciais (50%)" as const },
-    { name: "Pilates", rule: "Estilo de Vida (30%)" as const },
     { name: "Poupança", rule: "Investimentos/Dívidas (20%)" as const },
-    { name: "Praia", rule: "Investimentos/Dívidas (20%)" as const },
     { name: "Remédio", rule: "Essenciais (50%)" as const },
     { name: "Reserva", rule: "Investimentos/Dívidas (20%)" as const },
     { name: "Roupas", rule: "Estilo de Vida (30%)" as const },
     { name: "Saúde", rule: "Essenciais (50%)" as const },
     { name: "Seguro", rule: "Essenciais (50%)" as const },
-    { name: "Streaming/Hobby", rule: "Estilo de Vida (30%)" as const },
+    { name: "Streaming", rule: "Estilo de Vida (30%)" as const },
     { name: "Transporte", rule: "Essenciais (50%)" as const },
   ];
 
@@ -589,6 +672,24 @@ export async function getUserPaymentMethods(userId: number) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(paymentMethods).where(eq(paymentMethods.userId, userId)).orderBy(paymentMethods.sortOrder);
+}
+
+export async function initDefaultPaymentMethods(userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  const existing = await getUserPaymentMethods(userId);
+  if (existing.length > 0) return;
+  const defaults = [
+    { key: "pix_boleto", label: "Pix / Boleto", icon: "💸", colorClass: "bg-green-100 text-green-700 border-green-300", isCard: false, sortOrder: 0 },
+    { key: "cartao_1", label: "Cartão 1", icon: "💳", colorClass: "bg-blue-100 text-blue-700 border-blue-300", isCard: true, sortOrder: 1 },
+    { key: "cartao_2", label: "Cartão 2", icon: "💳", colorClass: "bg-purple-100 text-purple-700 border-purple-300", isCard: true, sortOrder: 2 },
+    { key: "cartao_3", label: "Cartão 3", icon: "💳", colorClass: "bg-orange-100 text-orange-700 border-orange-300", isCard: true, sortOrder: 3 },
+    { key: "cartao_4", label: "Cartão 4", icon: "💳", colorClass: "bg-pink-100 text-pink-700 border-pink-300", isCard: true, sortOrder: 4 },
+    { key: "cartao_5", label: "Cartão 5", icon: "💳", colorClass: "bg-yellow-100 text-yellow-700 border-yellow-300", isCard: true, sortOrder: 5 },
+  ];
+  for (const pm of defaults) {
+    await db.insert(paymentMethods).values({ userId, ...pm });
+  }
 }
 
 export async function upsertUserPaymentMethod(
@@ -653,34 +754,16 @@ export async function deleteFamilyMember(userId: number, id: number) {
 }
 
 // ── Annual Data ───────────────────────────────────────────────────────────────
-export async function getAnnualExpenses(userId: number, year: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(expenseEntries).where(and(eq(expenseEntries.userId, userId), eq(expenseEntries.year, year)));
-}
-
-export async function getAnnualIncome(userId: number, year: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(incomeEntries).where(and(eq(incomeEntries.userId, userId), eq(incomeEntries.year, year)));
-}
-
-export async function getAnnualFixedBills(userId: number, year: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(fixedBills).where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year)));
-}
-
 export async function getAllAnnualData(userId: number) {
   const db = await getDb();
   if (!db) return { incomes: [], bills: [], expenses: [], installments: [] };
-  const [incomes, bills, expenses, installments] = await Promise.all([
+  const [incomes, bills, expenses, installmentsList] = await Promise.all([
     db.select().from(incomeEntries).where(eq(incomeEntries.userId, userId)),
     db.select().from(fixedBills).where(eq(fixedBills.userId, userId)),
     db.select().from(expenseEntries).where(eq(expenseEntries.userId, userId)),
     db.select().from(installmentBills).where(eq(installmentBills.userId, userId)),
   ]);
-  return { incomes, bills, expenses, installments };
+  return { incomes, bills, expenses, installments: installmentsList };
 }
 
 export async function clearMonthData(userId: number, year: number, month: number) {
@@ -689,16 +772,7 @@ export async function clearMonthData(userId: number, year: number, month: number
   await db.delete(expenseEntries).where(and(eq(expenseEntries.userId, userId), eq(expenseEntries.year, year), eq(expenseEntries.month, month)));
   await db.delete(incomeEntries).where(and(eq(incomeEntries.userId, userId), eq(incomeEntries.year, year), eq(incomeEntries.month, month)));
   await db.delete(billEntries).where(and(eq(billEntries.userId, userId), eq(billEntries.year, year), eq(billEntries.month, month)));
-  const zeroFields = {
-    seguroVida: '0.00', gas: '0.00', agua: '0.00', luz: '0.00',
-    seguroPai: '0.00', celularNet: '0.00', condominio: '0.00',
-    faxina: '0.00', maconaria: '0.00', pet: '0.00', veiculo: '0.00',
-    musica: '0.00', colegio: '0.00', cantina: '0.00', manicure: '0.00',
-    seguroVeiculo: '0.00', pilates: '0.00', inglesLivia: '0.00',
-    ambiental1: '0.00', publiOnline: '0.00', ambiental2: '0.00',
-    iptu: '0.00', cartoes: '0.00',
-  };
-  await db.update(fixedBills).set(zeroFields).where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year), eq(fixedBills.month, month)));
+  await db.delete(fixedBills).where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year), eq(fixedBills.month, month)));
   return { success: true };
 }
 
@@ -730,7 +804,7 @@ export async function getMemberBreakdownMonthly(userId: number, year: number, mo
   const db = await getDb();
   if (!db) return [];
   const expenses = await db.select().from(expenseEntries).where(and(eq(expenseEntries.userId, userId), eq(expenseEntries.year, year), eq(expenseEntries.month, month)));
-  const billsRows = await db.select().from(fixedBills).where(and(eq(fixedBills.userId, userId), eq(fixedBills.year, year), eq(fixedBills.month, month))).limit(1);
+  const billsRows = await getFixedBills(userId, year, month);
   const members = await getFamilyMembers(userId);
   const memberMap: Record<number, { name: string; color: string }> = {};
   members.forEach(m => { memberMap[m.id] = { name: m.name, color: m.color }; });
@@ -748,19 +822,12 @@ export async function getMemberBreakdownMonthly(userId: number, year: number, mo
     totals[key].totalExpenses += val;
     totals[key].total += val;
   }
-  if (billsRows.length > 0) {
-    const row = billsRows[0];
-    const billFields = ["seguroVida","gas","agua","luz","seguroPai","celularNet","cartoes","condominio","faxina","maconaria","pet","veiculo","musica","colegio","cantina","manicure","seguroVeiculo","pilates","inglesLivia","ambiental1","publiOnline","ambiental2","iptu"] as const;
-    let memberJson: Record<string, number> = {};
-    try { memberJson = JSON.parse((row as any).billsMember || "{}"); } catch { memberJson = {}; }
-    for (const field of billFields) {
-      const mid = memberJson[field] ?? null;
-      const val = parseFloat(String((row as any)[field])) || 0;
-      if (val > 0 && mid != null) {
-        const key = ensure(mid);
-        totals[key].totalBills += val;
-        totals[key].total += val;
-      }
+  for (const bill of billsRows) {
+    const val = parseFloat(String(bill.amount)) || 0;
+    if (val > 0) {
+      const key = ensure(null);
+      totals[key].totalBills += val;
+      totals[key].total += val;
     }
   }
   return Object.values(totals).sort((a, b) => b.total - a.total);
@@ -774,7 +841,6 @@ export async function getMemberBreakdownAnnual(userId: number, year: number) {
   const members = await getFamilyMembers(userId);
   const memberMap: Record<number, { name: string; color: string }> = {};
   members.forEach(m => { memberMap[m.id] = { name: m.name, color: m.color }; });
-  const billFields = ["seguroVida","gas","agua","luz","seguroPai","celularNet","cartoes","condominio","faxina","maconaria","pet","veiculo","musica","colegio","cantina","manicure","seguroVeiculo","pilates","inglesLivia","ambiental1","publiOnline","ambiental2","iptu"] as const;
   const byMember: Record<string, { memberId: number | null; name: string; color: string; months: number[]; monthsExpenses: number[]; monthsBills: number[]; total: number; totalExpenses: number; totalBills: number }> = {};
   const ensure = (mid: number | null) => {
     const key = mid != null ? String(mid) : "sem_vinculo";
@@ -792,40 +858,16 @@ export async function getMemberBreakdownAnnual(userId: number, year: number) {
     byMember[key].totalExpenses += val;
   }
   for (const row of allBills) {
-    let memberJson: Record<string, number> = {};
-    try { memberJson = JSON.parse((row as any).billsMember || "{}"); } catch { memberJson = {}; }
-    for (const field of billFields) {
-      const mid = memberJson[field] ?? null;
-      const val = parseFloat(String((row as any)[field])) || 0;
-      if (val > 0 && mid != null) {
-        const key = ensure(mid);
-        byMember[key].months[row.month - 1] += val;
-        byMember[key].monthsBills[row.month - 1] += val;
-        byMember[key].total += val;
-        byMember[key].totalBills += val;
-      }
+    const val = parseFloat(String(row.amount)) || 0;
+    if (val > 0) {
+      const key = ensure(null);
+      byMember[key].months[row.month - 1] += val;
+      byMember[key].monthsBills[row.month - 1] += val;
+      byMember[key].total += val;
+      byMember[key].totalBills += val;
     }
   }
   return Object.values(byMember).sort((a, b) => b.total - a.total);
-}
-
-export async function getFixedBillLabels(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  const { fixedBillLabels } = await import("../drizzle/schema");
-  return db.select().from(fixedBillLabels).where(eq(fixedBillLabels.userId, userId));
-}
-
-export async function upsertFixedBillLabel(userId: number, billKey: string, label: string, hidden?: boolean) {
-  const db = await getDb();
-  if (!db) return;
-  const { fixedBillLabels } = await import("../drizzle/schema");
-  const existing = await db.select().from(fixedBillLabels).where(and(eq(fixedBillLabels.userId, userId), eq(fixedBillLabels.billKey, billKey))).limit(1);
-  if (existing[0]) {
-    await db.update(fixedBillLabels).set({ label, hidden: hidden ? 1 : 0 }).where(and(eq(fixedBillLabels.userId, userId), eq(fixedBillLabels.billKey, billKey)));
-  } else {
-    await db.insert(fixedBillLabels).values({ userId, billKey, label, hidden: hidden ? 1 : 0 });
-  }
 }
 
 // ── Admin functions ───────────────────────────────────────────────────────────
@@ -898,4 +940,42 @@ export async function adminSetUserPlan(userId: number, plan: "time_management" |
   } else {
     await db.insert(subscriptions).values({ userId, plan, status: "active" });
   }
+}
+
+// ── Task Categories (Categorias de Tarefa configuráveis pelo usuário) ──────────
+export async function getTaskCategories(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(taskCategories)
+    .where(eq(taskCategories.userId, userId))
+    .orderBy(taskCategories.sortOrder, taskCategories.createdAt);
+}
+
+export async function createTaskCategory(data: InsertTaskCategory) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  const result = await db.insert(taskCategories).values(data);
+  return result;
+}
+
+export async function updateTaskCategory(id: number, userId: number, data: Partial<InsertTaskCategory>) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db
+    .update(taskCategories)
+    .set(data)
+    .where(and(eq(taskCategories.id, id), eq(taskCategories.userId, userId)));
+}
+
+export async function deleteTaskCategory(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  // Desvincula tarefas desta categoria antes de deletar
+  await db
+    .update(tasks)
+    .set({ taskCategoryId: null })
+    .where(and(eq(tasks.taskCategoryId, id), eq(tasks.userId, userId)));
+  await db.delete(taskCategories).where(and(eq(taskCategories.id, id), eq(taskCategories.userId, userId)));
 }

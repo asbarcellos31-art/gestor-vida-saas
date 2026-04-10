@@ -34,47 +34,36 @@ const parseNum = (v: string | null | undefined) => parseFloat(String(v || "0")) 
 // ── Cartões ────────────────────────────────────────────────────────────────────
 const PAYMENT_METHODS = [
   { value: "pix_boleto", label: "Pix / Boleto", color: "bg-gray-100 text-gray-700 border-gray-300", icon: "💳" },
-  { value: "itau_infinite", label: "Itaú Azul Infinite", color: "bg-blue-100 text-blue-800 border-blue-400", icon: "🔵" },
-  { value: "c6_carbon", label: "C6 Carbon", color: "bg-zinc-800 text-zinc-100 border-zinc-600", icon: "⚫" },
-  { value: "xp", label: "XP Investimentos", color: "bg-yellow-100 text-yellow-800 border-yellow-400", icon: "🟡" },
+  { value: "cartao_1", label: "Cartão 1", color: "bg-blue-100 text-blue-800 border-blue-400", icon: "🔵" },
+  { value: "cartao_2", label: "Cartão 2", color: "bg-zinc-800 text-zinc-100 border-zinc-600", icon: "⚫" },
+  { value: "cartao_3", label: "Cartão 3", color: "bg-yellow-100 text-yellow-800 border-yellow-400", icon: "🟡" },
+  { value: "cartao_4", label: "Cartão 4", color: "bg-green-100 text-green-800 border-green-400", icon: "🟢" },
+  { value: "cartao_5", label: "Cartão 5", color: "bg-purple-100 text-purple-800 border-purple-400", icon: "🟣" },
 ];
 
 const PAYMENT_MAP: Record<string, { label: string; color: string; icon: string }> = {};
 PAYMENT_METHODS.forEach(p => { PAYMENT_MAP[p.value] = p; });
 
-// ── Contas Fixas ───────────────────────────────────────────────────────────────
+// ── Contas Fixas — fallback para usuários sem dados no banco ──────────────────
+// Os rótulos reais vêm de fixedBillLabels (banco de dados), configuráveis pelo usuário
 const FIXED_BILLS_FIELDS: { key: string; label: string; defaultCategory: string }[] = [
-  { key: "seguroVida", label: "Seguro de Vida", defaultCategory: "Seguro" },
-  { key: "gas", label: "Gás", defaultCategory: "Luz/Água" },
-  { key: "agua", label: "Água", defaultCategory: "Luz/Água" },
-  { key: "luz", label: "Luz", defaultCategory: "Luz/Água" },
-  { key: "seguroPai", label: "Seguro Pai", defaultCategory: "Seguro" },
-  { key: "celularNet", label: "Celular/Net", defaultCategory: "Assinaturas" },
+  { key: "conta_1", label: "Conta 1", defaultCategory: "Outros" },
+  { key: "conta_2", label: "Conta 2", defaultCategory: "Outros" },
+  { key: "conta_3", label: "Conta 3", defaultCategory: "Outros" },
+  { key: "conta_4", label: "Conta 4", defaultCategory: "Outros" },
+  { key: "conta_5", label: "Conta 5", defaultCategory: "Outros" },
+  { key: "conta_6", label: "Conta 6", defaultCategory: "Outros" },
+  { key: "conta_7", label: "Conta 7", defaultCategory: "Outros" },
+  { key: "conta_8", label: "Conta 8", defaultCategory: "Outros" },
   { key: "cartoes", label: "Cartões", defaultCategory: "Parcelados" },
-  { key: "condominio", label: "Condomínio", defaultCategory: "Condomínio" },
-  { key: "faxina", label: "Faxina", defaultCategory: "Faxina" },
-  { key: "maconaria", label: "Maçonaria", defaultCategory: "Outros" },
-  { key: "pet", label: "Pet", defaultCategory: "Pet" },
-  { key: "veiculo", label: "Veículo", defaultCategory: "Transporte" },
-  { key: "musica", label: "Música", defaultCategory: "Assinaturas" },
-  { key: "colegio", label: "Colégio", defaultCategory: "Educação" },
-  { key: "cantina", label: "Cantina", defaultCategory: "Cantina" },
-  { key: "manicure", label: "Manicure", defaultCategory: "Manicure" },
-  { key: "seguroVeiculo", label: "Seguro Veículo", defaultCategory: "Seguro" },
-  { key: "pilates", label: "Pilates", defaultCategory: "Pilates" },
-  { key: "inglesLivia", label: "Inglês Lívia", defaultCategory: "Inglês" },
-  { key: "ambiental1", label: "Ambiental 1", defaultCategory: "Outros" },
-  { key: "publiOnline", label: "Publi Online", defaultCategory: "Outros" },
-  { key: "ambiental2", label: "Ambiental 2", defaultCategory: "Outros" },
-  { key: "iptu", label: "IPTU", defaultCategory: "Imposto" },
 ];
 
+// INCOME_FIELDS — mantido apenas para compatibilidade com código legado
+// As receitas agora são lançamentos livres via income.add
 const INCOME_FIELDS: { key: string; label: string }[] = [
-  { key: "corretora", label: "Corretora" },
-  { key: "distribuicao", label: "Distribuição" },
-  { key: "carteiraFer", label: "Carteira Fer" },
-  { key: "angariacao", label: "Angariação Fer" },
-  { key: "advocacia", label: "Advocacia" },
+  { key: "salario", label: "Salário" },
+  { key: "freelance", label: "Freelance" },
+  { key: "investimentos", label: "Investimentos" },
   { key: "outros", label: "Outros" },
 ];
 
@@ -249,12 +238,12 @@ export default function MonthlyBudget() {
 
   const utils = trpc.useUtils();
   const { data: familyMembers } = trpc.members.list.useQuery();
-  const { data: incomeData } = trpc.income.get.useQuery({ year, month });
-  const { data: billsData, isLoading: billsLoading, isFetching: billsFetching } = trpc.fixedBills.get.useQuery({ year, month });
+  const { data: incomeData } = trpc.income.list.useQuery({ year, month });
+  const { data: billsData, isLoading: billsLoading, isFetching: billsFetching } = trpc.fixedBills.list.useQuery({ year, month });
   // Mês anterior — para replicar datas de vencimento quando o mês atual ainda não tem dados
   const prevMonth = month === 1 ? 12 : month - 1;
   const prevYear = month === 1 ? year - 1 : year;
-  const { data: prevBillsData } = trpc.fixedBills.get.useQuery({ year: prevYear, month: prevMonth });
+  const { data: prevBillsData } = trpc.fixedBills.list.useQuery({ year: prevYear, month: prevMonth });
   const { data: billEntries } = trpc.billEntries.list.useQuery({ year, month });
   const { data: expenses } = trpc.expenses.list.useQuery({ year, month });
   const { data: installments } = trpc.installments.list.useQuery();
@@ -288,8 +277,8 @@ export default function MonthlyBudget() {
     onSuccess: () => {
       toast.success("Mês limpo com sucesso!");
       setClearMonthDialogOpen(false);
-      utils.income.get.invalidate();
-      utils.fixedBills.get.invalidate();
+      utils.income.list.invalidate();
+      utils.fixedBills.list.invalidate();
       utils.expenses.list.invalidate();
       utils.billEntries.list.invalidate();
       utils.dashboard.monthly.invalidate();
@@ -297,15 +286,30 @@ export default function MonthlyBudget() {
     onError: () => toast.error("Erro ao limpar mês"),
   });
 
-  const saveIncome = trpc.income.save.useMutation({
-    onSuccess: () => { toast.success("Receitas salvas!"); setIncomeDirty(false); utils.income.get.invalidate(); utils.dashboard.monthly.invalidate(); },
-    onError: () => toast.error("Erro ao salvar receitas"),
+  const addIncomeMut = trpc.income.add.useMutation({
+    onSuccess: () => { utils.income.list.invalidate(); utils.dashboard.monthly.invalidate(); },
+    onError: () => toast.error("Erro ao salvar receita"),
   });
-
-  const saveBills = trpc.fixedBills.save.useMutation({
-    onSuccess: () => { toast.success("Contas salvas!"); setBillsDirty(false); utils.fixedBills.get.invalidate(); utils.dashboard.monthly.invalidate(); },
-    onError: (err) => toast.error(`Erro ao salvar contas: ${err.message}`, { duration: 10000 }),
+  const saveBillMut = trpc.fixedBills.upsert.useMutation({
+    onSuccess: () => { utils.fixedBills.list.invalidate(); utils.dashboard.monthly.invalidate(); },
+    onError: (err) => toast.error(`Erro ao salvar conta: ${err.message}`, { duration: 10000 }),
   });
+  // Estado para nova receita
+  const [showAddIncome, setShowAddIncome] = useState(false);
+  const [newIncomeDesc, setNewIncomeDesc] = useState("");
+  const [newIncomeAmount, setNewIncomeAmount] = useState("");
+  const [newIncomeCategory, setNewIncomeCategory] = useState("");
+  const deleteIncomeMut = trpc.income.delete.useMutation({
+    onSuccess: () => { utils.income.list.invalidate(); utils.dashboard.monthly.invalidate(); },
+    onError: () => toast.error("Erro ao remover receita"),
+  });
+  const updateIncomeMut = trpc.income.update.useMutation({
+    onSuccess: () => { utils.income.list.invalidate(); utils.dashboard.monthly.invalidate(); },
+    onError: () => toast.error("Erro ao atualizar receita"),
+  });
+  // Aliases para compatibilidade com o restante do código
+  const saveIncome = addIncomeMut;
+  const saveBills = saveBillMut;
 
   const addBillEntry = trpc.billEntries.add.useMutation({
     onSuccess: () => {
@@ -535,14 +539,15 @@ export default function MonthlyBudget() {
   }, [cardTotals]);
 
   // Metrics
-  const totalIncome = INCOME_FIELDS.reduce((s, f) => s + parseNum(incomeValues[f.key]), 0);
+  const totalIncome = (incomeData || []).reduce((s, e) => s + parseNum(e.amount), 0);
   const totalBillEntries = (billEntries || []).reduce((s, e) => s + parseNum(e.amount), 0);
   // Para o campo cartoes, usa cardTotals.total diretamente (evita valor desatualizado do banco antes do cardTotals chegar)
-  const cartoesParaTotal = cardTotals !== undefined ? cardTotals.total : parseNum(billsValues['cartoes']);
-  const totalBills = FIXED_BILLS_FIELDS.reduce((s, f) => {
-    if (f.key === 'cartoes') return s + cartoesParaTotal;
-    return s + parseNum(billsValues[f.key]);
-  }, 0) + totalBillEntries;
+  const cartoesParaTotal = cardTotals !== undefined ? cardTotals.total : 0;
+  const totalBillsFixed = (billsData || []).reduce((s, b) => {
+    if (b.billKey === 'cartoes') return s + cartoesParaTotal;
+    return s + parseNum(b.amount);
+  }, 0);
+  const totalBills = totalBillsFixed + totalBillEntries;
   const totalExpenses = (expenses || []).reduce((s, e) => s + parseNum(e.amount), 0);
   // Total filtrado por categoria/vínculo
   const filteredExpenses = (expenses || []).filter(e => {
@@ -632,22 +637,14 @@ export default function MonthlyBudget() {
     // Se categoria não mapeada, não soma em nenhum grupo
   });
 
-  const handleSaveIncome = () => saveIncome.mutate({ year, month, ...incomeValues });
+  const handleSaveIncome = () => {
+    if (!newIncomeDesc.trim() || !newIncomeAmount) return;
+    saveIncome.mutate({ year, month, description: newIncomeDesc, amount: newIncomeAmount, category: newIncomeCategory || undefined });
+    setNewIncomeDesc(""); setNewIncomeAmount(""); setNewIncomeCategory(""); setShowAddIncome(false);
+  };
 
-  const handleSaveBills = () => {
-    // Sempre usa o cardTotals.total calculado pelo backend para o campo cartoes,
-    // garantindo que o banco tenha o valor atualizado (despesas + parcelados do mês)
-    const cartoesAtualizado = cardTotals ? String(cardTotals.total.toFixed(2)) : billsValues.cartoes;
-    saveBills.mutate({
-      year, month, ...billsValues,
-      cartoes: cartoesAtualizado,
-      billsObs: JSON.stringify(billsObs),
-      billsDueDay: JSON.stringify(billsDueDay),
-      billsCategory: JSON.stringify(billsCategory),
-      billsMember: JSON.stringify(billsMember),
-      billsPaid: JSON.stringify(billsPaid),
-      billsLabels: JSON.stringify(billsLabels),
-    });
+  const handleSaveBills = (key: string, amount: string, paid?: boolean, paidDate?: string) => {
+    saveBills.mutate({ year, month, billKey: key, amount, paid, paidDate });
   };
 
   const handleBillMeta = (key: string, obs: string, dueDay: string, category: string) => {
@@ -698,7 +695,7 @@ export default function MonthlyBudget() {
   const monthName = MONTHS_FULL[month - 1];
   const isCard = (pm: string | null | undefined) => {
     const method = activePaymentMap[pm ?? ""];
-    return method?.isCard ?? ["itau_infinite", "c6_carbon", "xp"].includes(pm ?? "");
+    return method?.isCard ?? false;
   };
 
   return (
@@ -889,33 +886,61 @@ export default function MonthlyBudget() {
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-emerald-600">{fmt(totalIncome)}</span>
-                  {incomeDirty && (
-                    <Button size="sm" onClick={handleSaveIncome} disabled={saveIncome.isPending} className="h-7 text-xs">
-                      <Save className="w-3 h-3 mr-1" /> Salvar
-                    </Button>
-                  )}
+                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setShowAddIncome(true)}>
+                    <Plus className="w-3 h-3 mr-1" /> Adicionar
+                  </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
-              {INCOME_FIELDS.map(f => (
-                <div key={f.key} className="flex items-center gap-3">
-                  <label className="text-sm text-muted-foreground w-36 flex-shrink-0">{f.label}</label>
-                  <CurrencyInput
-                    value={incomeValues[f.key] || "0"}
-                    onChange={v => { setIncomeValues(prev => ({ ...prev, [f.key]: v })); setIncomeDirty(true); }}
-                  />
+              {(incomeData || []).length === 0 && !showAddIncome && (
+                <p className="text-sm text-muted-foreground text-center py-4">Nenhuma receita cadastrada. Clique em "Adicionar" para incluir.</p>
+              )}
+              {(incomeData || []).map(entry => (
+                <div key={entry.id} className="flex items-center gap-2 group">
+                  <label className="text-sm text-muted-foreground flex-1 truncate">{entry.description}</label>
+                  {entry.category && <span className="text-xs text-muted-foreground/60 hidden sm:block">{entry.category}</span>}
+                  <span className="text-sm font-medium text-emerald-600 flex-shrink-0">{fmt(parseNum(entry.amount))}</span>
+                  <button
+                    onClick={() => deleteIncomeMut.mutate({ id: entry.id })}
+                    className="opacity-0 group-hover:opacity-100 text-muted-foreground/40 hover:text-red-500 transition-all flex-shrink-0"
+                    title="Remover"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               ))}
-              <div className="flex items-center gap-3 pt-2 border-t border-border">
-                <span className="text-sm font-semibold w-36">TOTAL ENTRADA</span>
-                <span className="text-sm font-bold text-emerald-600 text-right flex-1">{fmt(totalIncome)}</span>
-              </div>
-              {incomeDirty && (
-                <Button onClick={handleSaveIncome} disabled={saveIncome.isPending} className="w-full mt-2">
-                  <Save className="w-4 h-4 mr-2" /> Salvar Entradas
-                </Button>
+              {showAddIncome && (
+                <div className="flex flex-col gap-2 p-3 bg-muted/30 rounded-lg border border-dashed border-emerald-300">
+                  <Input
+                    placeholder="Descrição (ex: Salário, Freela...)"
+                    value={newIncomeDesc}
+                    onChange={e => setNewIncomeDesc(e.target.value)}
+                    className="h-8 text-sm"
+                  />
+                  <div className="flex gap-2">
+                    <CurrencyInput value={newIncomeAmount} onChange={setNewIncomeAmount} placeholder="Valor" />
+                    <Select value={newIncomeCategory} onValueChange={setNewIncomeCategory}>
+                      <SelectTrigger className="h-8 text-xs flex-1"><SelectValue placeholder="Categoria" /></SelectTrigger>
+                      <SelectContent>
+                        {activeCategories.map(c => <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" className="flex-1 h-8 text-xs" onClick={handleSaveIncome} disabled={saveIncome.isPending || !newIncomeDesc.trim() || !newIncomeAmount}>
+                      <Save className="w-3 h-3 mr-1" /> Salvar
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => { setShowAddIncome(false); setNewIncomeDesc(""); setNewIncomeAmount(""); setNewIncomeCategory(""); }}>
+                      Cancelar
+                    </Button>
+                  </div>
+                </div>
               )}
+              <div className="flex items-center gap-3 pt-2 border-t border-border">
+                <span className="text-sm font-semibold flex-1">TOTAL ENTRADA</span>
+                <span className="text-sm font-bold text-emerald-600">{fmt(totalIncome)}</span>
+              </div>
             </CardContent>
           </Card>
 
@@ -929,27 +954,23 @@ export default function MonthlyBudget() {
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-red-600">{fmt(totalBills)}</span>
-                  {billsDirty && (
-                    <Button size="sm" onClick={handleSaveBills} disabled={saveBills.isPending} className="h-7 text-xs">
-                      <Save className="w-3 h-3 mr-1" /> Salvar
-                    </Button>
-                  )}
+
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-1.5">
-              {FIXED_BILLS_FIELDS.map(f => {
-                const obs = billsObs[f.key] || "";
-                const dueDay = billsDueDay[f.key] || "";
-                const cat = billsCategory[f.key] || "";
-                const memberIdForBill = billsMember[f.key] ?? null;
+              {(fixedBillLabels || []).filter(l => !l.hidden).map(f => {
+                const obs = billsObs[f.billKey] || "";
+                const dueDay = billsDueDay[f.billKey] || "";
+                const cat = billsCategory[f.billKey] || "";
+                const memberIdForBill = billsMember[f.billKey] ?? null;
                 const memberForBill = familyMembers?.find(m => m.id === memberIdForBill);
-                // Campo Cartões é preenchido automaticamente pelo Auto-Cartões
-                const isAutoCartoes = f.key === "cartoes" && cardTotals !== undefined;
+                const isAutoCartoes = f.billKey === "cartoes" && cardTotals !== undefined;
+                const billData = (billsData || []).find(b => b.billKey === f.billKey);
                 return (
-                  <div key={f.key} className={`flex items-center gap-2 ${isAutoCartoes && (cardTotals?.total ?? 0) > 0 ? "bg-blue-50 dark:bg-blue-950/20 rounded-lg px-1 -mx-1" : ""}`}>
+                  <div key={f.billKey} className={`flex items-center gap-2 ${isAutoCartoes && (cardTotals?.total ?? 0) > 0 ? "bg-blue-50 dark:bg-blue-950/20 rounded-lg px-1 -mx-1" : ""}`}>
                     <div className="flex items-center gap-1.5 w-44 flex-shrink-0">
-                      {editingFixedBillKey === f.key ? (
+                      {editingFixedBillKey === f.billKey ? (
                         <div className="flex items-center gap-1 flex-1">
                           <input
                             autoFocus
@@ -957,21 +978,19 @@ export default function MonthlyBudget() {
                             value={editingFixedBillLabel}
                             onChange={e => setEditingFixedBillLabel(e.target.value)}
                             onKeyDown={e => {
-                              if (e.key === 'Enter') { setBillsLabels(prev => ({ ...prev, [f.key]: editingFixedBillLabel })); setBillsDirty(true); setEditingFixedBillKey(null); }
+                              if (e.key === 'Enter') { upsertFixedBillLabel.mutate({ billKey: f.billKey, label: editingFixedBillLabel }); setEditingFixedBillKey(null); }
                               if (e.key === 'Escape') setEditingFixedBillKey(null);
                             }}
                           />
-                          <button onClick={() => { setBillsLabels(prev => ({ ...prev, [f.key]: editingFixedBillLabel })); setBillsDirty(true); setEditingFixedBillKey(null); }} className="text-emerald-600 hover:text-emerald-700"><Check className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => { upsertFixedBillLabel.mutate({ billKey: f.billKey, label: editingFixedBillLabel }); setEditingFixedBillKey(null); }} className="text-emerald-600 hover:text-emerald-700"><Check className="w-3.5 h-3.5" /></button>
                           <button onClick={() => setEditingFixedBillKey(null)} className="text-muted-foreground hover:text-destructive"><X className="w-3.5 h-3.5" /></button>
                         </div>
                       ) : (
-                        <label className="text-sm text-muted-foreground truncate flex-1">
-                          {billsLabels[f.key] || (fixedBillLabels || []).find(l => l.billKey === f.key)?.label || f.label}
-                        </label>
+                        <label className="text-sm text-muted-foreground truncate flex-1">{f.label}</label>
                       )}
-                      {editingFixedBillKey !== f.key && (
+                      {editingFixedBillKey !== f.billKey && (
                         <button
-                          onClick={() => { setEditingFixedBillKey(f.key); setEditingFixedBillLabel(billsLabels[f.key] || (fixedBillLabels || []).find(l => l.billKey === f.key)?.label || f.label); }}
+                          onClick={() => { setEditingFixedBillKey(f.billKey); setEditingFixedBillLabel(f.label); }}
                           className="text-muted-foreground/30 hover:text-blue-500 transition-colors flex-shrink-0"
                           title="Renomear conta"
                         ><Pencil className="w-3 h-3" /></button>
@@ -988,8 +1007,13 @@ export default function MonthlyBudget() {
                       )}
                     </div>
                     <CurrencyInput
-                      value={billsValues[f.key] || "0"}
-                      onChange={v => { if (!isAutoCartoes) { setBillsValues(prev => ({ ...prev, [f.key]: v })); setBillsDirty(true); } }}
+                      value={billData ? String(parseNum(billData.amount)) : billsValues[f.billKey] || "0"}
+                      onChange={v => {
+                        if (!isAutoCartoes) {
+                          setBillsValues(prev => ({ ...prev, [f.billKey]: v }));
+                          saveBillMut.mutate({ year, month, billKey: f.billKey, amount: v, paid: billsPaid[f.billKey] || false });
+                        }
+                      }}
                       placeholder={isAutoCartoes ? "Auto" : "0,00"}
                     />
                     {/* Seletor de vínculo */}
@@ -1017,7 +1041,7 @@ export default function MonthlyBudget() {
                         <p className="text-xs font-semibold mb-2 text-muted-foreground">Vínculo — {f.label}</p>
                         <div className="space-y-1">
                           <button
-                            onClick={() => handleBillMember(f.key, null)}
+                            onClick={() => handleBillMember(f.billKey, null)}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs hover:bg-muted transition-colors ${
                               memberIdForBill === null ? "bg-muted font-semibold" : ""
                             }`}
@@ -1028,7 +1052,7 @@ export default function MonthlyBudget() {
                           {(familyMembers || []).map(m => (
                             <button
                               key={m.id}
-                              onClick={() => handleBillMember(f.key, m.id)}
+                              onClick={() => handleBillMember(f.billKey, m.id)}
                               className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs hover:bg-muted transition-colors ${
                                 memberIdForBill === m.id ? "bg-muted font-semibold" : ""
                               }`}
@@ -1048,21 +1072,18 @@ export default function MonthlyBudget() {
                     {/* Botão OK Pago */}
                     <button
                       onClick={() => {
-                        const newPaid = { ...billsPaid, [f.key]: !billsPaid[f.key] };
-                        setBillsPaid(newPaid);
-                        saveBills.mutate({
-                          year, month, ...billsValues,
-                          cartoes: String(cardTotals?.total ?? parseNum(billsValues['cartoes'])),
-                          billsObs: JSON.stringify(billsObs),
-                          billsDueDay: JSON.stringify(billsDueDay),
-                          billsCategory: JSON.stringify(billsCategory),
-                          billsMember: JSON.stringify(billsMember),
-                          billsPaid: JSON.stringify(newPaid),
+                        const newPaid = !billsPaid[f.billKey];
+                        setBillsPaid(prev => ({ ...prev, [f.billKey]: newPaid }));
+                        saveBillMut.mutate({
+                          year, month, billKey: f.billKey,
+                          amount: billData ? String(parseNum(billData.amount)) : billsValues[f.billKey] || "0",
+                          paid: newPaid,
+                          paidDate: newPaid ? new Date().toISOString().split('T')[0] : undefined,
                         });
                       }}
-                      title={billsPaid[f.key] ? "Marcar como não pago" : "Marcar como pago"}
+                      title={billsPaid[f.billKey] ? "Marcar como não pago" : "Marcar como pago"}
                       className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                        billsPaid[f.key]
+                        billsPaid[f.billKey]
                           ? "bg-emerald-500 text-white hover:bg-emerald-600"
                           : "border-2 border-dashed border-muted-foreground/30 text-muted-foreground/40 hover:border-emerald-400 hover:text-emerald-500"
                       }`}
@@ -1070,9 +1091,9 @@ export default function MonthlyBudget() {
                       <Check className="w-3.5 h-3.5" />
                     </button>
                     <BillMetaPopover
-                      billKey={f.key} label={f.label}
-                      obs={obs} dueDay={dueDay} category={cat} defaultCategory={f.defaultCategory}
-                      onSave={(o, d, c) => handleBillMeta(f.key, o, d, c)}
+                      billKey={f.billKey} label={f.label}
+                      obs={obs} dueDay={dueDay} category={cat} defaultCategory=""
+                      onSave={(o, d, c) => handleBillMeta(f.billKey, o, d, c)}
                       categories={activeCategories}
                     />
                   </div>
@@ -1089,17 +1110,15 @@ export default function MonthlyBudget() {
                 </div>
               )}
               {/* Lançamentos avulsos */}
-              {(billEntries || []).filter(be => !sq || (be.description || "").toLowerCase().includes(sq)).length > 0 && (
+              {(billEntries || []).filter(be => !sq || (be.billKey || "").toLowerCase().includes(sq)).length > 0 && (
                 <div className="space-y-1 pt-1 border-t border-dashed border-orange-200 dark:border-orange-800">
-                  {(billEntries || []).filter(be => !sq || (be.description || "").toLowerCase().includes(sq)).map(be => {
-                    const pm = activePaymentMap[be.paymentMethod || "pix_boleto"];
+                  {(billEntries || []).filter(be => !sq || (be.billKey || "").toLowerCase().includes(sq)).map(be => {
                     return (
                       <div key={be.id} className="flex items-center gap-2 group">
-                        <span className="text-xs text-muted-foreground flex-1 truncate">{be.description}</span>
+                        <span className="text-xs text-muted-foreground flex-1 truncate">{be.billKey}</span>
                         <span className="text-sm font-medium text-right flex-shrink-0">{fmt(parseNum(be.amount))}</span>
-                        {pm && <span className={`text-xs px-1 py-0.5 rounded border flex-shrink-0 ${pm.color}`}>{pm.icon}</span>}
                         <button
-                          onClick={() => setEditBillEntry({ id: be.id, description: be.description || "", amount: String(parseNum(be.amount)), paymentMethod: be.paymentMethod || "pix_boleto", billDate: be.billDate || "" })}
+                          onClick={() => setEditBillEntry({ id: be.id, description: be.billKey || "", amount: String(parseNum(be.amount)), paymentMethod: "pix_boleto", billDate: be.paidDate || "" })}
                           className="text-muted-foreground/40 hover:text-blue-500 transition-colors flex-shrink-0"
                           title="Editar"
                         >
@@ -1221,11 +1240,7 @@ export default function MonthlyBudget() {
                 <span className="text-sm font-semibold w-36">TOTAL CONTAS</span>
                 <span className="text-sm font-bold text-red-600 text-right flex-1">{fmt(totalBills)}</span>
               </div>
-              {billsDirty && (
-                <Button onClick={handleSaveBills} disabled={saveBills.isPending} className="w-full mt-2">
-                  <Save className="w-4 h-4 mr-2" /> Salvar Contas
-                </Button>
-              )}
+
             </CardContent>
           </Card>
         </div>
@@ -1781,7 +1796,7 @@ export default function MonthlyBudget() {
             // Lançamentos avulsos (billEntries) — sem categoria, usa padrão Essencial
             if (groupKey === "essenciais") {
               (billEntries || []).forEach(be => {
-                items.push({ key: `be-${be.id}`, label: be.description || "Lançamento", category: "—", amount: parseNum(be.amount), type: "lancamento" });
+                items.push({ key: `be-${be.id}`, label: be.billKey || "Lançamento", category: "—", amount: parseNum(be.amount), type: "lancamento" });
               });
             }
             // Despesas avulsas

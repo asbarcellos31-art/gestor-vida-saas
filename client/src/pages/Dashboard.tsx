@@ -45,7 +45,7 @@ export default function Dashboard() {
   );
   const { data: score } = trpc.tasks.score.useQuery(undefined, { enabled: hasTimeAccess });
 
-  const { data: incomeData } = trpc.income.get.useQuery(
+  const { data: incomeData } = trpc.income.list.useQuery(
     { year: currentYear, month: currentMonthNum },
     { enabled: hasBudgetAccess }
   );
@@ -56,10 +56,7 @@ export default function Dashboard() {
 
   const budgetSummary = useMemo(() => {
     if (!hasBudgetAccess) return null;
-    const income = incomeData
-      ? [incomeData.corretora, incomeData.distribuicao, incomeData.carteiraFer, incomeData.angariacao, incomeData.advocacia, incomeData.outros]
-          .reduce((s, v) => s + (parseFloat(String(v ?? "0")) || 0), 0)
-      : 0;
+    const income = (incomeData ?? []).reduce((s, e) => s + (parseFloat(String(e.amount ?? "0")) || 0), 0);
     const totalExpenses = (expensesData ?? []).reduce((s, e) => s + (parseFloat(String(e.amount)) || 0), 0);
     return { income, totalExpenses, balance: income - totalExpenses };
   }, [incomeData, expensesData, hasBudgetAccess]);
