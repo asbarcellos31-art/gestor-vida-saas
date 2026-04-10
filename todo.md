@@ -227,3 +227,8 @@
 - [x] BUG CRÍTICO: erro ao lançar despesas — colunas installmentGroupId, installmentNumber, installmentTotal ausentes no banco (migração aplicada)
 - [x] BUG: timer do GestaoTempo não roda — corrigido closure stale no useEffect (usar startedAtMs local)
 - [x] BUG: indicador de tarefa ativa ausente na sidebar — adicionado ponto pulsante verde + cronômetro ao lado de "Tríade do Tempo"
+
+## Bugs GestaoTempo (10/04/2026 - Sessão 3)
+- [x] BUG: timer não cronometra na tela ao dar play (separado updateTaskStatus de updateTask para não resetar form/fechar diálogo)
+- [x] BUG: não consegue criar tarefa sem data (backlog) — scheduledDate era NOT NULL no banco, migração aplicada
+- [x] BUG: não consegue apagar tarefas pendentes na aba planejamento — adicionado botão Trash2 no hover das tarefas do backlog e dos dias da semana

@@ -245,6 +245,7 @@ export default function GestaoTempo() {
     onError: (e) => toast.error(e.message),
   });
 
+  // updateTask para salvar formulário (fecha diálogo)
   const updateTask = trpc.tasks.update.useMutation({
     onSuccess: () => {
       utils.tasks.byDate.invalidate();
@@ -254,6 +255,17 @@ export default function GestaoTempo() {
       setDialogOpen(false);
       setEditingTask(null);
       setForm(DEFAULT_FORM(selectedDate));
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  // updateTaskStatus para play/pause/complete (NÃO fecha diálogo nem reseta form)
+  const updateTaskStatus = trpc.tasks.update.useMutation({
+    onSuccess: () => {
+      utils.tasks.byDate.invalidate();
+      utils.tasks.byDateRange.invalidate();
+      utils.tasks.score.invalidate();
+      utils.tasks.backlog.invalidate();
     },
     onError: (e) => toast.error(e.message),
   });
@@ -298,19 +310,21 @@ export default function GestaoTempo() {
 
   const handleStartTask = (taskId: number) => {
     if (activeTimer?.taskId === taskId) {
+      // Pausar: salvar tempo executado
       const mins = Math.floor(elapsed / 60);
-      updateTask.mutate({ id: taskId, status: "started", executedMinutes: mins });
+      updateTaskStatus.mutate({ id: taskId, status: "pending", executedMinutes: mins });
       setActiveTimer(null);
     } else {
+      // Iniciar: setar timer
       setActiveTimer({ taskId, startedAt: new Date() });
-      updateTask.mutate({ id: taskId, status: "started" });
+      updateTaskStatus.mutate({ id: taskId, status: "started" });
     }
   };
 
   const handleCompleteTask = (taskId: number) => {
     const mins = activeTimer?.taskId === taskId ? Math.floor(elapsed / 60) : undefined;
     if (activeTimer?.taskId === taskId) setActiveTimer(null);
-    updateTask.mutate({ id: taskId, status: "completed", ...(mins !== undefined && { executedMinutes: mins }) });
+    updateTaskStatus.mutate({ id: taskId, status: "completed", ...(mins !== undefined && { executedMinutes: mins }) });
   };
 
   const handleSubmit = () => {
@@ -822,11 +836,18 @@ export default function GestaoTempo() {
                         return (
                           <div
                             key={t.id}
-                            className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs ${triade.bg} ${triade.text} cursor-pointer hover:opacity-80`}
+                            className={`group flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs ${triade.bg} ${triade.text}`}
                           >
                             <span className={`w-1.5 h-1.5 rounded-full ${triade.dot} flex-shrink-0`} />
                             <span className="truncate flex-1">{t.title}</span>
-                            <span className="text-[10px] opacity-60">{t.durationMinutes}min</span>
+                            <span className="text-[10px] opacity-60 group-hover:hidden">{t.durationMinutes}min</span>
+                            <button
+                              onClick={() => deleteTask.mutate({ id: t.id })}
+                              className="hidden group-hover:flex items-center justify-center w-4 h-4 rounded text-red-400 hover:text-red-600 hover:bg-red-100 transition-colors flex-shrink-0"
+                              title="Excluir"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
                           </div>
                         );
                       })
@@ -861,11 +882,20 @@ export default function GestaoTempo() {
                             return (
                               <div
                                 key={t.id}
-                                className={`text-[11px] px-1.5 py-1 rounded flex items-center gap-1 ${triade.bg} ${triade.text} ${t.status === "completed" ? "opacity-40 line-through" : ""}`}
+                                className={`group text-[11px] px-1.5 py-1 rounded flex items-center gap-1 ${triade.bg} ${triade.text} ${t.status === "completed" ? "opacity-40 line-through" : ""}`}
                                 title={t.title}
                               >
                                 <span className={`w-1.5 h-1.5 rounded-full ${triade.dot} flex-shrink-0`} />
-                                <span className="truncate">{t.title}</span>
+                                <span className="truncate flex-1">{t.title}</span>
+                                {t.status !== "completed" && (
+                                  <button
+                                    onClick={() => deleteTask.mutate({ id: t.id })}
+                                    className="hidden group-hover:flex items-center justify-center w-3.5 h-3.5 rounded text-red-400 hover:text-red-600 flex-shrink-0"
+                                    title="Excluir"
+                                  >
+                                    <Trash2 className="w-2.5 h-2.5" />
+                                  </button>
+                                )}
                               </div>
                             );
                           })}
