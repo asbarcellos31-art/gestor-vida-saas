@@ -163,16 +163,36 @@ function resolveYearsToRetirement(input: {
   return { currentAge, yearsToRetirement, monthsToRetirement: yearsToRetirement * 12 };
 }
 
-// ─── Subscription Router ──────────────────────────────────────────────────────
+/// ─── Subscription Router ──────────────────────────────────────────────────────
 const subscriptionRouter = router({
   get: protectedProcedure.query(async ({ ctx }) => {
     if (await isAdminUser(ctx.user.id)) {
-      return { plan: "combo" as const, status: "active" as const, isAdmin: true };
+      return { plan: "combo" as const, status: "active" as const, isAdmin: true, trialEndsAt: null as Date | null, trialDaysLeft: null as number | null };
     }
     const sub = await getUserSubscription(ctx.user.id);
-    return sub;
+    if (!sub) return null;
+    let trialDaysLeft: number | null = null;
+    if (sub.status === "trialing" && sub.trialEndsAt) {
+      const msLeft = sub.trialEndsAt.getTime() - Date.now();
+      trialDaysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+    }
+    return { ...sub, trialDaysLeft };
   }),
-
+  startTrial: protectedProcedure.mutation(async ({ ctx }) => {
+    const existing = await getUserSubscription(ctx.user.id);
+    if (existing) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "Você já possui ou utilizou um período de trial." });
+    }
+    const trialEndsAt = new Date();
+    trialEndsAt.setDate(trialEndsAt.getDate() + 5);
+    await createSubscription({
+      userId: ctx.user.id,
+      plan: "combo",
+      status: "trialing",
+      trialEndsAt,
+    });
+    return { success: true, trialEndsAt };
+  }),
   activate: protectedProcedure
     .input(z.object({ plan: z.enum(["time_management", "budget", "combo"]) }))
     .mutation(async ({ ctx, input }) => {
@@ -184,7 +204,6 @@ const subscriptionRouter = router({
       }
       return { success: true };
     }),
-
   cancel: protectedProcedure.mutation(async ({ ctx }) => {
     const sub = await getUserSubscription(ctx.user.id);
     if (sub) await updateSubscription(sub.id, { status: "cancelled" });

@@ -34,6 +34,7 @@ export const subscriptions = mysqlTable("subscriptions", {
   status: mysqlEnum("status", ["active", "cancelled", "expired", "trialing"]).default("active").notNull(),
   stripeCustomerId: varchar("stripeCustomerId", { length: 128 }),
   stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 128 }),
+  trialEndsAt: timestamp("trialEndsAt"),
   currentPeriodStart: timestamp("currentPeriodStart"),
   currentPeriodEnd: timestamp("currentPeriodEnd"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

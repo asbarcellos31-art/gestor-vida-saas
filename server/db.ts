@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, lte } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser,
@@ -87,9 +87,18 @@ export async function getActiveSubscription(userId: number) {
   const result = await db
     .select()
     .from(subscriptions)
-    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "active")))
+    .where(and(eq(subscriptions.userId, userId), inArray(subscriptions.status, ["active", "trialing"])))
     .limit(1);
-  return result[0] ?? null;
+  const sub = result[0] ?? null;
+  // Se estiver em trial, verificar se ainda não expirou
+  if (sub && sub.status === "trialing" && sub.trialEndsAt) {
+    if (new Date() > sub.trialEndsAt) {
+      // Trial expirado — atualizar status no banco
+      await db.update(subscriptions).set({ status: "expired" }).where(eq(subscriptions.id, sub.id));
+      return null;
+    }
+  }
+  return sub;
 }
 
 export async function getUserSubscription(userId: number) {

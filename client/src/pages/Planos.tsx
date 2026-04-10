@@ -1,6 +1,5 @@
 import { trpc } from "@/lib/trpc";
 import AppLayout from "@/components/AppLayout";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -13,6 +12,7 @@ import {
   X,
   ArrowRight,
   Zap,
+  Gift,
 } from "lucide-react";
 
 const PLANS = [
@@ -64,7 +64,7 @@ const PLANS = [
       "Dashboard unificado",
       "Resumo diário completo",
       "Acesso a todos os módulos",
-      "Suporte prioritário por email",
+      "Suporte por email",
     ],
     notIncluded: [],
   },
@@ -84,6 +84,15 @@ export default function Planos() {
     onError: (e: { message: string }) => toast.error(e.message),
   });
 
+  const startTrial = trpc.subscription.startTrial.useMutation({
+    onSuccess: () => {
+      utils.subscription.get.invalidate();
+      toast.success("🎉 Trial iniciado! Você tem 5 dias de acesso completo.");
+      navigate("/dashboard");
+    },
+    onError: (e: { message: string }) => toast.error(e.message),
+  });
+
   const cancelSubscription = trpc.subscription.cancel.useMutation({
     onSuccess: () => {
       utils.subscription.get.invalidate();
@@ -92,33 +101,61 @@ export default function Planos() {
     onError: (e) => toast.error(e.message),
   });
 
-  const currentPlan = subscription?.plan;
+  const sub = subscription as { plan?: string; status?: string; trialDaysLeft?: number | null; isAdmin?: boolean } | null;
+  const currentPlan = sub?.plan;
+  const isTrialing = sub?.status === "trialing";
+  const trialDaysLeft = sub?.trialDaysLeft ?? 0;
+  const hasNoSubscription = !subscription;
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-5xl mx-auto">
+      <div className="p-4 sm:p-6 max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Planos e Assinatura</h1>
-          <p className="text-gray-500 mt-1">
-            {currentPlan
+          <h1 className="text-2xl font-bold text-foreground">Planos e Assinatura</h1>
+          <p className="text-muted-foreground mt-1">
+            {isTrialing
+              ? `Período de avaliação — ${trialDaysLeft} dia(s) restante(s)`
+              : currentPlan
               ? `Seu plano atual: ${PLANS.find((p) => p.id === currentPlan)?.name}`
               : "Escolha o plano ideal para você"}
           </p>
         </div>
 
-        {/* Current subscription status */}
-        {subscription && (
-          <div className="mb-8 p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+        {/* Trial ativo */}
+        {isTrialing && (
+          <div className="mb-8 p-4 rounded-xl bg-violet-50 border border-violet-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5 text-violet-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">
+                  Avaliação gratuita em andamento
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {trialDaysLeft <= 0
+                    ? "Seu trial expirou. Escolha um plano para continuar."
+                    : `${trialDaysLeft} dia(s) restante(s) com acesso completo ao Combo`}
+                </p>
+              </div>
+            </div>
+            <Badge className="bg-violet-600 text-white border-0 text-xs">Trial ativo</Badge>
+          </div>
+        )}
+
+        {/* Plano ativo (não trial) */}
+        {sub && !isTrialing && !sub.isAdmin && currentPlan && (
+          <div className="mb-8 p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
                 <Zap className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
-                <p className="font-semibold text-gray-900">
+                <p className="font-semibold text-foreground">
                   Plano ativo: {PLANS.find((p) => p.id === currentPlan)?.name}
                 </p>
-                <p className="text-sm text-gray-500">
-                  Status: {subscription.status === "active" ? "Ativo" : subscription.status}
+                <p className="text-sm text-muted-foreground">
+                  Status: {sub.status === "active" ? "Ativo" : sub.status}
                 </p>
               </div>
             </div>
@@ -137,19 +174,44 @@ export default function Planos() {
           </div>
         )}
 
+        {/* Banner de trial para novos usuários */}
+        {hasNoSubscription && (
+          <div className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-violet-600 to-purple-700 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <Gift className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="font-bold text-lg">5 dias grátis — acesso completo</p>
+                <p className="text-violet-200 text-sm">
+                  Experimente todos os módulos sem compromisso. Sem cartão de crédito.
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={() => startTrial.mutate()}
+              disabled={startTrial.isPending}
+              className="bg-white text-violet-700 hover:bg-violet-50 font-semibold flex-shrink-0"
+            >
+              <Gift className="w-4 h-4 mr-2" />
+              Experimentar grátis
+            </Button>
+          </div>
+        )}
+
         {/* Plans grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PLANS.map((plan) => {
-            const isCurrentPlan = currentPlan === plan.id;
+            const isCurrentPlan = !isTrialing && currentPlan === plan.id;
             return (
               <div
                 key={plan.id}
-                className={`relative bg-white rounded-2xl border-2 p-6 flex flex-col transition-all ${
+                className={`relative bg-card rounded-2xl border-2 p-6 flex flex-col transition-all ${
                   isCurrentPlan
                     ? "border-violet-400 shadow-lg shadow-violet-100"
                     : plan.badge
                     ? "border-amber-300 shadow-md shadow-amber-50"
-                    : "border-gray-100 hover:border-gray-200 hover:shadow-md"
+                    : "border-border hover:border-muted-foreground/30 hover:shadow-md"
                 }`}
               >
                 {isCurrentPlan && (
@@ -167,24 +229,24 @@ export default function Planos() {
                   <plan.icon className="w-6 h-6 text-white" />
                 </div>
 
-                <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.name}</h3>
-                <p className="text-sm text-gray-500 mb-4">{plan.description}</p>
+                <h3 className="text-lg font-bold text-foreground mb-1">{plan.name}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
 
                 <div className="mb-5">
-                  <span className="text-3xl font-extrabold text-gray-900">R$ {plan.price}</span>
-                  <span className="text-gray-500 text-sm">/mês</span>
+                  <span className="text-3xl font-extrabold text-foreground">R$ {plan.price}</span>
+                  <span className="text-muted-foreground text-sm">/mês</span>
                 </div>
 
                 <ul className="space-y-2 mb-6 flex-1">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-gray-700">
+                    <li key={f} className="flex items-start gap-2 text-sm text-foreground">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
                       {f}
                     </li>
                   ))}
                   {plan.notIncluded.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-gray-400">
-                      <X className="w-4 h-4 text-gray-300 mt-0.5 shrink-0" />
+                    <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground/50">
+                      <X className="w-4 h-4 text-muted-foreground/30 mt-0.5 shrink-0" />
                       {f}
                     </li>
                   ))}
@@ -204,7 +266,7 @@ export default function Planos() {
                         : "bg-violet-600 hover:bg-violet-700 text-white"
                     }`}
                   >
-                    {currentPlan ? "Mudar para este plano" : "Assinar agora"}
+                    {isTrialing || currentPlan ? "Assinar este plano" : "Assinar agora"}
                     <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 )}
@@ -213,7 +275,7 @@ export default function Planos() {
           })}
         </div>
 
-        <p className="text-center text-sm text-gray-400 mt-8">
+        <p className="text-center text-sm text-muted-foreground mt-8">
           Cancele quando quiser. Sem fidelidade. Suporte por email.
         </p>
       </div>

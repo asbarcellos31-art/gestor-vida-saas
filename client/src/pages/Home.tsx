@@ -175,7 +175,7 @@ export default function Home() {
       <section className="pt-32 pb-20 px-4 bg-gradient-to-b from-violet-50 via-white to-white">
         <div className="container text-center max-w-4xl mx-auto">
           <Badge className="mb-6 bg-violet-100 text-violet-700 border-violet-200 hover:bg-violet-100">
-            ✨ Gestão de Tempo + Orçamento Doméstico
+            🎁 5 dias grátis — sem cartão de crédito
           </Badge>
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
             Organize seu{" "}
@@ -197,7 +197,7 @@ export default function Home() {
               onClick={() => handleGetStarted()}
               className="bg-violet-600 hover:bg-violet-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-violet-200"
             >
-              Começar por R$ 19,90/mês
+              Experimentar 5 dias grátis
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <Button
@@ -210,7 +210,7 @@ export default function Home() {
             </Button>
           </div>
           <p className="mt-4 text-sm text-gray-500">
-            Cancele quando quiser. Sem fidelidade.
+            5 dias grátis com acesso completo. Depois, a partir de R$ 19,90/mês. Cancele quando quiser.
           </p>
         </div>
       </section>

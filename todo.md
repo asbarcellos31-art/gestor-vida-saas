@@ -86,3 +86,7 @@
 - [x] Testes de projeção de aposentadoria
 - [x] Aplicar paleta de cores violeta/sidebar escura
 - [x] Reorganizar sidebar com grupos colapsáveis (Gestão de Tempo, Orçamento Doméstico)
+- [x] Trial gratuito de 5 dias — lógica no backend (campo trialEndsAt na subscription)
+- [x] Trial gratuito de 5 dias — banner com contador regressivo no dashboard
+- [x] Trial gratuito de 5 dias — bloqueio suave ao expirar com CTA para assinar
+- [x] Landing page — destacar trial gratuito no hero e nos planos
