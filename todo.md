@@ -232,3 +232,8 @@
 - [x] BUG: timer não cronometra na tela ao dar play (separado updateTaskStatus de updateTask para não resetar form/fechar diálogo)
 - [x] BUG: não consegue criar tarefa sem data (backlog) — scheduledDate era NOT NULL no banco, migração aplicada
 - [x] BUG: não consegue apagar tarefas pendentes na aba planejamento — adicionado botão Trash2 no hover das tarefas do backlog e dos dias da semana
+
+## PWA / Ícone (13/04/2026)
+- [x] Gerar ícone personalizado (raio azul/índigo) para tela inicial do celular
+- [x] Configurar manifest.json com ícones 192x192 e 512x512
+- [x] Adicionar meta tags apple-touch-icon e theme-color no index.html
