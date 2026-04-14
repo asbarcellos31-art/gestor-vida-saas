@@ -481,9 +481,7 @@ export default function Ferramentas() {
                 <div>
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Entenda o Método</p>
                   <a
-                    href="https://manus.im/slides/U6HOrPF9ekUg4e2KvGq3Bf"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="/tutorial/metodo"
                     className="group flex items-center gap-3 p-3 rounded-xl border border-violet-200 hover:border-violet-400 bg-violet-50 hover:bg-violet-100 transition-all"
                   >
                     <div className="w-10 h-10 rounded-lg bg-violet-600 flex items-center justify-center flex-shrink-0">
@@ -505,14 +503,12 @@ export default function Ferramentas() {
                   </p>
                   <div className="space-y-3">
                     <a
-                      href="https://manus.im/slides/iX3z6m83SVAy2mhZTgYd76"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href="/tutorial/souza"
                       className="group block rounded-xl overflow-hidden border border-amber-200 hover:border-amber-400 transition-all hover:shadow-md"
                     >
                       <div className="relative">
                         <img
-                          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/souza_intro_generated_d196f289.webp"
+                          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/souza_intro_generated_121a0c44.webp"
                           alt="Roberto e Maria Souza"
                           className="w-full h-28 object-cover"
                         />
@@ -535,14 +531,12 @@ export default function Ferramentas() {
                     </a>
 
                     <a
-                      href="https://manus.im/slides/73F7tlqOmeYkwSS28tknd0"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href="/tutorial/silva"
                       className="group block rounded-xl overflow-hidden border border-sky-200 hover:border-sky-400 transition-all hover:shadow-md"
                     >
                       <div className="relative">
                         <img
-                          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/silva_intro_generated_5f2f11b4.webp"
+                          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/silva_intro_generated_a3c7eb54.webp"
                           alt="Família Silva"
                           className="w-full h-28 object-cover"
                         />
@@ -565,14 +559,12 @@ export default function Ferramentas() {
                     </a>
 
                     <a
-                      href="https://manus.im/slides/Pzizhgk2DKXjGmyZ8DixPM"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href="/tutorial/fernanda"
                       className="group block rounded-xl overflow-hidden border border-cyan-200 hover:border-cyan-400 transition-all hover:shadow-md"
                     >
                       <div className="relative">
                         <img
-                          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/fernanda_intro_generated_ffcd7fdf.webp"
+                          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/fernanda_intro_generated_b7046782.webp"
                           alt="Dra. Fernanda Rocha"
                           className="w-full h-28 object-cover"
                         />
