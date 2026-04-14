@@ -46,30 +46,59 @@ interface Section {
 // ─── Content Gestão do Tempo ──────────────────────────────────────────────────────────
 const TRIADE_SECTIONS: Section[] = [
   {
+    id: "filosofia",
+    icon: Lightbulb,
+    color: "text-violet-700",
+    bgColor: "bg-violet-100",
+    borderColor: "border-violet-300",
+    title: "A Filosofia da Antecipação",
+    subtitle: "O segredo de quem não procrastina",
+    steps: [
+      {
+        icon: Target,
+        title: "Por que tudo vira urgente?",
+        description:
+          "Tarefas Importantes e Circunstanciais que são adiadas repetidamente se transformam em Urgentes. Esse é o ciclo do procrastinador: adiar o que é importante até que o prazo force uma ação desesperada. A Gestão do Tempo quebra esse ciclo pela antecipação.",
+        example:
+          "Renovar um contrato com cliente é Importante. Se adiado por semanas, vira Urgente na véspera do vencimento. Pagar o IPTU é Circunstancial. Se esquecido, vira Urgente com multa.",
+        tip: "O objetivo não é apagar incêndios mais rápido — é evitar que o fogo comece. Planeje antes que o prazo pressione.",
+      },
+      {
+        icon: CalendarDays,
+        title: "Como se antecipar na prática?",
+        description:
+          "Use o Planejamento Semanal todo domingo ou segunda-feira: distribua as tarefas Importantes e Circunstanciais da semana antes que elas se tornem urgentes. Isso é especialmente poderoso para quem tende a procrastinar.",
+        example:
+          "Na segunda-feira você vê que na quinta vence uma proposta. Agenda 2h na terça para elaborar. Na quarta, revisa. Na quinta, envia com calma — sem correria, sem erro.",
+        tip: "Quem planeja a semana no domingo tem até 40% menos tarefas urgentes durante a semana. A antecipação é o antidoto da procrastinação.",
+      },
+    ],
+  },
+  {
     id: "importante",
     icon: Star,
     color: "text-violet-600",
     bgColor: "bg-violet-50",
     borderColor: "border-violet-200",
     title: "Importante",
-    subtitle: "Tarefas que constroem o futuro",
+    subtitle: "Tarefas que constroem o futuro — faça antes que virem urgentes",
     steps: [
       {
         icon: Target,
         title: "O que é uma tarefa Importante?",
         description:
-          "São atividades que contribuem diretamente para seus objetivos de médio e longo prazo. Não têm prazo imediato, mas se ignoradas por muito tempo, geram consequências sérias.",
+          "São atividades que constroem resultados de médio e longo prazo. Não têm prazo imediato, mas se adiadas repetidamente se tornam urgentes — e aí são feitas com pressa, estresse e qualidade inferior.",
         example:
-          "Estudar para uma certificação, planejar metas do trimestre, desenvolver uma nova habilidade, fazer exercícios físicos, criar um plano financeiro.",
-        tip: "Se você só fizer o que é urgente, nunca chegará onde quer. Reserve pelo menos 60% do seu dia para o Importante.",
+          "Elaborar proposta comercial para cliente em potencial. Desenvolver novo produto ou serviço. Revisar a precificação dos seus serviços. Criar plano de expansão para o próximo trimestre.",
+        tip: "A tarefa Importante de hoje é a tarefa Urgente de amanhã se você não agendá-la agora. Reserve pelo menos 60% do seu dia para o Importante.",
       },
       {
         icon: Calendar,
         title: "Quando agendar tarefas Importantes?",
         description:
-          "Coloque as tarefas Importantes nos seus melhores horários — quando você tem mais energia e foco. Geralmente são as primeiras horas da manhã.",
+          "Coloque as tarefas Importantes nos seus melhores horários — quando você tem mais energia e foco. Geralmente são as primeiras horas da manhã ou blocos de tempo protegidos de interrupções.",
         example:
-          "Bloqueie das 8h às 10h para tarefas estratégicas. Não permita que reuniões ou interrupções tomem esse tempo.",
+          "Bloqueie das 8h às 10h para trabalho estratégico: elaborar propostas, planejar campanhas, desenvolver processos. Não permita que reuniões de rotina tomem esse horário nobre.",
         tip: "Use o Planejamento Semanal para distribuir suas tarefas Importantes ao longo da semana antes que o Urgente domine sua agenda.",
       },
     ],
@@ -77,58 +106,58 @@ const TRIADE_SECTIONS: Section[] = [
   {
     id: "urgente",
     icon: AlertTriangle,
-    color: "text-amber-600",
-    bgColor: "bg-amber-50",
-    borderColor: "border-amber-200",
+    color: "text-rose-600",
+    bgColor: "bg-rose-50",
+    borderColor: "border-rose-200",
     title: "Urgente",
-    subtitle: "Tarefas com prazo imediato",
+    subtitle: "Tarefas com prazo imediato — sinal de falta de planejamento",
     steps: [
       {
         icon: Zap,
         title: "O que é uma tarefa Urgente?",
         description:
-          "São atividades com prazo imediato ou que exigem ação agora. Podem ou não ser importantes — o que as define é a pressão do tempo.",
+          "São demandas com prazo imediato que precisam ser resolvidas hoje ou nas próximas horas. Muitas urgentes não nascem urgentes — elas viraram urgentes porque não foram planejadas a tempo. Esse é o sinal mais claro de procrastinação.",
         example:
-          "Responder um cliente insatisfeito, pagar uma conta com vencimento hoje, resolver uma falha técnica em produção.",
-        tip: "Urgente não significa importante. Aprenda a distinguir: urgência é sobre tempo, importância é sobre impacto.",
+          "Cliente solicitou ajuste urgente em contrato com prazo hoje. Fornecedor aguardando confirmação de pedido. Contador precisando de documentos no prazo. Funcionário com problema que paralisa a operação.",
+        tip: "Se você vive apagando incêndios, é sinal de que não está planejando o suficiente. Reduza o Urgente planejando melhor o Importante.",
       },
       {
         icon: CalendarDays,
-        title: "Como lidar com o Urgente?",
+        title: "Como lidar com o Urgente sem perder o foco?",
         description:
-          "Reserve um bloco de tempo diário para o Urgente — não deixe que ele tome o dia todo. Trate-o como uma categoria controlada, não como o padrão.",
+          "Reserve um bloco de tempo específico para o Urgente — por exemplo, das 14h às 16h. Fora desse bloco, foque no Importante. Isso evita que o Urgente invada todo o seu dia e destrua sua produtividade estratégica.",
         example:
-          "Separe das 14h às 15h para responder e-mails urgentes, ligações e demandas do dia.",
-        tip: "Se tudo parece urgente, você perdeu o controle da sua agenda. Use o Planejamento Semanal para antecipar urgências.",
+          "Ao criar uma tarefa urgente, defina a duração realista e bloqueie esse tempo no dia. Se vai levar 2 horas, proteja o restante da agenda para não criar um efeito cascata de atrasos.",
+        tip: "Urgente não significa importante. O que é urgente para o cliente nem sempre precisa ser urgente para você — aprenda a negociar prazos quando possível.",
       },
     ],
   },
   {
     id: "circunstancial",
     icon: Sun,
-    color: "text-sky-600",
-    bgColor: "bg-sky-50",
-    borderColor: "border-sky-200",
+    color: "text-amber-600",
+    bgColor: "bg-amber-50",
+    borderColor: "border-amber-200",
     title: "Circunstancial",
-    subtitle: "Tarefas do cotidiano",
+    subtitle: "Tarefas operacionais — antecipe para não virar urgência",
     steps: [
       {
         icon: Inbox,
         title: "O que é uma tarefa Circunstancial?",
         description:
-          "São atividades do dia a dia que precisam ser feitas mas têm baixo impacto estratégico. Consomem tempo mas não movem o ponteiro.",
+          "São atividades operacionais e administrativas necessárias para manter o negócio funcionando, mas que não geram crescimento direto. O perigo: quando ignoradas, viram urgentes — com multa, cliente insatisfeito ou operação parada.",
         example:
-          "Organizar a mesa, responder e-mails rotineiros, fazer compras, pagar contas recorrentes.",
-        tip: "Automatize, delegue ou agrupe tarefas circunstanciais. Nunca deixe que elas dominem seu dia.",
+          "Participar de reunião interna sem pauta definida. Preencher relatório operacional. Responder e-mails de baixa prioridade. Aprovar solicitações de rotina. Renovar licenças ou certidões com prazo.",
+        tip: "Agende as Circunstanciais com prazo (como renovações e pagamentos) com antecedência. Elas são previsíveis — não deixe que virem surpresas.",
       },
       {
         icon: Sun,
-        title: "Como gerenciar o Circunstancial?",
+        title: "Como minimizar o Circunstancial?",
         description:
-          "Agrupe tarefas circunstanciais em blocos específicos. Use listas de compras, automações bancárias e delegação para reduzir o tempo gasto.",
+          "Questione cada tarefa circunstancial: ela pode ser delegada? Automatizada? Eliminada? O objetivo é reduzir ao máximo o tempo gasto com operacional para liberar espaço para o que realmente gera resultado.",
         example:
-          "Reserve 30 minutos no final do dia para todas as tarefas circunstanciais pendentes.",
-        tip: "O objetivo não é eliminar o Circunstancial, mas contê-lo para que não invada o tempo do Importante.",
+          "Reunião semanal de status que dura 2 horas: transforme em relatório escrito de 5 minutos. Aprovações de rotina: delegue com critérios claros. Pagamentos recorrentes: automatize via débito automático.",
+        tip: "Um score de produtividade alto significa mais tempo no Importante e menos no Circunstancial. Acompanhe seu progresso no Relatório.",
       },
     ],
   },

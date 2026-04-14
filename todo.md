@@ -274,3 +274,12 @@
 - [ ] Produzir vídeo 1: Família Souza
 - [ ] Produzir vídeo 2: Família Silva
 - [ ] Produzir vídeo 3: Dra. Fernanda
+
+## Vídeos Tutoriais e Aba Aprender
+- [ ] Corrigir botão "Aprender" em Ferramentas para navegar para /aprender
+- [ ] Reformular conteúdo da aba Aprender com filosofia de antecipação (evitar que Importante/Circunstancial virem Urgente)
+- [ ] Capturar screenshots reais do sistema para cada perfil demo
+- [ ] Criar vídeos animados com screenshots reais para Família Souza
+- [ ] Criar vídeos animados com screenshots reais para Família Silva
+- [ ] Criar vídeos animados com screenshots reais para Dra. Fernanda
+- [ ] Integrar vídeos na aba Aprender

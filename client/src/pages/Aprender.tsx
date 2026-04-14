@@ -55,13 +55,42 @@ interface Section {
 
 const TRIADE_SECTIONS: Section[] = [
   {
+    id: "filosofia",
+    icon: Lightbulb,
+    color: "text-violet-700",
+    bgColor: "bg-violet-100",
+    borderColor: "border-violet-300",
+    title: "A Filosofia da Antecipação",
+    subtitle: "O segredo de quem não procrastina",
+    steps: [
+      {
+        icon: Target,
+        title: "Por que tudo vira urgente?",
+        description:
+          "Tarefas Importantes e Circunstanciais que são adiadas repetidamente se transformam em Urgentes. Esse é o ciclo do procrastinador: adiar o que é importante até que o prazo force uma ação desesperada. A Gestão do Tempo quebra esse ciclo pela antecipação.",
+        example:
+          "Renovar um contrato com cliente é Importante. Se adiado por semanas, vira Urgente na véspera do vencimento. Pagar o IPTU é Circunstancial. Se esquecido, vira Urgente com multa. A antecipação evita os dois cenários.",
+        tip: "O objetivo não é apagar incêndios mais rápido — é evitar que o fogo comece. Planeje antes que o prazo pressione.",
+      },
+      {
+        icon: CalendarDays,
+        title: "Como se antecipar na prática?",
+        description:
+          "Use o Planejamento Semanal todo domingo ou segunda-feira: distribua as tarefas Importantes e Circunstanciais da semana antes que elas se tornem urgentes. Isso é especialmente poderoso para quem tende a procrastinar.",
+        example:
+          "Na segunda-feira você vê que na quinta vence uma proposta. Agenda 2h na terça para elaborar. Na quarta, revisa. Na quinta, envia com calma — sem correria, sem erro. Sem antecipação, isso viraria uma madrugada de trabalho.",
+        tip: "Quem planeja a semana no domingo tem até 40% menos tarefas urgentes durante a semana. A antecipação é o antídoto da procrastinação.",
+      },
+    ],
+  },
+  {
     id: "importante",
     icon: Star,
     color: "text-violet-600",
     bgColor: "bg-violet-50",
     borderColor: "border-violet-200",
     title: "Importante",
-    subtitle: "Tarefas que constroem o futuro",
+    subtitle: "Tarefas que constroem o futuro — faça antes que virem urgentes",
     steps: [
       {
         icon: Target,
@@ -90,7 +119,7 @@ const TRIADE_SECTIONS: Section[] = [
     bgColor: "bg-rose-50",
     borderColor: "border-rose-200",
     title: "Urgente",
-    subtitle: "Tarefas que exigem ação imediata",
+    subtitle: "Tarefas com prazo imediato — sinal de falta de planejamento",
     steps: [
       {
         icon: Zap,
@@ -119,7 +148,7 @@ const TRIADE_SECTIONS: Section[] = [
     bgColor: "bg-amber-50",
     borderColor: "border-amber-200",
     title: "Circunstancial",
-    subtitle: "Tarefas necessárias mas de baixo impacto",
+    subtitle: "Tarefas operacionais — antecipe para não virar urgência",
     steps: [
       {
         icon: RefreshCcw,
@@ -628,14 +657,14 @@ export default function Aprender() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <a
-                href="https://manus.im/slides/ISoqzRxPMWpzDf9W74bnu9"
+                href="https://manus.im/slides/iX3z6m83SVAy2mhZTgYd76"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group block rounded-2xl overflow-hidden border border-amber-200 hover:border-amber-400 transition-all hover:shadow-lg"
               >
                 <div className="relative">
                   <img
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/souza_intro_generated_3c507ead.webp"
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/souza_intro_generated_d196f289.webp"
                     alt="Roberto e Maria Souza"
                     className="w-full h-36 object-cover"
                   />
@@ -663,14 +692,14 @@ export default function Aprender() {
               </a>
 
               <a
-                href="https://manus.im/slides/GUALQC3azwp08SPZEtxvNv"
+                href="https://manus.im/slides/73F7tlqOmeYkwSS28tknd0"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group block rounded-2xl overflow-hidden border border-sky-200 hover:border-sky-400 transition-all hover:shadow-lg"
               >
                 <div className="relative">
                   <img
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/silva_intro_generated_bda917a2.webp"
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/silva_intro_generated_5f2f11b4.webp"
                     alt="Família Silva"
                     className="w-full h-36 object-cover"
                   />
@@ -698,14 +727,14 @@ export default function Aprender() {
               </a>
 
               <a
-                href="https://manus.im/slides/tVRKmyr28lEnLpoW8GTUge"
+                href="https://manus.im/slides/Pzizhgk2DKXjGmyZ8DixPM"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group block rounded-2xl overflow-hidden border border-cyan-200 hover:border-cyan-400 transition-all hover:shadow-lg"
               >
                 <div className="relative">
                   <img
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/fernanda_intro_generated_b2739c4b.webp"
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/fernanda_intro_generated_ffcd7fdf.webp"
                     alt="Dra. Fernanda Rocha"
                     className="w-full h-36 object-cover"
                   />
