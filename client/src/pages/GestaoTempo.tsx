@@ -956,9 +956,9 @@ export default function GestaoTempo() {
               ))}
             </div>
 
-            {/* Resumo por Tríade */}
+            {/* Resumo por Categoria */}
             <div className="bg-white rounded-xl border border-gray-100 p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Resumo por Categoria (Tríade)</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Resumo por Categoria (Gestão do Tempo)</h3>
               {(Object.entries(TRIADE_CONFIG) as [TaskCategory, (typeof TRIADE_CONFIG)[TaskCategory]][]).map(([cat, cfg]) => {
                 const catTasks = tasks.filter((t) => t.category === cat);
                 if (catTasks.length === 0) return null;
@@ -1025,9 +1025,9 @@ export default function GestaoTempo() {
               />
             </div>
 
-            {/* Classificação (Tríade) - botões grandes */}
+            {/* Classificação (Gestão do Tempo) - botões grandes */}
             <div>
-              <Label>Classificação (Tríade)</Label>
+              <Label>Classificação (Gestão do Tempo)</Label>
               <div className="grid grid-cols-3 gap-2 mt-1">
                 {(Object.entries(TRIADE_CONFIG) as [TaskCategory, (typeof TRIADE_CONFIG)[TaskCategory]][]).map(([key, cfg]) => (
                   <button

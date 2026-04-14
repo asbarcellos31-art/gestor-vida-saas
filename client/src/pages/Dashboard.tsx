@@ -188,7 +188,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <CardTitle className="text-base">Gestão de Tempo</CardTitle>
-                    <p className="text-xs text-gray-500">Tríade do Tempo</p>
+                    <p className="text-xs text-gray-500">Gestão do Tempo</p>
                   </div>
                 </div>
                 {!hasTimeAccess && (
@@ -229,7 +229,7 @@ export default function Dashboard() {
               ) : (
                 <div className="text-center py-4">
                   <p className="text-sm text-gray-500 mb-3">
-                    Faça upgrade para acessar a Gestão de Tempo com a metodologia Tríade do Tempo.
+                    Faça upgrade para acessar a Gestão de Tempo com a metodologia Gestão do Tempo.
                   </p>
                   <Button
                     variant="outline"

@@ -22,13 +22,13 @@ const PLANS = [
     id: "time_management",
     name: "Gestão de Tempo",
     price: "19,90",
-    description: "Organize seu dia com a metodologia Tríade do Tempo",
+    description: "Organize seu dia com a metodologia Gestão do Tempo",
     icon: Clock,
     color: "from-violet-600 to-purple-700",
     features: [
       "Meu Dia — visão diária completa",
       "Planejamento semanal",
-      "Tríade do Tempo (Importante, Urgente, Circunstancial)",
+      "Gestão do Tempo (Importante, Urgente, Circunstancial)",
       "Score de produtividade (30 dias)",
       "Relatório de desempenho",
       "Timer por tarefa",
@@ -50,7 +50,7 @@ const PLANS = [
       "Dashboard anual com gráficos",
       "Categorização por tipo",
     ],
-    notIncluded: ["Gestão de tempo", "Tríade do Tempo", "Score de produtividade"],
+    notIncluded: ["Gestão de tempo", "Gestão do Tempo", "Score de produtividade"],
   },
   {
     id: "combo",
@@ -75,7 +75,7 @@ const PLANS = [
 const FEATURES = [
   {
     icon: Target,
-    title: "Tríade do Tempo",
+    title: "Gestão do Tempo",
     description:
       "Classifique suas tarefas em Importante, Urgente e Circunstancial para focar no que realmente importa.",
     color: "text-violet-600",

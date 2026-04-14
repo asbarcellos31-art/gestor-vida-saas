@@ -163,7 +163,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               }`}
             >
               <Clock className="w-4 h-4 flex-shrink-0" />
-              <span className="flex-1 text-left">Tríade do Tempo</span>
+              <span className="flex-1 text-left">Gestão do Tempo</span>
               {hasActiveTimer && (
                 <span className="flex items-center gap-1">
                   <span className="relative flex h-2 w-2">
@@ -175,7 +175,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               )}
             </button>
           ) : (
-            navItem("/planos", "Tríade do Tempo", Clock, true, false)
+            navItem("/planos", "Gestão do Tempo", Clock, true, false)
           )}
         </div>
 

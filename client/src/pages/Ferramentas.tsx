@@ -43,7 +43,7 @@ interface Section {
   steps: Step[];
 }
 
-// ─── Content Tríade ──────────────────────────────────────────────────────────
+// ─── Content Gestão do Tempo ──────────────────────────────────────────────────────────
 const TRIADE_SECTIONS: Section[] = [
   {
     id: "importante",
@@ -373,7 +373,7 @@ export default function Ferramentas() {
         {/* ── Aba Aprender ── */}
         {activeTab === "aprender" && (
           <div>
-            {/* Toggle Tríade / Financeiro */}
+            {/* Toggle Gestão do Tempo / Financeiro */}
             <div className="flex gap-2 mb-5">
               <button
                 onClick={() => setLearnSection("triade")}
@@ -383,7 +383,7 @@ export default function Ferramentas() {
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
-                Tríade do Tempo
+                Gestão do Tempo
               </button>
               <button
                 onClick={() => setLearnSection("financeiro")}
@@ -403,7 +403,7 @@ export default function Ferramentas() {
                   <Badge variant="outline" className="text-indigo-600 border-indigo-200 bg-indigo-50">
                     Gestão do Tempo
                   </Badge>
-                  <span className="text-xs text-gray-400">Como usar a Tríade do Tempo</span>
+                  <span className="text-xs text-gray-400">Como usar a Gestão do Tempo</span>
                 </div>
                 {TRIADE_SECTIONS.map((s) => (
                   <SectionCard key={s.id} section={s} />

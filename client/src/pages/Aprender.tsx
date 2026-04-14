@@ -67,18 +67,18 @@ const TRIADE_SECTIONS: Section[] = [
         icon: Target,
         title: "O que é uma tarefa Importante?",
         description:
-          "São atividades que contribuem diretamente para seus objetivos de médio e longo prazo. Não têm prazo imediato, mas se ignoradas por muito tempo, geram consequências sérias. São o coração da sua produtividade estratégica.",
+          "São atividades que constroem resultados de médio e longo prazo. Não têm prazo imediato, mas se adiadas repetidamente geram consequências sérias — perda de oportunidades, estagnação profissional ou problemas financeiros. São o núcleo da sua produtividade estratégica.",
         example:
-          "Estudar para uma certificação, planejar metas do trimestre, desenvolver uma nova habilidade, fazer exercícios físicos, criar um plano financeiro.",
+          "Elaborar proposta comercial para um cliente em potencial. Desenvolver um novo produto ou serviço. Estudar para obter uma certificação profissional. Criar um plano de expansão para o próximo trimestre. Revisar a precificação dos seus serviços.",
         tip: "Se você só fizer o que é urgente, nunca chegará onde quer. Reserve pelo menos 60% do seu dia para o Importante.",
       },
       {
         icon: Calendar,
         title: "Quando agendar tarefas Importantes?",
         description:
-          "Coloque as tarefas Importantes nos seus melhores horários — quando você tem mais energia e foco. Geralmente são as primeiras horas da manhã ou os blocos de tempo sem interrupções.",
+          "Coloque as tarefas Importantes nos seus melhores horários — quando você tem mais energia e foco. Geralmente são as primeiras horas da manhã ou blocos de tempo protegidos de interrupções.",
         example:
-          "Bloqueie das 8h às 10h para tarefas estratégicas. Não permita que reuniões ou interrupções tomem esse tempo.",
+          "Bloqueie das 8h às 10h para trabalho estratégico: elaborar propostas, planejar campanhas, desenvolver processos. Não permita que reuniões de rotina tomem esse horário nobre.",
         tip: "Use o Planejamento Semanal para distribuir suas tarefas Importantes ao longo da semana antes que o Urgente domine sua agenda.",
       },
     ],
@@ -96,19 +96,19 @@ const TRIADE_SECTIONS: Section[] = [
         icon: Zap,
         title: "O que é uma tarefa Urgente?",
         description:
-          "São demandas com prazo próximo ou imediato que precisam ser resolvidas hoje. Geralmente chegam de fora — clientes, chefes, problemas inesperados. O perigo é deixar que o Urgente consuma todo o seu dia.",
+          "São demandas com prazo imediato que precisam ser resolvidas hoje ou nas próximas horas. Geralmente chegam de fora — clientes, sócios, fornecedores, prazos legais. O perigo é deixar que o Urgente consuma todo o seu dia e impeça o trabalho estratégico.",
         example:
-          "Responder um cliente insatisfeito, resolver um erro no sistema, entregar um relatório com prazo de hoje, pagar uma conta vencendo hoje.",
+          "Cliente solicitou ajuste urgente em um contrato com prazo de assinatura hoje. Fornecedor aguarda confirmação de pedido para não perder o lote. Contador precisa de documentos para fechar a declaração no prazo. Funcionário com problema que paralisa a operação.",
         tip: "Se você vive apagando incêndios, é sinal de que não está planejando o suficiente. Reduza o Urgente planejando melhor o Importante.",
       },
       {
         icon: AlertTriangle,
         title: "Como lidar com o Urgente sem perder o foco?",
         description:
-          "Reserve um bloco de tempo específico para o Urgente — por exemplo, das 14h às 16h. Fora desse bloco, foque no Importante. Isso evita que o Urgente invada todo o seu dia.",
+          "Reserve um bloco de tempo específico para o Urgente — por exemplo, das 14h às 16h. Fora desse bloco, foque no Importante. Isso evita que o Urgente invada todo o seu dia e destrua sua produtividade estratégica.",
         example:
-          "Ao criar uma tarefa urgente, defina a duração realista. Se vai levar 2 horas, bloqueie 2 horas no seu dia e proteja o restante.",
-        tip: "Urgente não significa importante. Aprenda a diferenciar: o que é urgente para os outros nem sempre é urgente para você.",
+          "Ao criar uma tarefa urgente, defina a duração realista e bloqueie esse tempo no dia. Se vai levar 2 horas, proteja o restante da agenda para não criar um efeito cascata de atrasos.",
+        tip: "Urgente não significa importante. O que é urgente para o cliente nem sempre precisa ser urgente para você — aprenda a negociar prazos quando possível.",
       },
     ],
   },
@@ -125,18 +125,18 @@ const TRIADE_SECTIONS: Section[] = [
         icon: RefreshCcw,
         title: "O que é uma tarefa Circunstancial?",
         description:
-          "São atividades rotineiras, operacionais ou administrativas que precisam ser feitas mas não contribuem diretamente para seus objetivos. São necessárias para manter tudo funcionando, mas não criam valor novo.",
+          "São atividades operacionais e administrativas que precisam ser feitas para manter o negócio funcionando, mas que não geram crescimento direto. São necessárias, porém de baixo impacto estratégico — e costumam consumir mais tempo do que deveriam.",
         example:
-          "Verificar e-mails, organizar arquivos, preencher planilhas de controle, fazer ligações de rotina, atualizar cadastros.",
-        tip: "Agrupe tarefas circunstanciais em um único bloco de tempo. Fazer todas de uma vez é muito mais eficiente do que intercalar com tarefas estratégicas.",
+          "Participar de reunião interna sem pauta definida ou sem decisão clara. Preencher relatório operacional que ninguém lê. Responder e-mails de baixa prioridade. Aprovar solicitações de rotina que poderiam ser delegadas. Atualizar planilha de controle que já existe em outro sistema.",
+        tip: "Agrupe tarefas circunstanciais em um único bloco de tempo (ex: das 16h às 17h). Fazer todas de uma vez é muito mais eficiente do que intercalar com trabalho estratégico.",
       },
       {
         icon: Lightbulb,
         title: "Como minimizar o Circunstancial?",
         description:
-          "Questione sempre: essa tarefa pode ser delegada? Automatizada? Eliminada? O objetivo é reduzir ao máximo o tempo gasto com o Circunstancial para liberar espaço para o Importante.",
+          "Questione cada tarefa circunstancial: ela pode ser delegada? Automatizada? Eliminada? O objetivo é reduzir ao máximo o tempo gasto com operacional para liberar espaço para o que realmente gera resultado.",
         example:
-          "Se você passa 2 horas por dia em e-mails, experimente verificar apenas 2 vezes ao dia (manhã e tarde). Isso libera tempo para o que realmente importa.",
+          "Reunião semanal de status que dura 2 horas: transforme em um relatório de 5 minutos por escrito. Aprovações de rotina: delegue ao assistente com critérios claros. Relatórios manuais: automatize com o sistema.",
         tip: "Um score de produtividade alto significa mais tempo no Importante e menos no Circunstancial. Acompanhe seu progresso no Relatório.",
       },
     ],
@@ -518,7 +518,7 @@ export default function Aprender() {
               icon: Star,
               color: "text-violet-600",
               bg: "bg-violet-50",
-              title: "Tríade do Tempo",
+              title: "Gestão do Tempo",
               desc: "Importante, Urgente e Circunstancial",
             },
             {
@@ -552,10 +552,10 @@ export default function Aprender() {
             icon={Clock}
             color="text-violet-600"
             bgColor="bg-gradient-to-br from-violet-50 to-purple-50"
-            title="Gestão de Tempo — Tríade do Tempo"
+            title="Gestão de Tempo — Gestão do Tempo"
             description="Aprenda a classificar suas tarefas, planejar sua semana e usar o backlog para nunca mais perder uma boa ideia."
             sections={[...TRIADE_SECTIONS, ...PLANEJAMENTO_SECTIONS]}
-            badge="Metodologia Tríade"
+            badge="Método GV"
           />
 
           <TrailCard
@@ -593,7 +593,7 @@ export default function Aprender() {
               <div className="relative">
                 <img
                   src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/abertura_generated_7e5d41f4.webp"
-                  alt="O Método: Tríade do Tempo + Regra 50/30/20"
+                  alt="O Método: Gestão do Tempo + Regra 50/30/20"
                   className="w-full h-48 object-cover"
                 />
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -608,7 +608,7 @@ export default function Aprender() {
               <div className="p-4 bg-gradient-to-br from-violet-50 to-purple-50">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h4 className="font-bold text-gray-900">O Método: Tríade do Tempo + Regra 50/30/20</h4>
+                    <h4 className="font-bold text-gray-900">O Método: Gestão do Tempo + Regra 50/30/20</h4>
                     <p className="text-sm text-gray-600 mt-1">Entenda os dois métodos que estão por trás de todo o sistema. Ideal para começar.</p>
                   </div>
                   <ExternalLink className="w-4 h-4 text-violet-400 flex-shrink-0 mt-1" />
@@ -740,7 +740,7 @@ export default function Aprender() {
           <Lightbulb className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-gray-600">
             <strong className="text-gray-900">Dica:</strong> Não tente aprender tudo de uma vez.
-            Comece pela Tríade do Tempo e use o sistema por 1 semana. Depois explore o Orçamento.
+            Comece pela Gestão do Tempo e use o sistema por 1 semana. Depois explore o Orçamento.
             A consistência é mais importante que a perfeição.
           </p>
         </div>
