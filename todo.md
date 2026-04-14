@@ -283,3 +283,7 @@
 - [ ] Criar vídeos animados com screenshots reais para Família Silva
 - [ ] Criar vídeos animados com screenshots reais para Dra. Fernanda
 - [ ] Integrar vídeos na aba Aprender
+
+## Vídeos Animados Automáticos (Tutoriais)
+- [x] Criar componente VideoPlayer com autoplay, transições CSS e controles Play/Pause/Progress
+- [x] Substituir TutorialViewer pelo VideoPlayer em todas as rotas /tutorial/:id

@@ -20,7 +20,7 @@ import OrcamentoSettings from "./pages/OrcamentoSettings";
 import Ferramentas from "./pages/Ferramentas";
 import Cadastro from "./pages/Cadastro";
 import Login from "./pages/Login";
-import TutorialViewer from "./pages/TutorialViewer";
+import VideoPlayer from "./pages/VideoPlayer";
 
 function Router() {
   return (
@@ -42,7 +42,7 @@ function Router() {
       <Route path="/aprender" component={Aprender} />
       <Route path="/ferramentas" component={Ferramentas} />
       <Route path="/tutorial/:id">
-        {(params: { id?: string }) => <TutorialViewer id={params.id ?? ""} />}
+        {(params: { id?: string }) => <VideoPlayer id={params.id ?? ""} />}
       </Route>
       <Route path="/admin" component={Admin} />
       <Route path="/assinatura/sucesso" component={AssinaturaSucesso} />
