@@ -22,6 +22,7 @@ import {
   BookOpen,
   Crown,
   SlidersHorizontal,
+  Wrench,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -277,7 +278,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             Conta
           </p>
           {navItem("/planos", "Meu Plano", Settings2, false, location === "/planos")}
-          {navItem("/aprender", "Aprender", BookOpen, false, location === "/aprender")}
+          {navItem("/ferramentas", "Ferramentas", Wrench, false, location.startsWith("/ferramentas"))}
           {(user as any)?.role === "admin" && navItem("/admin", "Admin", Crown, false, location === "/admin")}
         </div>
       </nav>

@@ -237,3 +237,8 @@
 - [x] Gerar ícone personalizado (raio azul/índigo) para tela inicial do celular
 - [x] Configurar manifest.json com ícones 192x192 e 512x512
 - [x] Adicionar meta tags apple-touch-icon e theme-color no index.html
+
+## Ferramentas / Aprender (13/04/2026)
+- [x] Criar página Ferramentas com sub-aba Aprender
+- [x] Exibir guias de instalação iPhone e Android na sub-aba Aprender (sub-aba Instalar App)
+- [x] Adicionar rota /ferramentas na sidebar (substituiu link Aprender)

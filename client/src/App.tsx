@@ -17,6 +17,7 @@ import Aprender from "./pages/Aprender";
 import Admin from "./pages/Admin";
 import AssinaturaSucesso from "./pages/AssinaturaSucesso";
 import OrcamentoSettings from "./pages/OrcamentoSettings";
+import Ferramentas from "./pages/Ferramentas";
 
 function Router() {
   return (
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/planos" component={Planos} />
       <Route path="/trial-expirado" component={TrialExpired} />
       <Route path="/aprender" component={Aprender} />
+      <Route path="/ferramentas" component={Ferramentas} />
       <Route path="/admin" component={Admin} />
       <Route path="/assinatura/sucesso" component={AssinaturaSucesso} />
       <Route path="/orcamento/configuracoes" component={OrcamentoSettings} />
