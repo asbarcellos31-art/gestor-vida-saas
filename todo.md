@@ -262,3 +262,15 @@
 - [ ] Cobrança Stripe automática ao fim do trial (pendente)
 - [ ] E-mail de boas-vindas ao cadastrar (pendente)
 - [x] Painel admin: lista de clientes, planos, receita, cancelamentos
+
+## Terceiro Perfil Demo + Vídeos Explicativos (14/04/2026)
+- [ ] Criar conta demo: Família Souza (Roberto operador de caixa + Maria diarista, 2 filhos, renda R$4.500/mês)
+- [ ] Preencher dados demo Família Souza: tarefas, orçamento 50/30/20, despesas mensais, aposentadoria
+- [ ] Preencher dados demo Família Silva: tarefas, orçamento, despesas, aposentadoria
+- [ ] Preencher dados demo Dra. Fernanda: tarefas, orçamento, despesas, aposentadoria
+- [ ] Roteirizar vídeo 1: Família Souza (baixa renda, controle básico, saindo das dívidas)
+- [ ] Roteirizar vídeo 2: Família Silva (renda média, CLT + autônomo, filho escolar)
+- [ ] Roteirizar vídeo 3: Dra. Fernanda (profissional liberal, gestão de tempo + finanças)
+- [ ] Produzir vídeo 1: Família Souza
+- [ ] Produzir vídeo 2: Família Silva
+- [ ] Produzir vídeo 3: Dra. Fernanda

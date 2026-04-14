@@ -25,6 +25,9 @@ import {
   CheckCircle2,
   Lightbulb,
   Target,
+  Play,
+  ExternalLink,
+  Users,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -564,6 +567,172 @@ export default function Aprender() {
             sections={ORCAMENTO_SECTIONS}
             badge="Metodologia 50/30/20"
           />
+        </div>
+
+        {/* Seção de Vídeos */}
+        <div className="mt-10">
+          <div className="flex items-center gap-2 mb-1">
+            <Play className="w-5 h-5 text-violet-600" />
+            <h2 className="text-xl font-bold text-foreground">Vídeos Explicativos</h2>
+          </div>
+          <p className="text-muted-foreground text-sm mb-5">
+            Apresentações animadas mostrando o método e como cada perfil usa o sistema na prática.
+          </p>
+
+          {/* Vídeo didático do método */}
+          <div className="mb-6">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
+              <BookOpen className="w-4 h-4" /> Aprenda o Método
+            </h3>
+            <a
+              href="https://manus.im/slides/U6HOrPF9ekUg4e2KvGq3Bf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block rounded-2xl overflow-hidden border border-violet-200 hover:border-violet-400 transition-all hover:shadow-lg"
+            >
+              <div className="relative">
+                <img
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/abertura_generated_7e5d41f4.webp"
+                  alt="O Método: Tríade do Tempo + Regra 50/30/20"
+                  className="w-full h-48 object-cover"
+                />
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="bg-white/90 rounded-full p-4">
+                    <Play className="w-8 h-8 text-violet-600 fill-violet-600" />
+                  </div>
+                </div>
+                <div className="absolute top-3 left-3">
+                  <Badge className="bg-violet-600 text-white border-0">Didático</Badge>
+                </div>
+              </div>
+              <div className="p-4 bg-gradient-to-br from-violet-50 to-purple-50">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h4 className="font-bold text-gray-900">O Método: Tríade do Tempo + Regra 50/30/20</h4>
+                    <p className="text-sm text-gray-600 mt-1">Entenda os dois métodos que estão por trás de todo o sistema. Ideal para começar.</p>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-violet-400 flex-shrink-0 mt-1" />
+                </div>
+                <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                  <span className="flex items-center gap-1"><Play className="w-3 h-3" /> 13 slides</span>
+                  <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> ~90 segundos</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          {/* Tutoriais práticos */}
+          <div>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
+              <Users className="w-4 h-4" /> Tutoriais Práticos — Veja na prática
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <a
+                href="https://manus.im/slides/ISoqzRxPMWpzDf9W74bnu9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block rounded-2xl overflow-hidden border border-amber-200 hover:border-amber-400 transition-all hover:shadow-lg"
+              >
+                <div className="relative">
+                  <img
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/souza_intro_generated_3c507ead.webp"
+                    alt="Roberto e Maria Souza"
+                    className="w-full h-36 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-white/90 rounded-full p-3">
+                      <Play className="w-6 h-6 text-amber-600 fill-amber-600" />
+                    </div>
+                  </div>
+                  <div className="absolute top-2 left-2">
+                    <Badge className="bg-amber-500 text-white border-0 text-xs">Baixa Renda</Badge>
+                  </div>
+                </div>
+                <div className="p-3 bg-amber-50">
+                  <div className="flex items-start justify-between gap-1">
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-sm">Roberto e Maria Souza</h4>
+                      <p className="text-xs text-gray-600 mt-0.5">Saindo das dívidas com R$4.000/mês</p>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
+                  </div>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                    <Play className="w-3 h-3" /> 7 slides
+                  </div>
+                </div>
+              </a>
+
+              <a
+                href="https://manus.im/slides/GUALQC3azwp08SPZEtxvNv"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block rounded-2xl overflow-hidden border border-sky-200 hover:border-sky-400 transition-all hover:shadow-lg"
+              >
+                <div className="relative">
+                  <img
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/silva_intro_generated_bda917a2.webp"
+                    alt="Família Silva"
+                    className="w-full h-36 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-white/90 rounded-full p-3">
+                      <Play className="w-6 h-6 text-sky-600 fill-sky-600" />
+                    </div>
+                  </div>
+                  <div className="absolute top-2 left-2">
+                    <Badge className="bg-sky-500 text-white border-0 text-xs">Renda Média</Badge>
+                  </div>
+                </div>
+                <div className="p-3 bg-sky-50">
+                  <div className="flex items-start justify-between gap-1">
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-sm">Família Silva</h4>
+                      <p className="text-xs text-gray-600 mt-0.5">Organizando a vida de quem ganha bem</p>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
+                  </div>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                    <Play className="w-3 h-3" /> 7 slides
+                  </div>
+                </div>
+              </a>
+
+              <a
+                href="https://manus.im/slides/tVRKmyr28lEnLpoW8GTUge"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block rounded-2xl overflow-hidden border border-cyan-200 hover:border-cyan-400 transition-all hover:shadow-lg"
+              >
+                <div className="relative">
+                  <img
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/fernanda_intro_generated_b2739c4b.webp"
+                    alt="Dra. Fernanda Rocha"
+                    className="w-full h-36 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-white/90 rounded-full p-3">
+                      <Play className="w-6 h-6 text-cyan-600 fill-cyan-600" />
+                    </div>
+                  </div>
+                  <div className="absolute top-2 left-2">
+                    <Badge className="bg-cyan-600 text-white border-0 text-xs">Prof. Liberal</Badge>
+                  </div>
+                </div>
+                <div className="p-3 bg-cyan-50">
+                  <div className="flex items-start justify-between gap-1">
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-sm">Dra. Fernanda Rocha</h4>
+                      <p className="text-xs text-gray-600 mt-0.5">Médica que ganha bem mas não tem tempo</p>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                  </div>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                    <Play className="w-3 h-3" /> 7 slides
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Footer tip */}
