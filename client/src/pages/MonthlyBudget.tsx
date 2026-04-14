@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "wouter";
-import AppLayout, { MONTHS_FULL } from "@/components/AppLayout";
+import AppLayout from "@/components/AppLayout";
+import { MONTHS_FULL } from "@/lib/constants";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";

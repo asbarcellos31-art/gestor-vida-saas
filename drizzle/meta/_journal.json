@@ -29,6 +29,13 @@
       "when": 1775834466069,
       "tag": "0003_cloudy_lightspeed",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1776192972521,
+      "tag": "0004_chemical_talkback",
+      "breakpoints": true
     }
   ]
 }

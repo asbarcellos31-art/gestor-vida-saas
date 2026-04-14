@@ -18,11 +18,15 @@ import Admin from "./pages/Admin";
 import AssinaturaSucesso from "./pages/AssinaturaSucesso";
 import OrcamentoSettings from "./pages/OrcamentoSettings";
 import Ferramentas from "./pages/Ferramentas";
+import Cadastro from "./pages/Cadastro";
+import Login from "./pages/Login";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/cadastro" component={Cadastro} />
+      <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/gestao-tempo" component={GestaoTempo} />
       <Route path="/orcamento/dashboard" component={OrcamentoDashboard} />

@@ -56,6 +56,14 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet[field] = normalized;
     };
     textFields.forEach(assignNullable);
+    if (user.passwordHash !== undefined) {
+      values.passwordHash = user.passwordHash ?? null;
+      updateSet.passwordHash = user.passwordHash ?? null;
+    }
+    if (user.emailVerified !== undefined) {
+      values.emailVerified = user.emailVerified;
+      updateSet.emailVerified = user.emailVerified;
+    }
     if (user.lastSignedIn !== undefined) {
       values.lastSignedIn = user.lastSignedIn;
       updateSet.lastSignedIn = user.lastSignedIn;
@@ -81,6 +89,33 @@ export async function getUserByOpenId(openId: string) {
   if (!db) return undefined;
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
   return result[0];
+}
+
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return result[0];
+}
+
+export async function createTrialSubscription(userId: number, plan: "time_management" | "budget" | "combo") {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  // Verificar se já existe uma subscription ativa ou em trial para evitar duplicatas
+  const existing = await db
+    .select()
+    .from(subscriptions)
+    .where(and(eq(subscriptions.userId, userId), inArray(subscriptions.status, ["active", "trialing"])))
+    .limit(1);
+  if (existing.length > 0) return; // Já tem trial/assinatura ativa
+  const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 dias
+  await db.insert(subscriptions).values({
+    userId,
+    plan,
+    status: "trialing",
+    trialEndsAt,
+    cancelAtPeriodEnd: false,
+  });
 }
 
 // ── Subscriptions ─────────────────────────────────────────────────────────────

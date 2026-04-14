@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getLoginUrl } from "@/const";
+
 import {
   Clock,
   Wallet,
@@ -131,7 +131,7 @@ export default function Home() {
     if (isAuthenticated) {
       navigate("/dashboard");
     } else {
-      window.location.href = getLoginUrl();
+      navigate("/cadastro");
     }
   };
 
@@ -158,11 +158,11 @@ export default function Home() {
               </Button>
             ) : (
               <>
-                <Button variant="ghost" onClick={() => (window.location.href = getLoginUrl())}>
+                <Button variant="ghost" onClick={() => navigate("/login")}>
                   Entrar
                 </Button>
                 <Button
-                  onClick={() => (window.location.href = getLoginUrl())}
+                  onClick={() => navigate("/cadastro")}
                   className="bg-violet-600 hover:bg-violet-700"
                 >
                   Começar grátis

@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { getLoginUrl } from "@/const";
+
 import TrialBanner from "@/components/TrialBanner";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
@@ -27,10 +27,6 @@ import {
 import { toast } from "sonner";
 
 const MONTHS = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-export const MONTHS_FULL = [
-  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro",
-];
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -313,6 +309,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 export default function AppLayout({ children, title }: AppLayoutProps) {
   const { isAuthenticated, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [, navigate] = useLocation();
 
   if (loading) {
     return (
@@ -326,7 +323,7 @@ export default function AppLayout({ children, title }: AppLayoutProps) {
   }
 
   if (!isAuthenticated) {
-    window.location.href = getLoginUrl();
+    navigate("/login");
     return null;
   }
 

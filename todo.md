@@ -245,3 +245,20 @@
 
 ## Logo / Ícone Sidebar (13/04/2026)
 - [x] Substituir ícone do raio (Zap) pelo novo logo com cifrão na sidebar e no sistema
+
+## Perfis de Demonstração + Vídeo (14/04/2026)
+- [ ] Criar conta demo: Família Silva (Carlos CLT + Ana autônoma, filho escolar, renda R$16k)
+- [ ] Criar conta demo: Profissional liberal (Dra. Fernanda, 15k/mês)
+- [ ] Preencher tarefas, orçamento e aposentadoria para cada perfil demo
+- [ ] Roteirizar vídeo didático com os dois personagens
+- [ ] Produzir vídeo didático animado com narração
+
+## Autenticação Própria - PRIORIDADE (14/04/2026)
+- [x] Substituir Manus OAuth por autenticação e-mail + senha própria
+- [x] Criar tabela password_hash na tabela users (ou tabela separada)
+- [x] Criar endpoints: /api/auth/register, /api/auth/login, /api/auth/logout
+- [x] Criar páginas: /cadastro e /login
+- [x] Trial automático de 30 dias ao cadastrar (sem cartão)
+- [ ] Cobrança Stripe automática ao fim do trial (pendente)
+- [ ] E-mail de boas-vindas ao cadastrar (pendente)
+- [x] Painel admin: lista de clientes, planos, receita, cancelamentos
