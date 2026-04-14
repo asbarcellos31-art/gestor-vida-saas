@@ -138,9 +138,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       {/* Logo */}
       <div className="px-4 py-4 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-sidebar-primary rounded-lg flex items-center justify-center">
-            <Zap className="w-4 h-4 text-sidebar-primary-foreground" />
-          </div>
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-v3_237347c1.png"
+            alt="Gestor de Vida"
+            className="w-7 h-7 rounded-lg object-cover flex-shrink-0"
+          />
           <span className="font-bold text-sidebar-foreground text-sm tracking-tight">Gestor de Vida</span>
         </div>
       </div>

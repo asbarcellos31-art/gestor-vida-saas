@@ -242,3 +242,6 @@
 - [x] Criar página Ferramentas com sub-aba Aprender
 - [x] Exibir guias de instalação iPhone e Android na sub-aba Aprender (sub-aba Instalar App)
 - [x] Adicionar rota /ferramentas na sidebar (substituiu link Aprender)
+
+## Logo / Ícone Sidebar (13/04/2026)
+- [x] Substituir ícone do raio (Zap) pelo novo logo com cifrão na sidebar e no sistema
