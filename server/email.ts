@@ -4,7 +4,7 @@
  */
 import sgMail from "@sendgrid/mail";
 
-const FROM_EMAIL = "noreply@gestordevida.com.br";
+const FROM_EMAIL = "contato@gestordevida.com.br";
 const FROM_NAME = "Gestor de Vida";
 const BRAND_COLOR = "#4f46e5";
 
