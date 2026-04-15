@@ -325,3 +325,15 @@ export const paymentMethods = mysqlTable("payment_methods", {
 });
 
 export type PaymentMethod = typeof paymentMethods.$inferSelect;
+
+// ── Tokens de autenticação (reset de senha / verificação de e-mail) ──────────
+export const authTokens = mysqlTable("auth_tokens", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  token: varchar("token", { length: 128 }).notNull().unique(),
+  type: varchar("type", { length: 32 }).notNull(), // 'password_reset' | 'email_verify'
+  expiresAt: timestamp("expiresAt").notNull(),
+  usedAt: timestamp("usedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type AuthToken = typeof authTokens.$inferSelect;

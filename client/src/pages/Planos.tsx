@@ -80,7 +80,7 @@ export default function Planos() {
   const startTrial = trpc.subscription.startTrial.useMutation({
     onSuccess: () => {
       utils.subscription.get.invalidate();
-      toast.success("🎉 Trial iniciado! Você tem 5 dias de acesso completo.");
+      toast.success("🎉 Trial iniciado! Você tem 30 dias de acesso completo.");
       navigate("/dashboard");
     },
     onError: (e: { message: string }) => toast.error(e.message),
@@ -219,7 +219,7 @@ export default function Planos() {
                 <Gift className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="font-bold text-lg">5 dias grátis — acesso completo</p>
+                <p className="font-bold text-lg">30 dias grátis — acesso completo</p>
                 <p className="text-violet-200 text-sm">
                   Experimente todos os módulos sem compromisso. Sem cartão de crédito.
                 </p>

@@ -21,6 +21,7 @@ import {
   categories,
   paymentMethods,
   familyMembers,
+  authTokens,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1013,4 +1014,35 @@ export async function deleteTaskCategory(id: number, userId: number) {
     .set({ taskCategoryId: null })
     .where(and(eq(tasks.taskCategoryId, id), eq(tasks.userId, userId)));
   await db.delete(taskCategories).where(and(eq(taskCategories.id, id), eq(taskCategories.userId, userId)));
+}
+
+// ── Auth Tokens (reset de senha / verificação de e-mail) ──────────────────────
+export async function createAuthToken(userId: number, token: string, type: string, expiresAt: Date) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.insert(authTokens).values({ userId, token, type, expiresAt });
+}
+
+export async function getAuthToken(token: string, type: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db
+    .select()
+    .from(authTokens)
+    .where(and(eq(authTokens.token, token), eq(authTokens.type, type)))
+    .limit(1);
+  return result[0] ?? null;
+}
+
+export async function markAuthTokenUsed(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.update(authTokens).set({ usedAt: new Date() }).where(eq(authTokens.id, id));
+}
+
+export async function getUserById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  return result[0];
 }

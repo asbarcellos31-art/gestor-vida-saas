@@ -63,6 +63,10 @@ const SECTIONS: Section[] = [
             </ul>
             <p>Abaixo dos cards há dois painéis de acesso rápido: <strong>Gestão do Tempo</strong> e <strong>Orçamento Doméstico</strong>. Clique em <strong>"Abrir"</strong> em qualquer um deles para ir direto ao módulo.</p>
             <p>O <strong>banner roxo</strong> no topo indica quantos dias restam do seu período de avaliação gratuita. Clique em <strong>"Assinar agora"</strong> para escolher um plano antes que o período expire.</p>
+            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/01_dashboard_5214eb46.webp" alt="Dashboard Principal" className="w-full object-contain" />
+              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Dashboard Principal do sistema</p>
+            </div>
           </div>
         ),
       },
@@ -128,6 +132,10 @@ const SECTIONS: Section[] = [
               <li><strong>Descrição</strong> — campo opcional para detalhes adicionais</li>
             </ul>
             <p>Clique em <strong>"Criar Tarefa"</strong> para salvar. A tarefa aparecerá na lista do dia correspondente.</p>
+            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/02_gestao_tempo_5f707ede.webp" alt="Gestão do Tempo" className="w-full object-contain" />
+              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Módulo de Gestão do Tempo com tarefas criadas</p>
+            </div>
           </div>
         ),
       },
@@ -225,6 +233,10 @@ const SECTIONS: Section[] = [
             </ul>
             <p>Clique em <strong>"Salvar"</strong>. A receita aparecerá na lista e o total de entradas do mês será atualizado automaticamente.</p>
             <p><strong>Dica:</strong> lance todas as fontes de renda do mês antes de lançar despesas, para que o sistema calcule corretamente os percentuais da Regra 50/30/20.</p>
+            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/03_orcamento_302f95e5.webp" alt="Orçamento Mensal" className="w-full object-contain" />
+              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Tela de Orçamento Mensal com receitas e despesas lançadas</p>
+            </div>
           </div>
         ),
       },
@@ -276,6 +288,10 @@ const SECTIONS: Section[] = [
             </ul>
             <p>Clique em <strong>"Salvar"</strong>. O sistema distribuirá automaticamente o valor da parcela em cada mês correspondente. Você verá o parcelado aparecer no orçamento de cada mês até a quitação.</p>
             <p><strong>Dica:</strong> na tela de Parcelados você tem uma visão de todos os parcelados ativos, com o valor mensal comprometido e a data de quitação de cada um.</p>
+            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/04_parcelados_c38a7d80.webp" alt="Contas Parceladas" className="w-full object-contain" />
+              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Tela de Contas Parceladas com parcelados ativos</p>
+            </div>
           </div>
         ),
       },
@@ -353,6 +369,10 @@ const SECTIONS: Section[] = [
               <li><strong>Renda desejada na aposentadoria</strong> — quanto você quer receber por mês quando se aposentar</li>
             </ul>
             <p>Clique em <strong>"Calcular"</strong> para gerar as projeções.</p>
+            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/05_aposentadoria_b016b442.webp" alt="Simulador de Aposentadoria" className="w-full object-contain" />
+              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Simulador de Aposentadoria com os 3 cenários de projeção</p>
+            </div>
           </div>
         ),
       },
@@ -401,6 +421,10 @@ const SECTIONS: Section[] = [
               <li><strong>Meses com saldo negativo</strong> — destacados em vermelho para fácil identificação</li>
             </ul>
             <p>Use o seletor de ano no topo da tela para navegar entre anos anteriores e o ano atual.</p>
+            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/06_dashboard_anual_09f2fb4f.webp" alt="Dashboard Anual" className="w-full object-contain" />
+              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Dashboard Anual com gráficos de receita vs. despesas</p>
+            </div>
           </div>
         ),
       },
