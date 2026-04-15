@@ -72,15 +72,70 @@ const TUTORIALS: Record<string, TutorialData> = {
   },
   fernanda: {
     title: "Dra. Fernanda Rocha",
-    subtitle: "Médica profissional liberal sem tempo para nada",
+    subtitle: "Médica profissional liberal — organizando tempo e dinheiro na prática",
     badge: "Prof. Liberal",
     badgeColor: "bg-rose-500",
     slides: [
-      { img: `${CDN}/fernanda_capa_generated_c72143c6.webp`, caption: "Conheça a Dra. Fernanda Rocha", duration: 5000 },
-      { img: `${CDN}/fernanda_passo1_generated_d85ee556.webp`, caption: "Passo 1 — Cadastro e Dashboard", duration: 6000 },
-      { img: `${CDN}/fernanda_passo2_generated_e1f39784.webp`, caption: "Passo 2 — Gestão do Tempo na prática", duration: 7000 },
-      { img: `${CDN}/fernanda_passo3_generated_d6a117af.webp`, caption: "Passo 3 — Orçamento e aposentadoria", duration: 7000 },
-      { img: `${CDN}/fernanda_resultado_generated_6760272a.webp`, caption: "Resultado — 3 meses depois", duration: 6000 },
+      {
+        img: `${CDN}/01_dashboard_955dc6f1.webp`,
+        caption: "Dashboard — visão geral: entradas R$ 15.000, saldo e meta 20% atingida",
+        duration: 7000,
+      },
+      {
+        img: `${CDN}/02_gestao_tempo_meudio_35680b0d.webp`,
+        caption: "Gestão do Tempo — tarefas do dia classificadas: Importante, Urgente e Circunstancial",
+        duration: 7000,
+      },
+      {
+        img: `${CDN}/03_nova_tarefa_form_601804fb.webp`,
+        caption: "Criando nova tarefa — clique em '+ Nova' e preencha: título, categoria e duração estimada",
+        duration: 7000,
+      },
+      {
+        img: `${CDN}/04_nova_tarefa_preenchida_450ab4d7.webp`,
+        caption: "Tarefa preenchida — 'Elaborar proposta para plano de saúde empresarial' como Importante",
+        duration: 7000,
+      },
+      {
+        img: `${CDN}/05_tarefa_criada_be28a96d.webp`,
+        caption: "Tarefa salva — aparece na lista do dia com timer e opções de editar/excluir",
+        duration: 6000,
+      },
+      {
+        img: `${CDN}/06_planejamento_semanal_fa0b5b00.webp`,
+        caption: "Planejamento semanal — distribua as tarefas pelos dias da semana com antecedência",
+        duration: 7000,
+      },
+      {
+        img: `${CDN}/07_orcamento_mensal_ff594d25.webp`,
+        caption: "Orçamento Mensal — lançamento de entradas: consultório R$ 9.500, plantão R$ 4.200, telemedicina R$ 1.300",
+        duration: 8000,
+      },
+      {
+        img: `${CDN}/08_nova_despesa_form_5b08736c.webp`,
+        caption: "Nova Despesa — preencha: categoria, descrição, valor, forma de pagamento e vínculo familiar",
+        duration: 8000,
+      },
+      {
+        img: `${CDN}/09_parcelado_preenchido_a2a01768.webp`,
+        caption: "Parcelado — material cirúrgico R$ 3.600 em 3x: o sistema distribui automaticamente nos próximos meses",
+        duration: 8000,
+      },
+      {
+        img: `${CDN}/10_parcelados_ativos_cdcc89ca.webp`,
+        caption: "Contas Parceladas — visão de todos os parcelados ativos: comprometimento mensal e prazo de quitação",
+        duration: 7000,
+      },
+      {
+        img: `${CDN}/11_aposentadoria_9a8a7342.webp`,
+        caption: "Simulador de Aposentadoria — 3 cenários (pessimista, regular, otimista) baseados no seu orçamento real",
+        duration: 8000,
+      },
+      {
+        img: `${CDN}/12_relatorio_gestao_fd6f6b81.webp`,
+        caption: "Relatório de Gestão do Tempo — resumo diário por categoria: quantas tarefas, horas planejadas vs. executadas",
+        duration: 7000,
+      },
     ],
   },
 };

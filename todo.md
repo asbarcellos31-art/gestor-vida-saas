@@ -287,3 +287,8 @@
 ## Vídeos Animados Automáticos (Tutoriais)
 - [x] Criar componente VideoPlayer com autoplay, transições CSS e controles Play/Pause/Progress
 - [x] Substituir TutorialViewer pelo VideoPlayer em todas as rotas /tutorial/:id
+
+## Tutorial Prático Detalhado — Dra. Fernanda Rocha
+- [ ] Capturar screenshots reais de todos os módulos com perfil Fernanda
+- [ ] Criar tutorial animado completo (15-20 slides) cobrindo todos os módulos
+- [ ] Atualizar VideoPlayer com novo tutorial fernanda-completo
