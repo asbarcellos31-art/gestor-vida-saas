@@ -292,3 +292,8 @@
 - [ ] Capturar screenshots reais de todos os módulos com perfil Fernanda
 - [ ] Criar tutorial animado completo (15-20 slides) cobrindo todos os módulos
 - [ ] Atualizar VideoPlayer com novo tutorial fernanda-completo
+
+## Tutorial Completo Passo a Passo
+- [ ] Criar TutorialCompleto.tsx com tutorial detalhado de todos os módulos
+- [ ] Remover cards de perfis demo (Souza, Silva, Fernanda) da aba Aprender
+- [ ] Integrar TutorialCompleto na aba Ferramentas → Aprender → Tutoriais

@@ -472,120 +472,40 @@ export default function Ferramentas() {
               <div className="space-y-5">
                 <div className="flex items-center gap-2 mb-1">
                   <Badge variant="outline" className="text-violet-600 border-violet-200 bg-violet-50">
-                    <Video className="w-3 h-3 mr-1" /> Tutoriais Práticos
+                    <BookOpen className="w-3 h-3 mr-1" /> Tutorial Completo
                   </Badge>
-                  <span className="text-xs text-gray-400">Veja o sistema em uso real</span>
+                  <span className="text-xs text-gray-400">Passo a passo detalhado de todos os módulos</span>
                 </div>
 
-                {/* Didático do método */}
-                <div>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Entenda o Método</p>
-                  <a
-                    href="/tutorial/metodo"
-                    className="group flex items-center gap-3 p-3 rounded-xl border border-violet-200 hover:border-violet-400 bg-violet-50 hover:bg-violet-100 transition-all"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-violet-600 flex items-center justify-center flex-shrink-0">
-                      <Play className="w-5 h-5 text-white fill-white" />
+                <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-xl border border-violet-200 p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-violet-600 flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-6 h-6 text-white" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm text-gray-900">O Método: Gestão do Tempo + Regra 50/30/20</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Como antecipar o que é importante antes que vire urgente</p>
-                      <p className="text-xs text-violet-500 mt-1">13 slides · ~90 segundos</p>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-900">Tutorial Completo do Sistema</h3>
+                      <p className="text-sm text-gray-600 mt-1">Aprenda a usar todos os módulos do sistema com instruções passo a passo detalhadas: como criar tarefas, lançar receitas, registrar despesas, cadastrar parcelados, configurar contas fixas e simular sua aposentadoria.</p>
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <span className="text-xs bg-white border border-violet-200 text-violet-700 px-2 py-0.5 rounded-full">Gestão do Tempo</span>
+                        <span className="text-xs bg-white border border-green-200 text-green-700 px-2 py-0.5 rounded-full">Orçamento</span>
+                        <span className="text-xs bg-white border border-orange-200 text-orange-700 px-2 py-0.5 rounded-full">Parcelados</span>
+                        <span className="text-xs bg-white border border-teal-200 text-teal-700 px-2 py-0.5 rounded-full">Aposentadoria</span>
+                        <span className="text-xs bg-white border border-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full">Dashboard Anual</span>
+                      </div>
+                      <a
+                        href="/tutorial-completo"
+                        className="mt-4 inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                      >
+                        <BookOpen className="w-4 h-4" /> Abrir Tutorial
+                      </a>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-violet-400 flex-shrink-0" />
-                  </a>
-                </div>
-
-                {/* Tutoriais por perfil */}
-                <div>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 flex items-center gap-1">
-                    <Users className="w-3.5 h-3.5" /> Casos Reais — Veja na Prática
-                  </p>
-                  <div className="space-y-3">
-                    <a
-                      href="/tutorial/souza"
-                      className="group block rounded-xl overflow-hidden border border-amber-200 hover:border-amber-400 transition-all hover:shadow-md"
-                    >
-                      <div className="relative">
-                        <img
-                          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/souza_intro_generated_121a0c44.webp"
-                          alt="Roberto e Maria Souza"
-                          className="w-full h-28 object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="bg-white/90 rounded-full p-2.5">
-                            <Play className="w-5 h-5 text-amber-600 fill-amber-600" />
-                          </div>
-                        </div>
-                        <div className="absolute top-2 left-2">
-                          <span className="bg-amber-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Baixa Renda</span>
-                        </div>
-                      </div>
-                      <div className="p-3 bg-amber-50 flex items-center justify-between">
-                        <div>
-                          <p className="font-bold text-gray-900 text-sm">Roberto e Maria Souza</p>
-                          <p className="text-xs text-gray-500">Saindo das dívidas com R$4.000/mês · 7 slides</p>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-                      </div>
-                    </a>
-
-                    <a
-                      href="/tutorial/silva"
-                      className="group block rounded-xl overflow-hidden border border-sky-200 hover:border-sky-400 transition-all hover:shadow-md"
-                    >
-                      <div className="relative">
-                        <img
-                          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/silva_intro_generated_a3c7eb54.webp"
-                          alt="Família Silva"
-                          className="w-full h-28 object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="bg-white/90 rounded-full p-2.5">
-                            <Play className="w-5 h-5 text-sky-600 fill-sky-600" />
-                          </div>
-                        </div>
-                        <div className="absolute top-2 left-2">
-                          <span className="bg-sky-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Renda Média</span>
-                        </div>
-                      </div>
-                      <div className="p-3 bg-sky-50 flex items-center justify-between">
-                        <div>
-                          <p className="font-bold text-gray-900 text-sm">Família Silva</p>
-                          <p className="text-xs text-gray-500">Organizando quem ganha bem mas não investe · 7 slides</p>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 text-sky-400" />
-                      </div>
-                    </a>
-
-                    <a
-                      href="/tutorial/fernanda"
-                      className="group block rounded-xl overflow-hidden border border-cyan-200 hover:border-cyan-400 transition-all hover:shadow-md"
-                    >
-                      <div className="relative">
-                        <img
-                          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/fernanda_intro_generated_b7046782.webp"
-                          alt="Dra. Fernanda Rocha"
-                          className="w-full h-28 object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="bg-white/90 rounded-full p-2.5">
-                            <Play className="w-5 h-5 text-cyan-600 fill-cyan-600" />
-                          </div>
-                        </div>
-                        <div className="absolute top-2 left-2">
-                          <span className="bg-cyan-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Prof. Liberal</span>
-                        </div>
-                      </div>
-                      <div className="p-3 bg-cyan-50 flex items-center justify-between">
-                        <div>
-                          <p className="font-bold text-gray-900 text-sm">Dra. Fernanda Rocha</p>
-                          <p className="text-xs text-gray-500">Médica profissional liberal sem tempo · 7 slides</p>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
-                      </div>
-                    </a>
                   </div>
+                </div>
+
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                  <p className="text-sm text-amber-800">
+                    <strong>Dica:</strong> marque cada passo como lido conforme avança. O sistema rastreia seu progresso e você pode retomar de onde parou a qualquer momento.
+                  </p>
                 </div>
               </div>
             )}

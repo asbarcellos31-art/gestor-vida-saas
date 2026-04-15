@@ -21,6 +21,7 @@ import Ferramentas from "./pages/Ferramentas";
 import Cadastro from "./pages/Cadastro";
 import Login from "./pages/Login";
 import VideoPlayer from "./pages/VideoPlayer";
+import TutorialCompleto from "./pages/TutorialCompleto";
 
 function Router() {
   return (
@@ -41,6 +42,7 @@ function Router() {
       <Route path="/trial-expirado" component={TrialExpired} />
       <Route path="/aprender" component={Aprender} />
       <Route path="/ferramentas" component={Ferramentas} />
+      <Route path="/tutorial-completo" component={TutorialCompleto} />
       <Route path="/tutorial/:id">
         {(params: { id?: string }) => <VideoPlayer id={params.id ?? ""} />}
       </Route>
