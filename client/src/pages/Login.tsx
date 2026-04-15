@@ -100,6 +100,11 @@ export default function Login() {
 
             <div className="mt-4 text-center space-y-2">
               <p className="text-purple-300 text-sm">
+                <Link href="/esqueci-senha" className="text-purple-300 hover:text-white underline">
+                  Esqueci minha senha
+                </Link>
+              </p>
+              <p className="text-purple-300 text-sm">
                 Não tem conta?{" "}
                 <Link href="/cadastro" className="text-purple-200 font-semibold hover:text-white underline">
                   Criar conta grátis

@@ -36,7 +36,7 @@ const SECTIONS: Section[] = [
               <li><strong>Senha</strong> — mínimo de 8 caracteres</li>
               <li><strong>Confirmar senha</strong> — repita a senha para confirmar</li>
             </ul>
-            <p>Clique em <strong>"Criar conta grátis"</strong>. Você será redirecionado automaticamente para o dashboard com <strong>30 dias de acesso gratuito</strong> a todos os módulos — sem necessidade de cartão de crédito.</p>
+            <p>Clique em <strong>"Criar conta grátis"</strong>. Você será redirecionado automaticamente para o dashboard com <strong>5 dias de acesso gratuito</strong> a todos os módulos. Cartão de crédito necessário.</p>
           </div>
         ),
       },

@@ -39,7 +39,7 @@ export default function Cadastro() {
         return;
       }
       await utils.auth.me.invalidate();
-      toast.success("Conta criada! Seu trial de 30 dias começou agora.");
+      toast.success("Conta criada! Seu trial de 5 dias começou agora.");
       navigate("/dashboard");
     } catch {
       toast.error("Erro de conexão. Tente novamente.");
@@ -59,7 +59,7 @@ export default function Cadastro() {
             className="w-20 h-20 rounded-2xl shadow-lg mb-3"
           />
           <h1 className="text-2xl font-bold text-white">Gestão da Vida</h1>
-          <p className="text-purple-300 text-sm mt-1">Crie sua conta e comece grátis por 30 dias</p>
+          <p className="text-purple-300 text-sm mt-1">Crie sua conta e comece grátis por 5 dias</p>
         </div>
 
         <Card className="border-purple-800/40 bg-white/5 backdrop-blur-sm">
@@ -142,7 +142,7 @@ export default function Cadastro() {
             </div>
 
             <p className="text-purple-400 text-xs text-center mt-4">
-              Ao criar sua conta, você concorda com os termos de uso. Nenhum cartão necessário para o trial.
+              Ao criar sua conta, você concorda com os termos de uso. Cartão de crédito necessário para o trial.
             </p>
           </CardContent>
         </Card>

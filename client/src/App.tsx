@@ -20,6 +20,8 @@ import OrcamentoSettings from "./pages/OrcamentoSettings";
 import Ferramentas from "./pages/Ferramentas";
 import Cadastro from "./pages/Cadastro";
 import Login from "./pages/Login";
+import EsqueciSenha from "./pages/EsqueciSenha";
+import RedefinirSenha from "./pages/RedefinirSenha";
 import VideoPlayer from "./pages/VideoPlayer";
 import TutorialCompleto from "./pages/TutorialCompleto";
 
@@ -29,6 +31,8 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/cadastro" component={Cadastro} />
       <Route path="/login" component={Login} />
+      <Route path="/esqueci-senha" component={EsqueciSenha} />
+      <Route path="/redefinir-senha" component={RedefinirSenha} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/gestao-tempo" component={GestaoTempo} />
       <Route path="/orcamento/dashboard" component={OrcamentoDashboard} />

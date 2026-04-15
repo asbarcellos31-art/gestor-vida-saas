@@ -133,7 +133,7 @@ export async function sendPasswordResetEmail(
 ): Promise<boolean> {
   if (!isConfigured) return false;
   const firstName = name.split(" ")[0];
-  const resetUrl = `${origin}/reset-password?token=${resetToken}`;
+  const resetUrl = `${origin}/redefinir-senha?token=${resetToken}`;
   const html = baseTemplate(`
     <h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0 0 8px;">
       Redefinir sua senha
