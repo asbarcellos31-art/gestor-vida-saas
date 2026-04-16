@@ -17,18 +17,21 @@ export default function TrialBanner() {
 
   const daysLeft = sub.trialDaysLeft ?? 0;
 
-  const bgColor =
+  const bgStyle =
     daysLeft <= 1
-      ? "bg-red-500"
+      ? { background: "#8B1A1A", borderBottom: "1px solid rgba(255,100,100,0.3)" }
       : daysLeft <= 2
-      ? "bg-orange-500"
-      : "bg-violet-600";
+      ? { background: "#7A4A00", borderBottom: "1px solid rgba(201,168,76,0.4)" }
+      : { background: "rgba(201,168,76,0.12)", borderBottom: "1px solid rgba(201,168,76,0.3)" };
 
   return (
-    <div className={`${bgColor} text-white px-4 py-2.5 flex items-center justify-between gap-3 text-sm`}>
+    <div
+      className="px-4 py-2.5 flex items-center justify-between gap-3 text-sm"
+      style={bgStyle}
+    >
       <div className="flex items-center gap-2 flex-1 min-w-0">
-        <Clock className="w-4 h-4 flex-shrink-0" />
-        <span className="font-medium truncate">
+        <Clock className="w-4 h-4 flex-shrink-0" style={{ color: "#C9A84C" }} />
+        <span className="font-medium truncate" style={{ color: "#F0E6C8" }}>
           {daysLeft <= 0
             ? "Seu período de avaliação expirou."
             : daysLeft === 1
@@ -39,14 +42,16 @@ export default function TrialBanner() {
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={() => navigate("/planos")}
-          className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 transition-colors px-3 py-1 rounded-full text-xs font-semibold"
+          className="flex items-center gap-1.5 transition-colors px-3 py-1 rounded-full text-xs font-semibold"
+          style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}
         >
           <Zap className="w-3 h-3" />
           Assinar agora
         </button>
         <button
           onClick={() => setDismissed(true)}
-          className="text-white/70 hover:text-white transition-colors"
+          className="transition-colors"
+          style={{ color: "#8A9BB5" }}
           aria-label="Fechar"
         >
           <X className="w-4 h-4" />

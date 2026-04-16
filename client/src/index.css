@@ -42,98 +42,103 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ============================================================
+   GESTOR DE VIDA — Tema Dark Navy + Dourado
+   Paleta: Navy #0B1437 / #0D1B4B  |  Gold #C9A84C / #E2C97E
+   ============================================================ */
+
 :root {
-  /* Gestor de Vida SaaS — Violeta & Branco */
   --radius: 0.625rem;
 
-  /* Backgrounds */
-  --background: oklch(0.98 0.002 270);
-  --foreground: oklch(0.13 0.02 270);
+  /* Backgrounds — dark navy profundo */
+  --background: oklch(0.14 0.04 255);
+  --foreground: oklch(0.93 0.015 75);
 
-  /* Cards */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.13 0.02 270);
+  /* Cards — navy ligeiramente mais claro */
+  --card: oklch(0.18 0.04 255);
+  --card-foreground: oklch(0.93 0.015 75);
 
   /* Popovers */
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.13 0.02 270);
+  --popover: oklch(0.18 0.04 255);
+  --popover-foreground: oklch(0.93 0.015 75);
 
-  /* Primary — violeta */
-  --primary: oklch(0.55 0.22 290);
-  --primary-foreground: oklch(0.99 0 0);
+  /* Primary — dourado */
+  --primary: oklch(0.72 0.12 75);
+  --primary-foreground: oklch(0.12 0.04 255);
 
   /* Secondary */
-  --secondary: oklch(0.94 0.01 270);
-  --secondary-foreground: oklch(0.25 0.02 270);
+  --secondary: oklch(0.22 0.04 255);
+  --secondary-foreground: oklch(0.85 0.02 75);
 
   /* Muted */
-  --muted: oklch(0.95 0.005 270);
-  --muted-foreground: oklch(0.50 0.02 270);
+  --muted: oklch(0.20 0.035 255);
+  --muted-foreground: oklch(0.60 0.04 75);
 
-  /* Accent — violeta suave */
-  --accent: oklch(0.92 0.04 290);
-  --accent-foreground: oklch(0.40 0.15 290);
+  /* Accent — dourado suave */
+  --accent: oklch(0.25 0.05 255);
+  --accent-foreground: oklch(0.80 0.10 75);
 
   /* Destructive */
   --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
 
   /* Borders & inputs */
-  --border: oklch(0.88 0.01 270);
-  --input: oklch(0.88 0.01 270);
-  --ring: oklch(0.55 0.22 290);
+  --border: oklch(0.28 0.05 255);
+  --input: oklch(0.22 0.04 255);
+  --ring: oklch(0.72 0.12 75);
 
-  /* Charts */
-  --chart-1: oklch(0.55 0.22 290);   /* violeta */
-  --chart-2: oklch(0.55 0.18 160);   /* verde esmeralda */
-  --chart-3: oklch(0.72 0.18 85);    /* âmbar */
+  /* Charts — dourado, teal, âmbar, vermelho suave, azul */
+  --chart-1: oklch(0.72 0.12 75);    /* dourado */
+  --chart-2: oklch(0.65 0.14 180);   /* teal */
+  --chart-3: oklch(0.78 0.14 85);    /* âmbar */
   --chart-4: oklch(0.60 0.20 20);    /* vermelho suave */
-  --chart-5: oklch(0.55 0.18 220);   /* azul */
+  --chart-5: oklch(0.60 0.16 240);   /* azul */
 
-  /* Sidebar — cinza escuro profissional */
-  --sidebar: oklch(0.17 0.015 270);
-  --sidebar-foreground: oklch(0.92 0.005 270);
-  --sidebar-primary: oklch(0.65 0.20 290);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.25 0.025 270);
-  --sidebar-accent-foreground: oklch(0.92 0.005 270);
-  --sidebar-border: oklch(0.26 0.02 270);
-  --sidebar-ring: oklch(0.55 0.22 290);
+  /* Sidebar — navy mais escuro */
+  --sidebar: oklch(0.11 0.04 255);
+  --sidebar-foreground: oklch(0.88 0.015 75);
+  --sidebar-primary: oklch(0.72 0.12 75);
+  --sidebar-primary-foreground: oklch(0.10 0.04 255);
+  --sidebar-accent: oklch(0.20 0.04 255);
+  --sidebar-accent-foreground: oklch(0.88 0.015 75);
+  --sidebar-border: oklch(0.22 0.04 255);
+  --sidebar-ring: oklch(0.72 0.12 75);
 }
 
+/* Dark mode = mesmas cores (sistema já é dark por padrão) */
 .dark {
-  --background: oklch(0.13 0.015 270);
-  --foreground: oklch(0.95 0.005 270);
-  --card: oklch(0.17 0.015 270);
-  --card-foreground: oklch(0.95 0.005 270);
-  --popover: oklch(0.17 0.015 270);
-  --popover-foreground: oklch(0.95 0.005 270);
-  --primary: oklch(0.65 0.22 290);
-  --primary-foreground: oklch(0.10 0.01 270);
-  --secondary: oklch(0.24 0.02 270);
-  --secondary-foreground: oklch(0.90 0.01 270);
-  --muted: oklch(0.24 0.02 270);
-  --muted-foreground: oklch(0.62 0.02 270);
-  --accent: oklch(0.28 0.05 290);
-  --accent-foreground: oklch(0.90 0.01 270);
-  --destructive: oklch(0.60 0.22 25);
+  --background: oklch(0.14 0.04 255);
+  --foreground: oklch(0.93 0.015 75);
+  --card: oklch(0.18 0.04 255);
+  --card-foreground: oklch(0.93 0.015 75);
+  --popover: oklch(0.18 0.04 255);
+  --popover-foreground: oklch(0.93 0.015 75);
+  --primary: oklch(0.72 0.12 75);
+  --primary-foreground: oklch(0.12 0.04 255);
+  --secondary: oklch(0.22 0.04 255);
+  --secondary-foreground: oklch(0.85 0.02 75);
+  --muted: oklch(0.20 0.035 255);
+  --muted-foreground: oklch(0.60 0.04 75);
+  --accent: oklch(0.25 0.05 255);
+  --accent-foreground: oklch(0.80 0.10 75);
+  --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.28 0.02 270);
-  --input: oklch(0.28 0.02 270);
-  --ring: oklch(0.65 0.22 290);
-  --chart-1: oklch(0.65 0.22 290);
-  --chart-2: oklch(0.65 0.18 160);
-  --chart-3: oklch(0.78 0.16 85);
-  --chart-4: oklch(0.70 0.18 50);
-  --chart-5: oklch(0.65 0.18 220);
-  --sidebar: oklch(0.10 0.01 270);
-  --sidebar-foreground: oklch(0.92 0.005 270);
-  --sidebar-primary: oklch(0.65 0.22 290);
-  --sidebar-primary-foreground: oklch(0.10 0.01 270);
-  --sidebar-accent: oklch(0.20 0.02 270);
-  --sidebar-accent-foreground: oklch(0.92 0.005 270);
-  --sidebar-border: oklch(0.22 0.02 270);
-  --sidebar-ring: oklch(0.65 0.22 290);
+  --border: oklch(0.28 0.05 255);
+  --input: oklch(0.22 0.04 255);
+  --ring: oklch(0.72 0.12 75);
+  --chart-1: oklch(0.72 0.12 75);
+  --chart-2: oklch(0.65 0.14 180);
+  --chart-3: oklch(0.78 0.14 85);
+  --chart-4: oklch(0.60 0.20 20);
+  --chart-5: oklch(0.60 0.16 240);
+  --sidebar: oklch(0.11 0.04 255);
+  --sidebar-foreground: oklch(0.88 0.015 75);
+  --sidebar-primary: oklch(0.72 0.12 75);
+  --sidebar-primary-foreground: oklch(0.10 0.04 255);
+  --sidebar-accent: oklch(0.20 0.04 255);
+  --sidebar-accent-foreground: oklch(0.88 0.015 75);
+  --sidebar-border: oklch(0.22 0.04 255);
+  --sidebar-ring: oklch(0.72 0.12 75);
 }
 
 @layer base {

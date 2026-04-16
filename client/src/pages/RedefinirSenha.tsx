@@ -3,10 +3,11 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Link } from "wouter";
 import { Lock, ArrowLeft, CheckCircle2, AlertTriangle } from "lucide-react";
+
+const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png";
 
 export default function RedefinirSenha() {
   const [, navigate] = useLocation();
@@ -16,7 +17,6 @@ export default function RedefinirSenha() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    // Extrair token da URL: /redefinir-senha?token=xxx
     const params = new URLSearchParams(window.location.search);
     const t = params.get("token");
     if (t) setToken(t);
@@ -59,122 +59,127 @@ export default function RedefinirSenha() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900 flex items-center justify-center p-4">
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ background: "linear-gradient(135deg,#070E26 0%,#0B1437 50%,#0D1B4B 100%)" }}
+    >
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-v3_237347c1.png"
+            src={ICON_URL}
             alt="Gestor de Vida"
             className="w-20 h-20 rounded-2xl shadow-lg mb-3"
+            style={{ boxShadow: "0 0 40px rgba(201,168,76,0.3)" }}
           />
-          <h1 className="text-2xl font-bold text-white">Gestor de Vida</h1>
-          <p className="text-purple-300 text-sm mt-1">Redefinição de senha</p>
+          <h1 className="text-2xl font-bold" style={{ color: "#C9A84C" }}>Gestor de Vida</h1>
+          <p className="text-sm mt-1" style={{ color: "#8A9BB5" }}>Redefinição de senha</p>
         </div>
 
-        <Card className="border-purple-800/40 bg-white/5 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-white text-xl">Nova senha</CardTitle>
-            <CardDescription className="text-purple-300">
-              {!token
-                ? "Link inválido ou expirado"
-                : success
-                ? "Senha redefinida com sucesso"
-                : "Escolha uma nova senha para sua conta"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {!token ? (
-              <div className="text-center space-y-4 py-4">
-                <div className="flex justify-center">
-                  <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center">
-                    <AlertTriangle className="w-8 h-8 text-amber-400" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-white font-semibold mb-1">Link inválido</p>
-                  <p className="text-purple-300 text-sm">
-                    Este link de recuperação é inválido ou expirou. Solicite um novo link.
-                  </p>
-                </div>
-                <Link href="/esqueci-senha">
-                  <Button className="bg-purple-600 hover:bg-purple-500 text-white">
-                    Solicitar novo link
-                  </Button>
-                </Link>
-              </div>
-            ) : success ? (
-              <div className="text-center space-y-4 py-4">
-                <div className="flex justify-center">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-white font-semibold mb-1">Senha redefinida!</p>
-                  <p className="text-purple-300 text-sm">
-                    Sua senha foi alterada com sucesso. Você será redirecionado para o login em instantes.
-                  </p>
-                </div>
-                <Link href="/login">
-                  <Button variant="outline" className="border-purple-700/50 text-purple-200 hover:bg-purple-900/30 hover:text-white">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Ir para o login
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-purple-200">Nova senha</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Mínimo 6 caracteres"
-                      value={form.password}
-                      onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                      required
-                      className="bg-white/10 border-purple-700/50 text-white placeholder:text-purple-400 focus:border-purple-400 pl-10"
-                    />
-                  </div>
-                </div>
+        <div
+          className="rounded-2xl p-8"
+          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}
+        >
+          <h2 className="text-xl font-bold mb-1" style={{ color: "#F0E6C8" }}>Nova senha</h2>
+          <p className="text-sm mb-6" style={{ color: "#8A9BB5" }}>
+            {!token ? "Link inválido ou expirado" : success ? "Senha redefinida com sucesso" : "Escolha uma nova senha para sua conta"}
+          </p>
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirm" className="text-purple-200">Confirmar nova senha</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
-                    <Input
-                      id="confirm"
-                      type="password"
-                      placeholder="Repita a nova senha"
-                      value={form.confirm}
-                      onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))}
-                      required
-                      className="bg-white/10 border-purple-700/50 text-white placeholder:text-purple-400 focus:border-purple-400 pl-10"
-                    />
-                  </div>
+          {!token ? (
+            <div className="text-center space-y-4 py-4">
+              <div className="flex justify-center">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "rgba(201,168,76,0.1)" }}>
+                  <AlertTriangle className="w-8 h-8" style={{ color: "#C9A84C" }} />
                 </div>
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2.5 mt-2"
-                >
-                  {loading ? "Salvando..." : "Redefinir senha"}
+              </div>
+              <div>
+                <p className="font-semibold mb-1" style={{ color: "#F0E6C8" }}>Link inválido</p>
+                <p className="text-sm" style={{ color: "#8A9BB5" }}>
+                  Este link de recuperação é inválido ou expirou. Solicite um novo link.
+                </p>
+              </div>
+              <Link href="/esqueci-senha">
+                <Button style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }} className="font-semibold">
+                  Solicitar novo link
                 </Button>
-
-                <div className="text-center">
-                  <Link href="/login" className="text-purple-300 text-sm hover:text-white underline inline-flex items-center gap-1">
-                    <ArrowLeft className="w-3 h-3" />
-                    Voltar para o login
-                  </Link>
+              </Link>
+            </div>
+          ) : success ? (
+            <div className="text-center space-y-4 py-4">
+              <div className="flex justify-center">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "rgba(201,168,76,0.15)" }}>
+                  <CheckCircle2 className="w-8 h-8" style={{ color: "#C9A84C" }} />
                 </div>
-              </form>
-            )}
-          </CardContent>
-        </Card>
+              </div>
+              <div>
+                <p className="font-semibold mb-1" style={{ color: "#F0E6C8" }}>Senha redefinida!</p>
+                <p className="text-sm" style={{ color: "#8A9BB5" }}>
+                  Sua senha foi alterada com sucesso. Você será redirecionado para o login em instantes.
+                </p>
+              </div>
+              <Link href="/login">
+                <Button
+                  variant="outline"
+                  style={{ borderColor: "rgba(201,168,76,0.4)", color: "#C9A84C", background: "transparent" }}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Ir para o login
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="password" style={{ color: "#C9A84C" }}>Nova senha</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C9A84C" }} />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Mínimo 6 caracteres"
+                    value={form.password}
+                    onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                    required
+                    style={{ background: "rgba(255,255,255,0.06)", borderColor: "rgba(201,168,76,0.3)", color: "#F0E6C8", paddingLeft: "2.5rem" }}
+                    className="placeholder:text-[#3A4A60]"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirm" style={{ color: "#C9A84C" }}>Confirmar nova senha</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C9A84C" }} />
+                  <Input
+                    id="confirm"
+                    type="password"
+                    placeholder="Repita a nova senha"
+                    value={form.confirm}
+                    onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))}
+                    required
+                    style={{ background: "rgba(255,255,255,0.06)", borderColor: "rgba(201,168,76,0.3)", color: "#F0E6C8", paddingLeft: "2.5rem" }}
+                    className="placeholder:text-[#3A4A60]"
+                  />
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full font-semibold py-2.5 mt-2"
+                style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}
+              >
+                {loading ? "Salvando..." : "Redefinir senha"}
+              </Button>
+
+              <div className="text-center">
+                <Link href="/login" className="text-sm underline inline-flex items-center gap-1" style={{ color: "#8A9BB5" }}>
+                  <ArrowLeft className="w-3 h-3" />
+                  Voltar para o login
+                </Link>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

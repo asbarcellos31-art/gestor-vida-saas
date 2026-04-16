@@ -135,7 +135,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       <div className="px-4 py-4 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-v3_237347c1.png"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png"
             alt="Gestor de Vida"
             className="w-7 h-7 rounded-lg object-cover flex-shrink-0"
           />

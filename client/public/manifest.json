@@ -1,21 +1,21 @@
 {
-  "name": "Gestão da Vida",
-  "short_name": "Gestão Vida",
+  "name": "Gestor de Vida",
+  "short_name": "Gestor de Vida",
   "description": "Organize seu tempo e suas finanças",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#4F46E5",
-  "theme_color": "#4F46E5",
+  "background_color": "#0B1437",
+  "theme_color": "#0B1437",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-v3-Qb8TxPaT9ugZhdHV7VfAfM.png",
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-v3-Qb8TxPaT9ugZhdHV7VfAfM.png",
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
