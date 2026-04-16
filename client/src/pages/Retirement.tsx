@@ -555,7 +555,7 @@ export default function Retirement() {
           </Card>
         )}
 
-        {/* Banner Consultor Barcelos Investimentos */}
+        {/* Banner Consultor Barcellos Consultoria de Investimentos */}
         <a
           href="https://wa.me/5548991860742"
           target="_blank"
@@ -568,7 +568,7 @@ export default function Retirement() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs text-[#C9A84C] font-semibold uppercase tracking-wide mb-0.5">Consultoria de Investimentos</p>
-              <p className="text-base font-bold text-white leading-tight">Barcelos Investimentos</p>
+              <p className="text-base font-bold text-white leading-tight">Barcellos Consultoria de Investimentos</p>
               <p className="text-sm text-gray-400 mt-0.5">Fale com um especialista e acelere sua aposentadoria</p>
             </div>
             <div className="flex-shrink-0 flex flex-col items-end gap-1">
