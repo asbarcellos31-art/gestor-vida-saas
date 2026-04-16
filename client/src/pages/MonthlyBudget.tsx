@@ -34,7 +34,7 @@ const parseNum = (v: string | null | undefined) => parseFloat(String(v || "0")) 
 
 // ── Cartões ────────────────────────────────────────────────────────────────────
 const PAYMENT_METHODS = [
-  { value: "pix_boleto", label: "Pix / Boleto", color: "bg-gray-100 text-gray-700 border-gray-300", icon: "💳" },
+  { value: "pix_boleto", label: "Pix / Boleto", color: "bg-muted/50 text-foreground/90 border-border", icon: "💳" },
   { value: "cartao_1", label: "Cartão 1", color: "bg-blue-100 text-blue-800 border-blue-400", icon: "🔵" },
   { value: "cartao_2", label: "Cartão 2", color: "bg-zinc-800 text-zinc-100 border-zinc-600", icon: "⚫" },
   { value: "cartao_3", label: "Cartão 3", color: "bg-yellow-100 text-yellow-800 border-yellow-400", icon: "🟡" },
@@ -738,7 +738,7 @@ export default function MonthlyBudget() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {lastInstallmentsThisMonth.map(inst => (
-                  <div key={inst.id} className="flex items-center gap-1.5 bg-white dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded px-2 py-1">
+                  <div key={inst.id} className="flex items-center gap-1.5 bg-card dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded px-2 py-1">
                     <span className="text-xs font-medium text-green-800 dark:text-green-300">{inst.description}</span>
                     <span className="text-xs text-green-600 dark:text-green-400">{fmt(parseNum(inst.installmentAmount))}</span>
                     <span className="text-[10px] text-green-500">{inst.totalInstallments}/{inst.totalInstallments}</span>
@@ -1831,21 +1831,21 @@ export default function MonthlyBudget() {
               badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400",
               text: "text-blue-700 dark:text-blue-400",
               border: "border-blue-200 dark:border-blue-800",
-              typeBadge: { conta: "bg-red-100 text-red-700", despesa: "bg-orange-100 text-orange-700", parcelado: "bg-amber-100 text-amber-700", lancamento: "bg-gray-100 text-gray-600" },
+              typeBadge: { conta: "bg-red-100 text-red-700", despesa: "bg-orange-100 text-orange-700", parcelado: "bg-amber-100 text-amber-700", lancamento: "bg-muted/50 text-muted-foreground" },
             },
             purple: {
               card: "bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-950/50",
               badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400",
               text: "text-purple-700 dark:text-purple-400",
               border: "border-purple-200 dark:border-purple-800",
-              typeBadge: { conta: "bg-red-100 text-red-700", despesa: "bg-orange-100 text-orange-700", parcelado: "bg-amber-100 text-amber-700", lancamento: "bg-gray-100 text-gray-600" },
+              typeBadge: { conta: "bg-red-100 text-red-700", despesa: "bg-orange-100 text-orange-700", parcelado: "bg-amber-100 text-amber-700", lancamento: "bg-muted/50 text-muted-foreground" },
             },
             emerald: {
               card: "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-950/50",
               badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400",
               text: "text-emerald-700 dark:text-emerald-400",
               border: "border-emerald-200 dark:border-emerald-800",
-              typeBadge: { conta: "bg-red-100 text-red-700", despesa: "bg-orange-100 text-orange-700", parcelado: "bg-amber-100 text-amber-700", lancamento: "bg-gray-100 text-gray-600" },
+              typeBadge: { conta: "bg-red-100 text-red-700", despesa: "bg-orange-100 text-orange-700", parcelado: "bg-amber-100 text-amber-700", lancamento: "bg-muted/50 text-muted-foreground" },
             },
           };
 

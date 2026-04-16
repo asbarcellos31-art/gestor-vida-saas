@@ -261,32 +261,32 @@ function SectionCard({ section }: { section: Section }) {
         onClick={() => setOpen(!open)}
         className={`w-full flex items-center gap-3 p-4 ${section.bgColor} hover:opacity-90 transition-opacity text-left`}
       >
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-white/70`}>
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-card/70`}>
           <Icon className={`w-5 h-5 ${section.color}`} />
         </div>
         <div className="flex-1">
           <p className={`font-semibold text-sm ${section.color}`}>{section.title}</p>
-          <p className="text-xs text-gray-500">{section.subtitle}</p>
+          <p className="text-xs text-muted-foreground">{section.subtitle}</p>
         </div>
-        <span className="text-gray-400 text-lg">{open ? "▲" : "▼"}</span>
+        <span className="text-muted-foreground/70 text-lg">{open ? "▲" : "▼"}</span>
       </button>
       {open && (
         <div className="divide-y divide-gray-100">
           {section.steps.map((step, i) => {
             const StepIcon = step.icon;
             return (
-              <div key={i} className="p-4 bg-white">
+              <div key={i} className="p-4 bg-card">
                 <div className="flex items-start gap-3">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${section.bgColor}`}>
                     <StepIcon className={`w-4 h-4 ${section.color}`} />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-sm text-gray-800 mb-1">{step.title}</p>
-                    <p className="text-sm text-gray-600 mb-2">{step.description}</p>
+                    <p className="font-semibold text-sm text-foreground mb-1">{step.title}</p>
+                    <p className="text-sm text-muted-foreground mb-2">{step.description}</p>
                     {step.example && (
-                      <div className="bg-gray-50 rounded-lg p-3 mb-2">
-                        <p className="text-xs font-semibold text-gray-500 mb-1">Exemplo</p>
-                        <p className="text-xs text-gray-600">{step.example}</p>
+                      <div className="bg-muted/30 rounded-lg p-3 mb-2">
+                        <p className="text-xs font-semibold text-muted-foreground mb-1">Exemplo</p>
+                        <p className="text-xs text-muted-foreground">{step.example}</p>
                       </div>
                     )}
                     {step.tip && (
@@ -329,11 +329,11 @@ function InstallGuide({
         <span className="text-2xl">{emoji}</span>
         <div>
           <p className="font-bold text-sm" style={{ color }}>{title}</p>
-          <p className="text-xs text-gray-500">Passo a passo para instalar o app</p>
+          <p className="text-xs text-muted-foreground">Passo a passo para instalar o app</p>
         </div>
       </div>
       {/* Steps */}
-      <div className="bg-white divide-y divide-gray-100">
+      <div className="bg-card divide-y divide-gray-100">
         {steps.map((s) => (
           <div key={s.step} className="flex items-start gap-3 p-4">
             <div
@@ -343,16 +343,16 @@ function InstallGuide({
               {s.step}
             </div>
             <div className="flex-1">
-              <p className="font-semibold text-sm text-gray-800 flex items-center gap-1.5">
+              <p className="font-semibold text-sm text-foreground flex items-center gap-1.5">
                 <span>{s.icon}</span> {s.title}
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">{s.desc}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{s.desc}</p>
             </div>
           </div>
         ))}
       </div>
       {/* Image preview */}
-      <div className="p-4 bg-gray-50 flex justify-center">
+      <div className="p-4 bg-muted/30 flex justify-center">
         <img
           src={imageUrl}
           alt={`Guia ${title}`}
@@ -377,13 +377,13 @@ export default function Ferramentas() {
             <Wrench className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Ferramentas</h1>
-            <p className="text-sm text-gray-500">Recursos para usar o sistema ao máximo</p>
+            <h1 className="text-xl font-bold text-foreground">Ferramentas</h1>
+            <p className="text-sm text-muted-foreground">Recursos para usar o sistema ao máximo</p>
           </div>
         </div>
 
         {/* Sub-abas */}
-        <div className="flex gap-2 mb-6 border-b border-gray-200">
+        <div className="flex gap-2 mb-6 border-b border-border">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -393,7 +393,7 @@ export default function Ferramentas() {
                 className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? "border-indigo-600 text-indigo-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    : "border-transparent text-muted-foreground hover:text-foreground/90"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -413,7 +413,7 @@ export default function Ferramentas() {
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                   learnSection === "triade"
                     ? "bg-indigo-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
                 }`}
               >
                 Gestão do Tempo
@@ -423,7 +423,7 @@ export default function Ferramentas() {
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                   learnSection === "financeiro"
                     ? "bg-indigo-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
                 }`}
               >
                 Módulo Financeiro
@@ -433,7 +433,7 @@ export default function Ferramentas() {
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
                   learnSection === "videos"
                     ? "bg-violet-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
                 }`}
               >
                 <Play className="w-3.5 h-3.5" /> Tutoriais
@@ -446,7 +446,7 @@ export default function Ferramentas() {
                   <Badge variant="outline" className="text-indigo-600 border-indigo-200 bg-indigo-50">
                     Gestão do Tempo
                   </Badge>
-                  <span className="text-xs text-gray-400">Como usar a Gestão do Tempo</span>
+                  <span className="text-xs text-muted-foreground/70">Como usar a Gestão do Tempo</span>
                 </div>
                 {TRIADE_SECTIONS.map((s) => (
                   <SectionCard key={s.id} section={s} />
@@ -460,7 +460,7 @@ export default function Ferramentas() {
                   <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50">
                     Finanças
                   </Badge>
-                  <span className="text-xs text-gray-400">Como usar os módulos financeiros</span>
+                  <span className="text-xs text-muted-foreground/70">Como usar os módulos financeiros</span>
                 </div>
                 {FINANCEIRO_SECTIONS.map((s) => (
                   <SectionCard key={s.id} section={s} />
@@ -474,7 +474,7 @@ export default function Ferramentas() {
                   <Badge variant="outline" className="text-violet-600 border-violet-200 bg-violet-50">
                     <BookOpen className="w-3 h-3 mr-1" /> Tutorial Completo
                   </Badge>
-                  <span className="text-xs text-gray-400">Passo a passo detalhado de todos os módulos</span>
+                  <span className="text-xs text-muted-foreground/70">Passo a passo detalhado de todos os módulos</span>
                 </div>
 
                 <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-xl border border-violet-200 p-5">
@@ -483,14 +483,14 @@ export default function Ferramentas() {
                       <BookOpen className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-gray-900">Tutorial Completo do Sistema</h3>
-                      <p className="text-sm text-gray-600 mt-1">Aprenda a usar todos os módulos do sistema com instruções passo a passo detalhadas: como criar tarefas, lançar receitas, registrar despesas, cadastrar parcelados, configurar contas fixas e simular sua aposentadoria.</p>
+                      <h3 className="font-bold text-foreground">Tutorial Completo do Sistema</h3>
+                      <p className="text-sm text-muted-foreground mt-1">Aprenda a usar todos os módulos do sistema com instruções passo a passo detalhadas: como criar tarefas, lançar receitas, registrar despesas, cadastrar parcelados, configurar contas fixas e simular sua aposentadoria.</p>
                       <div className="flex flex-wrap gap-2 mt-3">
-                        <span className="text-xs bg-white border border-violet-200 text-violet-700 px-2 py-0.5 rounded-full">Gestão do Tempo</span>
-                        <span className="text-xs bg-white border border-green-200 text-green-700 px-2 py-0.5 rounded-full">Orçamento</span>
-                        <span className="text-xs bg-white border border-orange-200 text-orange-700 px-2 py-0.5 rounded-full">Parcelados</span>
-                        <span className="text-xs bg-white border border-teal-200 text-teal-700 px-2 py-0.5 rounded-full">Aposentadoria</span>
-                        <span className="text-xs bg-white border border-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full">Dashboard Anual</span>
+                        <span className="text-xs bg-card border border-violet-200 text-violet-700 px-2 py-0.5 rounded-full">Gestão do Tempo</span>
+                        <span className="text-xs bg-card border border-green-200 text-green-700 px-2 py-0.5 rounded-full">Orçamento</span>
+                        <span className="text-xs bg-card border border-orange-200 text-orange-700 px-2 py-0.5 rounded-full">Parcelados</span>
+                        <span className="text-xs bg-card border border-teal-200 text-teal-700 px-2 py-0.5 rounded-full">Aposentadoria</span>
+                        <span className="text-xs bg-card border border-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full">Dashboard Anual</span>
                       </div>
                       <a
                         href="/tutorial-completo"

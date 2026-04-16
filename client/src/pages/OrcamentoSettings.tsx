@@ -33,7 +33,7 @@ const RULE_COLORS: Record<string, string> = {
 };
 
 const COLOR_PRESETS = [
-  { label: "Cinza (padrão)", value: "bg-gray-100 text-gray-700 border-gray-300", preview: "bg-gray-100 text-gray-700" },
+  { label: "Cinza (padrão)", value: "bg-muted/50 text-foreground/90 border-border", preview: "bg-muted/50 text-foreground/90" },
   { label: "Azul (Itaú)", value: "bg-blue-100 text-blue-800 border-blue-400", preview: "bg-blue-100 text-blue-800" },
   { label: "Preto (C6)", value: "bg-zinc-800 text-zinc-100 border-zinc-600", preview: "bg-zinc-800 text-zinc-100" },
   { label: "Amarelo (XP)", value: "bg-yellow-100 text-yellow-800 border-yellow-400", preview: "bg-yellow-100 text-yellow-800" },

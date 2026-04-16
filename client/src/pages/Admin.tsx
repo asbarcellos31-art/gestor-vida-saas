@@ -230,7 +230,7 @@ export default function Admin() {
                 </thead>
                 <tbody>
                   {filteredUsers.map((user) => {
-                    const statusInfo = STATUS_LABELS[user.status ?? ""] ?? { label: user.status ?? "—", color: "bg-gray-100 text-gray-600" };
+                    const statusInfo = STATUS_LABELS[user.status ?? ""] ?? { label: user.status ?? "—", color: "bg-muted/50 text-muted-foreground" };
                     const isExpanded = selectedUser === user.userId;
                     return (
                       <>

@@ -265,7 +265,7 @@ export default function VideoPlayer({ id }: Props) {
       >
         <button
           onClick={() => navigate("/ferramentas")}
-          className="w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+          className="w-8 h-8 rounded-full bg-card/10 backdrop-blur flex items-center justify-center text-white hover:bg-card/20 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -282,7 +282,7 @@ export default function VideoPlayer({ id }: Props) {
         </div>
         <button
           onClick={() => setMuted((m) => !m)}
-          className="w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+          className="w-8 h-8 rounded-full bg-card/10 backdrop-blur flex items-center justify-center text-white hover:bg-card/20 transition-colors"
         >
           {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
         </button>
@@ -324,7 +324,7 @@ export default function VideoPlayer({ id }: Props) {
             <div className="flex gap-3">
               <button
                 onClick={() => goToSlide(0, false)}
-                className="px-5 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded-full transition-colors"
+                className="px-5 py-2 bg-card/10 hover:bg-card/20 text-white text-sm font-semibold rounded-full transition-colors"
               >
                 Rever
               </button>
@@ -349,7 +349,7 @@ export default function VideoPlayer({ id }: Props) {
 
         {/* Overall progress bar (clickable) */}
         <div
-          className="w-full h-1.5 bg-white/20 rounded-full mb-4 cursor-pointer"
+          className="w-full h-1.5 bg-card/20 rounded-full mb-4 cursor-pointer"
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const ratio = (e.clientX - rect.left) / rect.width;
@@ -384,7 +384,7 @@ export default function VideoPlayer({ id }: Props) {
           <button
             onClick={prev}
             disabled={current === 0}
-            className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white disabled:opacity-30 hover:bg-white/20 transition-colors"
+            className="w-10 h-10 rounded-full bg-card/10 flex items-center justify-center text-white disabled:opacity-30 hover:bg-card/20 transition-colors"
           >
             <SkipBack className="w-5 h-5" />
           </button>
@@ -409,7 +409,7 @@ export default function VideoPlayer({ id }: Props) {
           <button
             onClick={next}
             disabled={current === total - 1 && ended}
-            className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white disabled:opacity-30 hover:bg-white/20 transition-colors"
+            className="w-10 h-10 rounded-full bg-card/10 flex items-center justify-center text-white disabled:opacity-30 hover:bg-card/20 transition-colors"
           >
             <SkipForward className="w-5 h-5" />
           </button>

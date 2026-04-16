@@ -105,7 +105,7 @@ export default function TutorialViewer({ id }: Props) {
       <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-800">
         <button
           onClick={() => navigate("/ferramentas")}
-          className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-gray-700 transition-colors"
+          className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-muted-foreground/60 hover:bg-gray-700 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -114,7 +114,7 @@ export default function TutorialViewer({ id }: Props) {
             <span className={`${badgeColor} text-white text-xs font-semibold px-2 py-0.5 rounded-full`}>
               {badge}
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {current + 1} / {total}
             </span>
           </div>
@@ -122,7 +122,7 @@ export default function TutorialViewer({ id }: Props) {
         </div>
         <button
           onClick={() => navigate("/ferramentas")}
-          className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-gray-700 transition-colors"
+          className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-muted-foreground/70 hover:bg-gray-700 transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
@@ -166,14 +166,14 @@ export default function TutorialViewer({ id }: Props) {
 
       {/* Caption + dots */}
       <div className="px-4 pb-6 text-center">
-        <p className="text-sm text-gray-300 mb-3">{slides[current].caption}</p>
+        <p className="text-sm text-muted-foreground/60 mb-3">{slides[current].caption}</p>
         <div className="flex justify-center gap-1.5">
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
               className={`rounded-full transition-all ${
-                i === current ? "w-5 h-2 bg-indigo-500" : "w-2 h-2 bg-gray-600 hover:bg-gray-500"
+                i === current ? "w-5 h-2 bg-indigo-500" : "w-2 h-2 bg-gray-600 hover:bg-muted/300"
               }`}
             />
           ))}

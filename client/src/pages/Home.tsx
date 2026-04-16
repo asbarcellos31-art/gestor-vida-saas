@@ -159,7 +159,7 @@ export default function Home() {
                   variant="ghost"
                   onClick={() => navigate("/login")}
                   style={{ color: "#C9A84C" }}
-                  className="hover:bg-white/10"
+                  className="hover:bg-card/10"
                 >
                   Entrar
                 </Button>

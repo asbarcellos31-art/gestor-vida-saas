@@ -27,7 +27,7 @@ const SECTIONS: Section[] = [
       {
         title: "Criar sua conta",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Acesse a página inicial do sistema e clique em <strong>"Começar grátis"</strong> ou <strong>"Criar conta"</strong>.</p>
             <p>Preencha os campos obrigatórios:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -43,7 +43,7 @@ const SECTIONS: Section[] = [
       {
         title: "Fazer login",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Na página de login, informe seu <strong>e-mail</strong> e <strong>senha</strong> cadastrados e clique em <strong>"Entrar"</strong>.</p>
             <p>Caso tenha esquecido a senha, clique em <strong>"Esqueci minha senha"</strong> e siga as instruções enviadas ao seu e-mail.</p>
             <p>Após o login, você será direcionado ao <strong>Dashboard Principal</strong>.</p>
@@ -53,7 +53,7 @@ const SECTIONS: Section[] = [
       {
         title: "Entender o Dashboard Principal",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>O dashboard exibe um resumo do seu dia e do seu mês em quatro cards:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>Score de Produtividade</strong> — percentual calculado com base nas tarefas concluídas nos últimos 30 dias</li>
@@ -63,9 +63,9 @@ const SECTIONS: Section[] = [
             </ul>
             <p>Abaixo dos cards há dois painéis de acesso rápido: <strong>Gestão do Tempo</strong> e <strong>Orçamento Doméstico</strong>. Clique em <strong>"Abrir"</strong> em qualquer um deles para ir direto ao módulo.</p>
 
-            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+            <div className="mt-3 rounded-lg overflow-hidden border border-border">
               <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/01_dashboard_5214eb46.webp" alt="Dashboard Principal" className="w-full object-contain" />
-              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Dashboard Principal do sistema</p>
+              <p className="text-xs text-muted-foreground/70 text-center py-1 bg-muted/30">Dashboard Principal do sistema</p>
             </div>
           </div>
         ),
@@ -73,7 +73,7 @@ const SECTIONS: Section[] = [
       {
         title: "Navegar pelo sistema",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>A <strong>barra lateral esquerda</strong> (sidebar) é o menu principal do sistema. Ela está organizada em grupos:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>Dashboard</strong> — página inicial com resumo geral</li>
@@ -98,7 +98,7 @@ const SECTIONS: Section[] = [
       {
         title: "Entender as 3 categorias de tarefas",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Antes de criar qualquer tarefa, entenda as três categorias do método de Gestão do Tempo:</p>
             <div className="space-y-2">
               <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -114,14 +114,14 @@ const SECTIONS: Section[] = [
                 <p className="text-yellow-700 mt-1">Tarefas que aparecem no caminho mas não são prioritárias. Podem ser delegadas ou adiadas. Exemplo: reunião sem pauta definida, e-mail de rotina, aprovação burocrática.</p>
               </div>
             </div>
-            <p className="font-medium text-gray-800">A chave do método: antecipe o que é Importante e Circunstancial antes que se torne Urgente. Quem planeja com antecedência passa menos tempo apagando incêndios.</p>
+            <p className="font-medium text-foreground">A chave do método: antecipe o que é Importante e Circunstancial antes que se torne Urgente. Quem planeja com antecedência passa menos tempo apagando incêndios.</p>
           </div>
         ),
       },
       {
         title: "Criar uma nova tarefa",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Acesse <strong>Gestão do Tempo</strong> na sidebar. Você estará na aba <strong>"Meu Dia"</strong>.</p>
             <p>Clique no botão <strong>"+ Nova Tarefa"</strong> (canto superior direito). Um formulário será exibido com os seguintes campos:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -132,9 +132,9 @@ const SECTIONS: Section[] = [
               <li><strong>Descrição</strong> — campo opcional para detalhes adicionais</li>
             </ul>
             <p>Clique em <strong>"Criar Tarefa"</strong> para salvar. A tarefa aparecerá na lista do dia correspondente.</p>
-            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+            <div className="mt-3 rounded-lg overflow-hidden border border-border">
               <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/02_gestao_tempo_5f707ede.webp" alt="Gestão do Tempo" className="w-full object-contain" />
-              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Módulo de Gestão do Tempo com tarefas criadas</p>
+              <p className="text-xs text-muted-foreground/70 text-center py-1 bg-muted/30">Módulo de Gestão do Tempo com tarefas criadas</p>
             </div>
           </div>
         ),
@@ -142,7 +142,7 @@ const SECTIONS: Section[] = [
       {
         title: "Executar e controlar o tempo de uma tarefa",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Na lista de tarefas do dia, cada item exibe:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>Nome da tarefa</strong> e sua categoria (cor da bolinha)</li>
@@ -158,7 +158,7 @@ const SECTIONS: Section[] = [
       {
         title: "Usar o Planejamento Semanal",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Clique na aba <strong>"Planejamento"</strong> dentro de Gestão do Tempo. Você verá uma visão dos 7 dias da semana atual.</p>
             <p>O planejamento semanal serve para <strong>distribuir suas tarefas com antecedência</strong>. Ao criar uma tarefa com data futura, ela aparecerá automaticamente no dia correspondente.</p>
             <p>Use esta tela para:</p>
@@ -174,7 +174,7 @@ const SECTIONS: Section[] = [
       {
         title: "Acompanhar o Relatório de Produtividade",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Clique na aba <strong>"Relatório"</strong> dentro de Gestão do Tempo.</p>
             <p>O relatório exibe:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -199,7 +199,7 @@ const SECTIONS: Section[] = [
       {
         title: "Entender a Regra 50/30/20",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>O módulo de Orçamento é baseado na <strong>Regra 50/30/20</strong>, um método simples para distribuir sua renda:</p>
             <div className="space-y-2">
               <div className="p-3 bg-green-50 rounded-lg border border-green-200">
@@ -222,7 +222,7 @@ const SECTIONS: Section[] = [
       {
         title: "Lançar receitas (entradas)",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Acesse <strong>Orçamento → Mês Atual</strong> na sidebar. Você verá a tela do mês corrente dividida em seções.</p>
             <p>Na seção <strong>"Receitas"</strong>, clique em <strong>"+ Adicionar"</strong>. Preencha:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -233,9 +233,9 @@ const SECTIONS: Section[] = [
             </ul>
             <p>Clique em <strong>"Salvar"</strong>. A receita aparecerá na lista e o total de entradas do mês será atualizado automaticamente.</p>
             <p><strong>Dica:</strong> lance todas as fontes de renda do mês antes de lançar despesas, para que o sistema calcule corretamente os percentuais da Regra 50/30/20.</p>
-            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+            <div className="mt-3 rounded-lg overflow-hidden border border-border">
               <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/03_orcamento_302f95e5.webp" alt="Orçamento Mensal" className="w-full object-contain" />
-              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Tela de Orçamento Mensal com receitas e despesas lançadas</p>
+              <p className="text-xs text-muted-foreground/70 text-center py-1 bg-muted/30">Tela de Orçamento Mensal com receitas e despesas lançadas</p>
             </div>
           </div>
         ),
@@ -243,7 +243,7 @@ const SECTIONS: Section[] = [
       {
         title: "Lançar despesas variáveis",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Na tela do mês, role até a seção <strong>"Despesas"</strong> e clique em <strong>"+ Adicionar despesa"</strong>. Preencha:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>Descrição</strong> — o que foi gasto (ex: "Supermercado", "Farmácia", "Uber")</li>
@@ -260,7 +260,7 @@ const SECTIONS: Section[] = [
       {
         title: "Lançar contas fixas",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Contas fixas são despesas que se repetem todo mês com valor igual ou similar (aluguel, plano de saúde, internet, etc.).</p>
             <p>Na tela do mês, localize a seção <strong>"Contas Fixas"</strong>. As contas fixas cadastradas nas configurações aparecem aqui automaticamente. Para confirmar o pagamento de uma conta fixa:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -274,7 +274,7 @@ const SECTIONS: Section[] = [
       {
         title: "Lançar despesas parceladas",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Para compras parceladas (cartão de crédito, financiamentos, etc.), acesse <strong>Orçamento → Parcelados</strong> na sidebar ou clique em <strong>"+ Adicionar parcelado"</strong> dentro da tela do mês.</p>
             <p>Preencha o formulário de parcelado:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -288,9 +288,9 @@ const SECTIONS: Section[] = [
             </ul>
             <p>Clique em <strong>"Salvar"</strong>. O sistema distribuirá automaticamente o valor da parcela em cada mês correspondente. Você verá o parcelado aparecer no orçamento de cada mês até a quitação.</p>
             <p><strong>Dica:</strong> na tela de Parcelados você tem uma visão de todos os parcelados ativos, com o valor mensal comprometido e a data de quitação de cada um.</p>
-            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+            <div className="mt-3 rounded-lg overflow-hidden border border-border">
               <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/04_parcelados_c38a7d80.webp" alt="Contas Parceladas" className="w-full object-contain" />
-              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Tela de Contas Parceladas com parcelados ativos</p>
+              <p className="text-xs text-muted-foreground/70 text-center py-1 bg-muted/30">Tela de Contas Parceladas com parcelados ativos</p>
             </div>
           </div>
         ),
@@ -298,7 +298,7 @@ const SECTIONS: Section[] = [
       {
         title: "Visualizar o resumo 50/30/20",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Na tela do mês, role até o final para ver o <strong>Resumo 50/30/20</strong>. Ele mostra:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>Quanto você gastou</strong> em cada bucket (Essenciais, Estilo de Vida, Futuro)</li>
@@ -322,7 +322,7 @@ const SECTIONS: Section[] = [
       {
         title: "Acessar a tela de Parcelados",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Acesse <strong>Orçamento → Parcelados</strong> na sidebar. Esta tela exibe todos os parcelamentos ativos em uma única visão.</p>
             <p>Para cada parcelado você verá:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -339,7 +339,7 @@ const SECTIONS: Section[] = [
       {
         title: "Editar ou encerrar um parcelado",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Para <strong>editar</strong> um parcelado (ex: o valor da parcela mudou), clique no ícone de lápis ao lado do item. Você poderá alterar a descrição, valor da parcela e categoria.</p>
             <p>Para <strong>encerrar antecipadamente</strong> um parcelado (quitação à vista), clique no ícone de lixeira. O sistema removerá as parcelas futuras do orçamento dos meses seguintes.</p>
             <p><strong>Atenção:</strong> ao excluir um parcelado, as parcelas já registradas em meses anteriores são mantidas no histórico. Apenas as parcelas futuras são removidas.</p>
@@ -358,7 +358,7 @@ const SECTIONS: Section[] = [
       {
         title: "Acessar e configurar o simulador",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Acesse <strong>Orçamento → Aposentadoria</strong> na sidebar.</p>
             <p>Na primeira vez, preencha os dados de configuração:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -369,9 +369,9 @@ const SECTIONS: Section[] = [
               <li><strong>Renda desejada na aposentadoria</strong> — quanto você quer receber por mês quando se aposentar</li>
             </ul>
             <p>Clique em <strong>"Calcular"</strong> para gerar as projeções.</p>
-            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+            <div className="mt-3 rounded-lg overflow-hidden border border-border">
               <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/05_aposentadoria_b016b442.webp" alt="Simulador de Aposentadoria" className="w-full object-contain" />
-              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Simulador de Aposentadoria com os 3 cenários de projeção</p>
+              <p className="text-xs text-muted-foreground/70 text-center py-1 bg-muted/30">Simulador de Aposentadoria com os 3 cenários de projeção</p>
             </div>
           </div>
         ),
@@ -379,7 +379,7 @@ const SECTIONS: Section[] = [
       {
         title: "Interpretar os 3 cenários",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>O simulador gera três projeções com diferentes taxas de retorno:</p>
             <div className="space-y-2">
               <div className="p-3 bg-red-50 rounded-lg border border-red-200">
@@ -411,7 +411,7 @@ const SECTIONS: Section[] = [
       {
         title: "Acessar o Dashboard Anual",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Acesse <strong>Orçamento → Dashboard Anual</strong> na sidebar.</p>
             <p>Esta tela exibe um resumo financeiro de todos os meses do ano em uma única visão, com:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -421,9 +421,9 @@ const SECTIONS: Section[] = [
               <li><strong>Meses com saldo negativo</strong> — destacados em vermelho para fácil identificação</li>
             </ul>
             <p>Use o seletor de ano no topo da tela para navegar entre anos anteriores e o ano atual.</p>
-            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+            <div className="mt-3 rounded-lg overflow-hidden border border-border">
               <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/06_dashboard_anual_09f2fb4f.webp" alt="Dashboard Anual" className="w-full object-contain" />
-              <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Dashboard Anual com gráficos de receita vs. despesas</p>
+              <p className="text-xs text-muted-foreground/70 text-center py-1 bg-muted/30">Dashboard Anual com gráficos de receita vs. despesas</p>
             </div>
           </div>
         ),
@@ -431,7 +431,7 @@ const SECTIONS: Section[] = [
       {
         title: "Navegar entre meses pelo Dashboard",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>No Dashboard Anual, clique em qualquer <strong>card de mês</strong> para ir diretamente ao orçamento detalhado daquele mês.</p>
             <p>Isso facilita a navegação entre meses sem precisar usar o menu lateral. Você pode comparar dois meses clicando em um, voltando ao dashboard e clicando em outro.</p>
             <p>Os meses futuros (que ainda não chegaram) aparecem com dados em branco — você pode lançar despesas futuras neles para planejamento antecipado.</p>
@@ -450,7 +450,7 @@ const SECTIONS: Section[] = [
       {
         title: "Escolher um plano",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Acesse <strong>Planos</strong> na sidebar. O sistema oferece três opções de pagamento único — sem mensalidade, sem recorrência:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>E-book</strong> — R$ 19,90 (pagamento único) — Guia PDF Método 3 Pilares da Vida</li>
@@ -464,7 +464,7 @@ const SECTIONS: Section[] = [
       {
         title: "Realizar o pagamento",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Na página de pagamento do Stripe, preencha:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>Número do cartão</strong> — cartão de crédito ou débito</li>
@@ -480,7 +480,7 @@ const SECTIONS: Section[] = [
       {
         title: "Gerenciar sua assinatura",
         content: (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-foreground/90">
             <p>Acesse <strong>Meu Plano</strong> na sidebar para ver os detalhes da sua assinatura atual: plano contratado, data de renovação e valor.</p>
             <p>Clique em <strong>"Gerenciar assinatura"</strong> para acessar o portal do Stripe, onde você pode:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -506,27 +506,27 @@ function StepItem({ step, index, isOpen, onToggle, isCompleted, onComplete }: {
   onComplete: () => void;
 }) {
   return (
-    <div className={`border rounded-lg overflow-hidden transition-all ${isCompleted ? "border-green-200 bg-green-50/30" : "border-gray-200 bg-white"}`}>
+    <div className={`border rounded-lg overflow-hidden transition-all ${isCompleted ? "border-green-200 bg-green-50/30" : "border-border bg-card"}`}>
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-3 p-4 text-left hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center gap-3 p-4 text-left hover:bg-muted/30 transition-colors"
       >
         <button
           onClick={(e) => { e.stopPropagation(); onComplete(); }}
-          className="flex-shrink-0 text-gray-400 hover:text-green-500 transition-colors"
+          className="flex-shrink-0 text-muted-foreground/70 hover:text-green-500 transition-colors"
         >
           {isCompleted ? <CheckCircle2 size={20} className="text-green-500" /> : <Circle size={20} />}
         </button>
-        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">
+        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-muted/50 text-muted-foreground text-xs font-bold flex items-center justify-center">
           {index + 1}
         </span>
-        <span className={`flex-1 font-medium text-sm ${isCompleted ? "text-green-700 line-through" : "text-gray-800"}`}>
+        <span className={`flex-1 font-medium text-sm ${isCompleted ? "text-green-700 line-through" : "text-foreground"}`}>
           {step.title}
         </span>
-        {isOpen ? <ChevronDown size={16} className="text-gray-400 flex-shrink-0" /> : <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />}
+        {isOpen ? <ChevronDown size={16} className="text-muted-foreground/70 flex-shrink-0" /> : <ChevronRight size={16} className="text-muted-foreground/70 flex-shrink-0" />}
       </button>
       {isOpen && (
-        <div className="px-4 pb-4 pt-0 ml-12 border-t border-gray-100">
+        <div className="px-4 pb-4 pt-0 ml-12 border-t border-border/50">
           <div className="pt-3">
             {step.content}
           </div>
@@ -568,29 +568,29 @@ function SectionCard({ section, isOpen, onToggle, completedSteps, onStepComplete
   const iconColor = colorMap[section.color] || colorMap.violet;
 
   return (
-    <div className={`rounded-xl border-2 overflow-hidden transition-all ${allDone ? "border-green-300" : "border-gray-200"}`}>
+    <div className={`rounded-xl border-2 overflow-hidden transition-all ${allDone ? "border-green-300" : "border-border"}`}>
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-4 p-5 text-left bg-white hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center gap-4 p-5 text-left bg-card hover:bg-muted/30 transition-colors"
       >
         <div className={`w-10 h-10 rounded-lg border flex items-center justify-center flex-shrink-0 ${iconColor}`}>
           {section.icon}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-gray-900">{section.title}</h3>
+            <h3 className="font-semibold text-foreground">{section.title}</h3>
             {allDone && <CheckCircle2 size={16} className="text-green-500" />}
           </div>
-          <p className="text-xs text-gray-500 mt-0.5 truncate">{section.description}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 truncate">{section.description}</p>
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
-          <span className="text-xs text-gray-500 font-medium">{completedCount}/{section.steps.length}</span>
-          {isOpen ? <ChevronDown size={18} className="text-gray-400" /> : <ChevronRight size={18} className="text-gray-400" />}
+          <span className="text-xs text-muted-foreground font-medium">{completedCount}/{section.steps.length}</span>
+          {isOpen ? <ChevronDown size={18} className="text-muted-foreground/70" /> : <ChevronRight size={18} className="text-muted-foreground/70" />}
         </div>
       </button>
 
       {isOpen && (
-        <div className="border-t border-gray-100 bg-gray-50/50 p-4 space-y-2">
+        <div className="border-t border-border/50 bg-muted/30/50 p-4 space-y-2">
           {section.steps.map((step, i) => (
             <StepItem
               key={i}
@@ -626,29 +626,29 @@ export default function TutorialCompleto() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/30">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-card border-b border-border sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
             onClick={() => navigate("/ferramentas")}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-muted-foreground hover:text-foreground/90 transition-colors"
           >
             ← Voltar
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <BookOpen size={18} className="text-violet-600" />
-              <h1 className="font-bold text-gray-900">Tutorial Completo do Sistema</h1>
+              <h1 className="font-bold text-foreground">Tutorial Completo do Sistema</h1>
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-violet-500 rounded-full transition-all duration-500"
                   style={{ width: `${progressPct}%` }}
                 />
               </div>
-              <span className="text-xs text-gray-500 font-medium whitespace-nowrap">{completedCount}/{totalSteps} passos</span>
+              <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">{completedCount}/{totalSteps} passos</span>
             </div>
           </div>
         </div>
@@ -673,7 +673,7 @@ export default function TutorialCompleto() {
           />
         ))}
 
-        <div className="text-center py-6 text-sm text-gray-500">
+        <div className="text-center py-6 text-sm text-muted-foreground">
           {completedCount === totalSteps ? (
             <div className="space-y-2">
               <p className="text-green-600 font-semibold text-base">🎉 Parabéns! Você concluiu o tutorial completo.</p>

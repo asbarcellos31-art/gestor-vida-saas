@@ -385,20 +385,20 @@ const ORCAMENTO_SECTIONS: Section[] = [
 
 function StepCard({ step, index }: { step: Step; index: number }) {
   return (
-    <div className="flex gap-4 p-4 rounded-xl bg-white border border-gray-100 shadow-sm">
+    <div className="flex gap-4 p-4 rounded-xl bg-card border border-border/50 shadow-sm">
       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center font-bold text-sm">
         {index + 1}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <step.icon className="w-4 h-4 text-gray-500 flex-shrink-0" />
-          <h4 className="font-semibold text-gray-900 text-sm">{step.title}</h4>
+          <step.icon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <h4 className="font-semibold text-foreground text-sm">{step.title}</h4>
         </div>
-        <p className="text-sm text-gray-600 leading-relaxed mb-2">{step.description}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-2">{step.description}</p>
         {step.example && (
-          <div className="bg-gray-50 rounded-lg p-3 mb-2 border-l-2 border-violet-300">
-            <p className="text-xs text-gray-500 font-medium mb-0.5">Exemplo prático</p>
-            <p className="text-xs text-gray-700">{step.example}</p>
+          <div className="bg-muted/30 rounded-lg p-3 mb-2 border-l-2 border-violet-300">
+            <p className="text-xs text-muted-foreground font-medium mb-0.5">Exemplo prático</p>
+            <p className="text-xs text-foreground/90">{step.example}</p>
           </div>
         )}
         {step.tip && (
@@ -421,12 +421,12 @@ function SectionAccordion({ section }: { section: Section }) {
         className={`w-full flex items-center justify-between p-4 ${section.bgColor} hover:opacity-90 transition-opacity`}
       >
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center`}>
+          <div className={`w-10 h-10 rounded-xl bg-card/70 flex items-center justify-center`}>
             <section.icon className={`w-5 h-5 ${section.color}`} />
           </div>
           <div className="text-left">
             <p className={`font-bold text-sm ${section.color}`}>{section.title}</p>
-            <p className="text-xs text-gray-600">{section.subtitle}</p>
+            <p className="text-xs text-muted-foreground">{section.subtitle}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -434,14 +434,14 @@ function SectionAccordion({ section }: { section: Section }) {
             {section.steps.length} {section.steps.length === 1 ? "lição" : "lições"}
           </Badge>
           {open ? (
-            <ChevronDown className="w-4 h-4 text-gray-500" />
+            <ChevronDown className="w-4 h-4 text-muted-foreground" />
           ) : (
-            <ChevronRight className="w-4 h-4 text-gray-500" />
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
           )}
         </div>
       </button>
       {open && (
-        <div className="p-4 bg-white space-y-3">
+        <div className="p-4 bg-card space-y-3">
           {section.steps.map((step, i) => (
             <StepCard key={i} step={step} index={i} />
           ))}
@@ -476,19 +476,19 @@ function TrailCard({
       {/* Header */}
       <div className={`${bgColor} p-5`}>
         <div className="flex items-start justify-between mb-3">
-          <div className={`w-12 h-12 rounded-xl bg-white/70 flex items-center justify-center`}>
+          <div className={`w-12 h-12 rounded-xl bg-card/70 flex items-center justify-center`}>
             <Icon className={`w-6 h-6 ${color}`} />
           </div>
-          <Badge className="bg-white/80 text-gray-700 border-0 text-xs">{badge}</Badge>
+          <Badge className="bg-card/80 text-foreground/90 border-0 text-xs">{badge}</Badge>
         </div>
-        <h3 className="font-bold text-gray-900 text-lg mb-1">{title}</h3>
-        <p className="text-sm text-gray-600">{description}</p>
+        <h3 className="font-bold text-foreground text-lg mb-1">{title}</h3>
+        <p className="text-sm text-muted-foreground">{description}</p>
         <div className="flex items-center gap-3 mt-3">
-          <div className="flex items-center gap-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <BookOpen className="w-3.5 h-3.5" />
             {sections.length} módulos
           </div>
-          <div className="flex items-center gap-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <CheckCircle2 className="w-3.5 h-3.5" />
             {totalLessons} lições
           </div>
@@ -568,8 +568,8 @@ export default function Aprender() {
             <div key={tip.title} className={`${tip.bg} rounded-xl p-4 flex items-start gap-3`}>
               <tip.icon className={`w-5 h-5 ${tip.color} flex-shrink-0 mt-0.5`} />
               <div>
-                <p className="font-semibold text-sm text-gray-900">{tip.title}</p>
-                <p className="text-xs text-gray-600">{tip.desc}</p>
+                <p className="font-semibold text-sm text-foreground">{tip.title}</p>
+                <p className="text-xs text-muted-foreground">{tip.desc}</p>
               </div>
             </div>
           ))}
@@ -626,7 +626,7 @@ export default function Aprender() {
                   className="w-full h-48 object-cover"
                 />
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="bg-white/90 rounded-full p-4">
+                  <div className="bg-card/90 rounded-full p-4">
                     <Play className="w-8 h-8 text-violet-600 fill-violet-600" />
                   </div>
                 </div>
@@ -637,12 +637,12 @@ export default function Aprender() {
               <div className="p-4 bg-gradient-to-br from-violet-50 to-purple-50">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h4 className="font-bold text-gray-900">O Método: Gestão do Tempo + Regra 50/30/20</h4>
-                    <p className="text-sm text-gray-600 mt-1">Entenda os dois métodos que estão por trás de todo o sistema. Ideal para começar.</p>
+                    <h4 className="font-bold text-foreground">O Método: Gestão do Tempo + Regra 50/30/20</h4>
+                    <p className="text-sm text-muted-foreground mt-1">Entenda os dois métodos que estão por trás de todo o sistema. Ideal para começar.</p>
                   </div>
                   <ExternalLink className="w-4 h-4 text-violet-400 flex-shrink-0 mt-1" />
                 </div>
-                <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1"><Play className="w-3 h-3" /> 13 slides</span>
                   <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> ~90 segundos</span>
                 </div>
@@ -669,7 +669,7 @@ export default function Aprender() {
                     className="w-full h-36 object-cover"
                   />
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-white/90 rounded-full p-3">
+                    <div className="bg-card/90 rounded-full p-3">
                       <Play className="w-6 h-6 text-amber-600 fill-amber-600" />
                     </div>
                   </div>
@@ -680,12 +680,12 @@ export default function Aprender() {
                 <div className="p-3 bg-amber-50">
                   <div className="flex items-start justify-between gap-1">
                     <div>
-                      <h4 className="font-bold text-gray-900 text-sm">Roberto e Maria Souza</h4>
-                      <p className="text-xs text-gray-600 mt-0.5">Saindo das dívidas com R$4.000/mês</p>
+                      <h4 className="font-bold text-foreground text-sm">Roberto e Maria Souza</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">Saindo das dívidas com R$4.000/mês</p>
                     </div>
                     <ExternalLink className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
                   </div>
-                  <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
                     <Play className="w-3 h-3" /> 7 slides
                   </div>
                 </div>
@@ -704,7 +704,7 @@ export default function Aprender() {
                     className="w-full h-36 object-cover"
                   />
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-white/90 rounded-full p-3">
+                    <div className="bg-card/90 rounded-full p-3">
                       <Play className="w-6 h-6 text-sky-600 fill-sky-600" />
                     </div>
                   </div>
@@ -715,12 +715,12 @@ export default function Aprender() {
                 <div className="p-3 bg-sky-50">
                   <div className="flex items-start justify-between gap-1">
                     <div>
-                      <h4 className="font-bold text-gray-900 text-sm">Família Silva</h4>
-                      <p className="text-xs text-gray-600 mt-0.5">Organizando a vida de quem ganha bem</p>
+                      <h4 className="font-bold text-foreground text-sm">Família Silva</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">Organizando a vida de quem ganha bem</p>
                     </div>
                     <ExternalLink className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
                   </div>
-                  <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
                     <Play className="w-3 h-3" /> 7 slides
                   </div>
                 </div>
@@ -739,7 +739,7 @@ export default function Aprender() {
                     className="w-full h-36 object-cover"
                   />
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-white/90 rounded-full p-3">
+                    <div className="bg-card/90 rounded-full p-3">
                       <Play className="w-6 h-6 text-cyan-600 fill-cyan-600" />
                     </div>
                   </div>
@@ -750,12 +750,12 @@ export default function Aprender() {
                 <div className="p-3 bg-cyan-50">
                   <div className="flex items-start justify-between gap-1">
                     <div>
-                      <h4 className="font-bold text-gray-900 text-sm">Dra. Fernanda Rocha</h4>
-                      <p className="text-xs text-gray-600 mt-0.5">Médica que ganha bem mas não tem tempo</p>
+                      <h4 className="font-bold text-foreground text-sm">Dra. Fernanda Rocha</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">Médica que ganha bem mas não tem tempo</p>
                     </div>
                     <ExternalLink className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0 mt-0.5" />
                   </div>
-                  <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
                     <Play className="w-3 h-3" /> 7 slides
                   </div>
                 </div>
@@ -765,10 +765,10 @@ export default function Aprender() {
         </div>
 
         {/* Footer tip */}
-        <div className="mt-8 p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-start gap-3">
+        <div className="mt-8 p-4 rounded-xl bg-muted/30 border border-border/50 flex items-start gap-3">
           <Lightbulb className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-gray-600">
-            <strong className="text-gray-900">Dica:</strong> Não tente aprender tudo de uma vez.
+          <p className="text-sm text-muted-foreground">
+            <strong className="text-foreground">Dica:</strong> Não tente aprender tudo de uma vez.
             Comece pela Gestão do Tempo e use o sistema por 1 semana. Depois explore o Orçamento.
             A consistência é mais importante que a perfeição.
           </p>
