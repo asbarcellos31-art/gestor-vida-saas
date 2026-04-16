@@ -22,53 +22,55 @@ const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDF
 const PLANS = [
   {
     id: "time_management",
-    name: "Gestão de Tempo",
+    name: "E-book",
     price: "19,90",
-    description: "Organize seu dia com a metodologia Gestão do Tempo",
+    priceLabel: "pagamento único",
+    description: "Método 3 Pilares da Vida — guia completo em PDF",
     icon: Clock,
     color: "from-amber-600 to-yellow-700",
     features: [
-      "Meu Dia — visão diária completa",
-      "Planejamento semanal",
-      "Gestão do Tempo (Importante, Urgente, Circunstancial)",
-      "Score de produtividade (30 dias)",
-      "Relatório de desempenho",
-      "Timer por tarefa",
+      "E-book: Método 3 Pilares da Vida",
+      "Gestão de Tempo, Dinheiro e Futuro",
+      "Estratégias práticas e aplicáveis",
+      "Acesso imediato ao PDF",
     ],
-    notIncluded: ["Orçamento doméstico", "Regra 50/30/20", "Projeção de aposentadoria"],
+    notIncluded: ["Acesso ao sistema", "Dashboard interativo", "Projeção de aposentadoria"],
   },
   {
     id: "budget",
-    name: "Orçamento Doméstico",
-    price: "19,90",
-    description: "Controle financeiro familiar inteligente e completo",
+    name: "Sistema Vitalício",
+    price: "250,00",
+    priceLabel: "acesso vitalício",
+    description: "Acesso completo e permanente ao sistema Gestor de Vida",
     icon: Wallet,
     color: "from-amber-700 to-amber-900",
     features: [
-      "Orçamento mensal (receitas e despesas)",
-      "Regra 50/30/20 automática",
-      "Contas parceladas",
+      "Gestão do Tempo completa",
+      "Orçamento Doméstico completo",
+      "Dashboard com gráficos",
       "Projeção de aposentadoria (3 cenários)",
-      "Dashboard anual com gráficos",
-      "Categorização por tipo",
+      "Regra 50/30/20 automática",
+      "Score de produtividade",
+      "Pague uma vez, use para sempre",
     ],
-    notIncluded: ["Gestão de tempo", "Gestão do Tempo", "Score de produtividade"],
+    notIncluded: ["E-book não incluso"],
   },
   {
     id: "combo",
     name: "Combo Completo",
-    price: "34,90",
-    description: "Tudo em um só lugar — tempo e dinheiro sob controle",
+    price: "147,90",
+    priceLabel: "acesso vitalício",
+    description: "E-book + Sistema — tudo por um preço especial",
     icon: Star,
     color: "from-yellow-500 to-amber-600",
-    badge: "Mais Popular",
+    badge: "Melhor Oferta",
     features: [
-      "Tudo do plano Gestão de Tempo",
-      "Tudo do plano Orçamento Doméstico",
-      "Dashboard unificado",
-      "Resumo diário completo",
-      "Acesso a todos os módulos",
-      "Suporte prioritário por email",
+      "E-book: Método 3 Pilares da Vida",
+      "Acesso vitalício ao sistema completo",
+      "Gestão do Tempo + Orçamento Doméstico",
+      "Dashboard com gráficos interativos",
+      "Projeção de aposentadoria (3 cenários)",
+      "Pague uma vez, use para sempre",
     ],
     notIncluded: [],
   },
@@ -186,7 +188,7 @@ export default function Home() {
             className="mb-6 border"
             style={{ background: "rgba(201,168,76,0.15)", color: "#E2C97E", borderColor: "rgba(201,168,76,0.4)" }}
           >
-            🎁 5 dias grátis — com cartão de crédito
+            🎁 Pagamento único — sem mensalidade, sem recorrência
           </Badge>
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight" style={{ color: "#F0E6C8" }}>
             Organize seu{" "}
@@ -205,7 +207,7 @@ export default function Home() {
               className="px-8 py-6 text-lg rounded-xl font-semibold"
               style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}
             >
-              Experimentar 5 dias grátis
+              Adquirir agora
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <Button
@@ -219,7 +221,7 @@ export default function Home() {
             </Button>
           </div>
           <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>
-            5 dias grátis com acesso completo. Depois, a partir de R$ 19,90/mês. Cancele quando quiser.
+            E-book R$ 19,90 · Sistema R$ 250,00 · Combo R$ 147,90 — pague uma vez, use para sempre.
           </p>
         </div>
       </section>
@@ -265,7 +267,7 @@ export default function Home() {
               Escolha o plano ideal para você
             </h2>
             <p className="text-lg" style={{ color: "#8A9BB5" }}>
-              Sem surpresas. Preço fixo mensal, cancele quando quiser.
+              Pagamento único. Sem mensalidade. Sem recorrência. Pague uma vez e use para sempre.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -297,7 +299,7 @@ export default function Home() {
                 <p className="text-sm mb-5" style={{ color: "#8A9BB5" }}>{plan.description}</p>
                 <div className="mb-6">
                   <span className="text-4xl font-extrabold" style={{ color: "#C9A84C" }}>R$ {plan.price}</span>
-                  <span className="text-sm" style={{ color: "#8A9BB5" }}>/mês</span>
+                  <span className="text-sm" style={{ color: "#8A9BB5" }}>{(plan as any).priceLabel}</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((f) => (
@@ -322,7 +324,7 @@ export default function Home() {
                       : { background: "rgba(201,168,76,0.15)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.4)" }
                   }
                 >
-                  Assinar agora
+                  Comprar agora
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </div>
@@ -350,7 +352,7 @@ export default function Home() {
             className="px-10 py-6 text-lg rounded-xl font-semibold"
             style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}
           >
-            Começar agora — R$ 19,90/mês
+            Adquirir agora — Combo R$ 147,90
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
