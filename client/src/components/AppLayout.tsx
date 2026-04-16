@@ -1,7 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 
-import TrialBanner from "@/components/TrialBanner";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import {
@@ -362,7 +361,6 @@ export default function AppLayout({ children, title }: AppLayoutProps) {
           </button>
           <h1 className="font-semibold text-foreground text-base">{title || "Gestor de Vida"}</h1>
         </header>
-        <TrialBanner />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           {children}
         </main>
