@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, TrendingUp, Calendar, DollarSign, Target, Clock, Info } from "lucide-react";
+import { Save, TrendingUp, Calendar, DollarSign, Target, Clock, Info, MessageCircle } from "lucide-react";
 
 const fmt = (v: number | null | undefined) => {
   const n = Number(v);
@@ -554,6 +554,32 @@ export default function Retirement() {
             </CardContent>
           </Card>
         )}
+
+        {/* Banner Consultor Barcelos Investimentos */}
+        <a
+          href="https://wa.me/5548991860742"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
+          <div className="flex items-center gap-4 bg-[#0B1437] border border-[#C9A84C]/40 rounded-xl p-4 hover:border-[#C9A84C] transition-colors cursor-pointer">
+            <div className="flex-shrink-0 w-12 h-12 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg">
+              <MessageCircle className="w-6 h-6 text-white fill-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-[#C9A84C] font-semibold uppercase tracking-wide mb-0.5">Consultoria de Investimentos</p>
+              <p className="text-base font-bold text-white leading-tight">Barcelos Investimentos</p>
+              <p className="text-sm text-gray-400 mt-0.5">Fale com um especialista e acelere sua aposentadoria</p>
+            </div>
+            <div className="flex-shrink-0 flex flex-col items-end gap-1">
+              <span className="text-[#25D366] font-bold text-sm">(48) 99186-0742</span>
+              <span className="text-xs text-[#C9A84C] font-medium flex items-center gap-1">
+                <MessageCircle className="w-3 h-3" /> WhatsApp
+              </span>
+            </div>
+          </div>
+        </a>
+
       </div>
     </AppLayout>
   );
