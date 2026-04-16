@@ -40,7 +40,7 @@ export default function Cadastro() {
         return;
       }
       await utils.auth.me.invalidate();
-      toast.success("Conta criada! Seu trial de 5 dias começou agora.");
+      toast.success("Conta criada! Bem-vindo ao Gestor de Vida.");
       navigate("/dashboard");
     } catch {
       toast.error("Erro de conexão. Tente novamente.");
@@ -64,7 +64,7 @@ export default function Cadastro() {
             style={{ boxShadow: "0 0 40px rgba(201,168,76,0.3)" }}
           />
           <h1 className="text-2xl font-bold" style={{ color: "#C9A84C" }}>Gestor de Vida</h1>
-          <p className="text-sm mt-1" style={{ color: "#8A9BB5" }}>Crie sua conta e comece grátis por 5 dias</p>
+          <p className="text-sm mt-1" style={{ color: "#8A9BB5" }}>Crie sua conta para acessar o sistema</p>
         </div>
 
         <div
@@ -151,8 +151,8 @@ export default function Cadastro() {
           </div>
 
           <p className="text-xs text-center mt-4" style={{ color: "#3A4A60" }}>
-            Ao criar sua conta, você concorda com os termos de uso. Cartão de crédito necessário para o trial.
-          </p>
+              Ao criar sua conta, você concorda com os termos de uso.
+            </p>
         </div>
       </div>
     </div>

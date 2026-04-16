@@ -3,7 +3,6 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { useLocation } from "wouter";
 import {
   Clock,
   Wallet,
@@ -12,7 +11,6 @@ import {
   X,
   ArrowRight,
   Zap,
-  Gift,
   ExternalLink,
   CreditCard,
   BookOpen,
@@ -53,9 +51,9 @@ const PLANS = [
       "Projeção de aposentadoria (3 cenários)",
       "Regra 50/30/20 automática",
       "Score de produtividade",
-      "Acesso vitalício — pague uma vez",
+      "Pague uma vez, use para sempre",
     ],
-    notIncluded: ["E-book incluso"],
+    notIncluded: ["E-book não incluso"],
   },
   {
     id: "combo" as const,
@@ -81,17 +79,7 @@ const PLANS = [
 
 export default function Planos() {
   const utils = trpc.useUtils();
-  const [, navigate] = useLocation();
   const { data: subscription } = trpc.subscription.get.useQuery();
-
-  const startTrial = trpc.subscription.startTrial.useMutation({
-    onSuccess: () => {
-      utils.subscription.get.invalidate();
-      toast.success("🎉 Trial iniciado! Você tem 30 dias de acesso completo.");
-      navigate("/dashboard");
-    },
-    onError: (e: { message: string }) => toast.error(e.message),
-  });
 
   const createCheckout = trpc.stripe.createCheckoutSession.useMutation({
     onSuccess: (data) => {
@@ -116,15 +104,11 @@ export default function Planos() {
   const sub = subscription as {
     plan?: string;
     status?: string;
-    trialDaysLeft?: number | null;
     isAdmin?: boolean;
     stripeCustomerId?: string | null;
   } | null;
 
   const currentPlan = sub?.plan;
-  const isTrialing = sub?.status === "trialing";
-  const trialDaysLeft = sub?.trialDaysLeft ?? 0;
-  const hasNoSubscription = !subscription;
   const hasStripeSubscription = !!(sub as any)?.stripeCustomerId;
 
   return (
@@ -133,36 +117,14 @@ export default function Planos() {
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-foreground">Planos e Acesso</h1>
           <p className="text-muted-foreground mt-1">
-            {isTrialing
-              ? `Período de avaliação — ${trialDaysLeft} dia(s) restante(s)`
-              : currentPlan
+            {currentPlan
               ? `Seu plano atual: ${PLANS.find((p) => p.id === currentPlan)?.name ?? currentPlan}`
-              : "Escolha o plano ideal para você — pagamento único, sem mensalidade"}
+              : "Pagamento único — sem mensalidade, sem recorrência"}
           </p>
         </div>
 
-        {/* Trial ativo */}
-        {isTrialing && (
-          <div className="mb-8 p-4 rounded-xl bg-primary/10 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
-                <Clock className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-semibold text-foreground">Avaliação gratuita em andamento</p>
-                <p className="text-sm text-muted-foreground">
-                  {trialDaysLeft <= 0
-                    ? "Seu trial expirou. Escolha um plano para continuar."
-                    : `${trialDaysLeft} dia(s) restante(s) com acesso completo`}
-                </p>
-              </div>
-            </div>
-            <Badge className="bg-primary text-primary-foreground border-0 text-xs">Trial ativo</Badge>
-          </div>
-        )}
-
         {/* Plano ativo */}
-        {sub && !isTrialing && !sub.isAdmin && currentPlan && (
+        {sub && !sub.isAdmin && currentPlan && (
           <div className="mb-8 p-4 rounded-xl bg-emerald-900/20 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
@@ -191,31 +153,6 @@ export default function Planos() {
           </div>
         )}
 
-        {/* Banner trial para novos usuários */}
-        {hasNoSubscription && (
-          <div className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-primary/80 to-primary border border-primary/30 text-primary-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-                <Gift className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="font-bold text-lg">30 dias grátis — acesso completo</p>
-                <p className="text-primary-foreground/80 text-sm">
-                  Experimente todos os módulos sem compromisso.
-                </p>
-              </div>
-            </div>
-            <Button
-              onClick={() => startTrial.mutate()}
-              disabled={startTrial.isPending}
-              className="bg-white text-primary hover:bg-white/90 font-semibold flex-shrink-0"
-            >
-              <Gift className="w-4 h-4 mr-2" />
-              Experimentar grátis
-            </Button>
-          </div>
-        )}
-
         {/* Destaque combo */}
         <div className="mb-6 p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 flex items-center gap-3">
           <Star className="w-5 h-5 text-amber-400 flex-shrink-0" />
@@ -227,7 +164,7 @@ export default function Planos() {
         {/* Plans grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PLANS.map((plan) => {
-            const isCurrentPlan = !isTrialing && currentPlan === plan.id;
+            const isCurrentPlan = currentPlan === plan.id;
             return (
               <div
                 key={plan.id}
@@ -303,7 +240,7 @@ export default function Planos() {
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          Pagamento seguro via Hotmart. Acesso vitalício — pague uma vez, use para sempre.
+          Pagamento seguro. Acesso vitalício — pague uma vez, use para sempre. Sem mensalidade.
         </p>
       </div>
     </AppLayout>

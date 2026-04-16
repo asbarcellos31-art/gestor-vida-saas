@@ -36,7 +36,7 @@ const SECTIONS: Section[] = [
               <li><strong>Senha</strong> — mínimo de 8 caracteres</li>
               <li><strong>Confirmar senha</strong> — repita a senha para confirmar</li>
             </ul>
-            <p>Clique em <strong>"Criar conta grátis"</strong>. Você será redirecionado automaticamente para o dashboard com <strong>5 dias de acesso gratuito</strong> a todos os módulos. Cartão de crédito necessário.</p>
+            <p>Clique em <strong>"Criar conta"</strong>. Você será redirecionado automaticamente para o dashboard. Acesse <strong>Planos</strong> na sidebar para liberar os módulos.</p>
           </div>
         ),
       },
@@ -62,7 +62,7 @@ const SECTIONS: Section[] = [
               <li><strong>Receita do mês</strong> — total de entradas lançadas no mês</li>
             </ul>
             <p>Abaixo dos cards há dois painéis de acesso rápido: <strong>Gestão do Tempo</strong> e <strong>Orçamento Doméstico</strong>. Clique em <strong>"Abrir"</strong> em qualquer um deles para ir direto ao módulo.</p>
-            <p>O <strong>banner roxo</strong> no topo indica quantos dias restam do seu período de avaliação gratuita. Clique em <strong>"Assinar agora"</strong> para escolher um plano antes que o período expire.</p>
+
             <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
               <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/01_dashboard_5214eb46.webp" alt="Dashboard Principal" className="w-full object-contain" />
               <p className="text-xs text-gray-400 text-center py-1 bg-gray-50">Dashboard Principal do sistema</p>
@@ -444,21 +444,20 @@ const SECTIONS: Section[] = [
     id: "planos",
     icon: <Settings size={20} />,
     title: "Planos e Assinatura",
-    description: "Como escolher um plano, assinar e gerenciar sua assinatura.",
+    description: "Como escolher um plano e liberar o acesso vitalício ao sistema.",
     color: "rose",
     steps: [
       {
         title: "Escolher um plano",
         content: (
           <div className="space-y-3 text-sm text-gray-700">
-            <p>Acesse <strong>Meu Plano</strong> na sidebar ou clique em <strong>"Assinar agora"</strong> no banner do trial.</p>
-            <p>O sistema oferece três opções:</p>
+            <p>Acesse <strong>Planos</strong> na sidebar. O sistema oferece três opções de pagamento único — sem mensalidade, sem recorrência:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong>Gestão do Tempo</strong> — acesso apenas ao módulo de tarefas e produtividade</li>
-              <li><strong>Orçamento Doméstico</strong> — acesso apenas ao módulo financeiro</li>
-              <li><strong>Combo Completo</strong> — acesso a todos os módulos com desconto</li>
+              <li><strong>E-book</strong> — R$ 19,90 (pagamento único) — Guia PDF Método 3 Pilares da Vida</li>
+              <li><strong>Sistema Vitalício</strong> — R$ 250,00 (acesso vitalício) — todos os módulos do sistema</li>
+              <li><strong>Combo Completo</strong> — R$ 147,90 (acesso vitalício) — E-book + Sistema com desconto</li>
             </ul>
-            <p>Clique em <strong>"Assinar"</strong> no plano desejado. Você será redirecionado para a página de pagamento segura do Stripe.</p>
+            <p>Clique em <strong>"Comprar agora"</strong> no plano desejado. Você será redirecionado para a página de pagamento segura. Pague uma vez e use para sempre.</p>
           </div>
         ),
       },
