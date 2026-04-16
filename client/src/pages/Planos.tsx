@@ -15,58 +15,65 @@ import {
   Gift,
   ExternalLink,
   CreditCard,
+  BookOpen,
+  Infinity,
 } from "lucide-react";
 
 const PLANS = [
   {
     id: "time_management" as const,
-    name: "Gestão de Tempo",
+    name: "E-book",
     price: "19,90",
-    description: "Organize seu dia com a metodologia Gestão do Tempo",
-    icon: Clock,
-    color: "from-violet-600 to-purple-700",
+    priceLabel: "pagamento único",
+    description: "Método 3 Pilares da Vida — guia completo em PDF",
+    icon: BookOpen,
+    color: "from-blue-600 to-indigo-700",
+    badge: null,
     features: [
-      "Meu Dia — visão diária completa",
-      "Planejamento semanal",
-      "Gestão do Tempo (Importante, Urgente, Circunstancial)",
-      "Score de produtividade (30 dias)",
-      "Relatório de desempenho",
-      "Timer por tarefa",
+      "E-book: Método 3 Pilares da Vida",
+      "Gestão de Tempo, Dinheiro e Futuro",
+      "Estratégias práticas e aplicáveis",
+      "Acesso imediato ao PDF",
     ],
-    notIncluded: ["Orçamento doméstico", "Regra 50/30/20", "Projeção de aposentadoria"],
+    notIncluded: ["Acesso ao sistema", "Dashboard interativo", "Projeção de aposentadoria"],
   },
   {
     id: "budget" as const,
-    name: "Orçamento Doméstico",
-    price: "19,90",
-    description: "Controle financeiro familiar inteligente e completo",
-    icon: Wallet,
+    name: "Sistema Vitalício",
+    price: "250,00",
+    priceLabel: "acesso vitalício",
+    description: "Acesso completo e permanente ao sistema Gestor de Vida",
+    icon: Infinity,
     color: "from-emerald-600 to-teal-700",
+    badge: null,
     features: [
-      "Orçamento mensal (receitas e despesas)",
-      "Regra 50/30/20 automática",
-      "Contas parceladas",
+      "Gestão do Tempo completa",
+      "Orçamento Doméstico completo",
+      "Dashboard com gráficos",
       "Projeção de aposentadoria (3 cenários)",
-      "Dashboard anual com gráficos",
-      "Categorização por tipo",
+      "Regra 50/30/20 automática",
+      "Score de produtividade",
+      "Acesso vitalício — pague uma vez",
     ],
-    notIncluded: ["Gestão de tempo", "Gestão do Tempo", "Score de produtividade"],
+    notIncluded: ["E-book incluso"],
   },
   {
     id: "combo" as const,
     name: "Combo Completo",
-    price: "34,90",
-    description: "Tudo em um só lugar — tempo e dinheiro sob controle",
+    price: "147,90",
+    priceLabel: "acesso vitalício",
+    description: "E-book + Sistema — tudo por um preço especial",
     icon: Star,
     color: "from-amber-500 to-orange-600",
-    badge: "Mais Popular",
+    badge: "Melhor Oferta",
     features: [
-      "Tudo do plano Gestão de Tempo",
-      "Tudo do plano Orçamento Doméstico",
-      "Dashboard unificado",
-      "Resumo diário completo",
-      "Acesso a todos os módulos",
-      "Suporte por email",
+      "E-book: Método 3 Pilares da Vida",
+      "Acesso vitalício ao sistema completo",
+      "Gestão do Tempo + Orçamento Doméstico",
+      "Dashboard com gráficos interativos",
+      "Projeção de aposentadoria (3 cenários)",
+      "Score de produtividade",
+      "Pague uma vez, use para sempre",
     ],
     notIncluded: [],
   },
@@ -80,18 +87,10 @@ export default function Planos() {
   const startTrial = trpc.subscription.startTrial.useMutation({
     onSuccess: () => {
       utils.subscription.get.invalidate();
-      toast.success("🎉 Trial iniciado! Você tem 5 dias de acesso completo.");
+      toast.success("🎉 Trial iniciado! Você tem 30 dias de acesso completo.");
       navigate("/dashboard");
     },
     onError: (e: { message: string }) => toast.error(e.message),
-  });
-
-  const cancelSubscription = trpc.subscription.cancel.useMutation({
-    onSuccess: () => {
-      utils.subscription.get.invalidate();
-      toast.success("Assinatura cancelada.");
-    },
-    onError: (e) => toast.error(e.message),
   });
 
   const createCheckout = trpc.stripe.createCheckoutSession.useMutation({
@@ -107,7 +106,7 @@ export default function Planos() {
   const createPortal = trpc.stripe.createPortalSession.useMutation({
     onSuccess: (data) => {
       if (data.url) {
-        toast.info("Abrindo portal de assinatura...");
+        toast.info("Abrindo portal de pagamento...");
         window.open(data.url, "_blank");
       }
     },
@@ -132,109 +131,98 @@ export default function Planos() {
     <AppLayout>
       <div className="p-4 sm:p-6 max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-foreground">Planos e Assinatura</h1>
+          <h1 className="text-2xl font-bold text-foreground">Planos e Acesso</h1>
           <p className="text-muted-foreground mt-1">
             {isTrialing
               ? `Período de avaliação — ${trialDaysLeft} dia(s) restante(s)`
               : currentPlan
-              ? `Seu plano atual: ${PLANS.find((p) => p.id === currentPlan)?.name}`
-              : "Escolha o plano ideal para você"}
+              ? `Seu plano atual: ${PLANS.find((p) => p.id === currentPlan)?.name ?? currentPlan}`
+              : "Escolha o plano ideal para você — pagamento único, sem mensalidade"}
           </p>
         </div>
 
         {/* Trial ativo */}
         {isTrialing && (
-          <div className="mb-8 p-4 rounded-xl bg-violet-50 border border-violet-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="mb-8 p-4 rounded-xl bg-primary/10 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0">
-                <Clock className="w-5 h-5 text-violet-600" />
+              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-foreground">
-                  Avaliação gratuita em andamento
-                </p>
+                <p className="font-semibold text-foreground">Avaliação gratuita em andamento</p>
                 <p className="text-sm text-muted-foreground">
                   {trialDaysLeft <= 0
                     ? "Seu trial expirou. Escolha um plano para continuar."
-                    : `${trialDaysLeft} dia(s) restante(s) com acesso completo ao Combo`}
+                    : `${trialDaysLeft} dia(s) restante(s) com acesso completo`}
                 </p>
               </div>
             </div>
-            <Badge className="bg-violet-600 text-white border-0 text-xs">Trial ativo</Badge>
+            <Badge className="bg-primary text-primary-foreground border-0 text-xs">Trial ativo</Badge>
           </div>
         )}
 
-        {/* Plano ativo (não trial) */}
+        {/* Plano ativo */}
         {sub && !isTrialing && !sub.isAdmin && currentPlan && (
-          <div className="mb-8 p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="mb-8 p-4 rounded-xl bg-emerald-900/20 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                <Zap className="w-5 h-5 text-emerald-600" />
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <Zap className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
                 <p className="font-semibold text-foreground">
-                  Plano ativo: {PLANS.find((p) => p.id === currentPlan)?.name}
+                  Acesso ativo: {PLANS.find((p) => p.id === currentPlan)?.name ?? currentPlan}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  Status: {sub.status === "active" ? "Ativo" : sub.status}
-                </p>
+                <p className="text-sm text-muted-foreground">Acesso vitalício — sem mensalidade</p>
               </div>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              {hasStripeSubscription ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => createPortal.mutate({ origin: window.location.origin })}
-                  disabled={createPortal.isPending}
-                  className="border-violet-200 text-violet-600 hover:bg-violet-50"
-                >
-                  <CreditCard className="w-4 h-4 mr-1" />
-                  Gerenciar assinatura
-                  <ExternalLink className="w-3 h-3 ml-1" />
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (confirm("Tem certeza que deseja cancelar sua assinatura?")) {
-                      cancelSubscription.mutate();
-                    }
-                  }}
-                  className="border-rose-200 text-rose-600 hover:bg-rose-50"
-                >
-                  Cancelar assinatura
-                </Button>
-              )}
-            </div>
+            {hasStripeSubscription && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => createPortal.mutate({ origin: window.location.origin })}
+                disabled={createPortal.isPending}
+                className="border-primary/30 text-primary hover:bg-primary/10"
+              >
+                <CreditCard className="w-4 h-4 mr-1" />
+                Gerenciar pagamento
+                <ExternalLink className="w-3 h-3 ml-1" />
+              </Button>
+            )}
           </div>
         )}
 
-        {/* Banner de trial para novos usuários */}
+        {/* Banner trial para novos usuários */}
         {hasNoSubscription && (
-          <div className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-violet-600 to-purple-700 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-primary/80 to-primary border border-primary/30 text-primary-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-                <Gift className="w-5 h-5 text-white" />
+                <Gift className="w-5 h-5" />
               </div>
               <div>
-                <p className="font-bold text-lg">5 dias grátis — acesso completo</p>
-                <p className="text-violet-200 text-sm">
-                  Experimente todos os módulos. Cartão de crédito necessário.
+                <p className="font-bold text-lg">30 dias grátis — acesso completo</p>
+                <p className="text-primary-foreground/80 text-sm">
+                  Experimente todos os módulos sem compromisso.
                 </p>
               </div>
             </div>
             <Button
               onClick={() => startTrial.mutate()}
               disabled={startTrial.isPending}
-              className="bg-white text-violet-700 hover:bg-violet-50 font-semibold flex-shrink-0"
+              className="bg-white text-primary hover:bg-white/90 font-semibold flex-shrink-0"
             >
               <Gift className="w-4 h-4 mr-2" />
               Experimentar grátis
             </Button>
           </div>
         )}
+
+        {/* Destaque combo */}
+        <div className="mb-6 p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 flex items-center gap-3">
+          <Star className="w-5 h-5 text-amber-400 flex-shrink-0" />
+          <p className="text-sm text-foreground">
+            <span className="font-bold text-amber-400">Melhor custo-benefício:</span> E-book (R$ 19,90) + Sistema vitalício (R$ 250,00) separados custam R$ 269,90 — no Combo você paga apenas <span className="font-bold text-amber-400">R$ 147,90</span> e economiza R$ 122,00.
+          </p>
+        </div>
 
         {/* Plans grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -245,15 +233,15 @@ export default function Planos() {
                 key={plan.id}
                 className={`relative bg-card rounded-2xl border-2 p-6 flex flex-col transition-all ${
                   isCurrentPlan
-                    ? "border-violet-400 shadow-lg shadow-violet-100"
+                    ? "border-primary shadow-lg shadow-primary/10"
                     : plan.badge
-                    ? "border-amber-300 shadow-md shadow-amber-50"
+                    ? "border-amber-400/60 shadow-md shadow-amber-500/10"
                     : "border-border hover:border-muted-foreground/30 hover:shadow-md"
                 }`}
               >
                 {isCurrentPlan && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-violet-600 text-white border-0 px-3">Plano Atual</Badge>
+                    <Badge className="bg-primary text-primary-foreground border-0 px-3">Plano Atual</Badge>
                   </div>
                 )}
                 {plan.badge && !isCurrentPlan && (
@@ -271,7 +259,7 @@ export default function Planos() {
 
                 <div className="mb-5">
                   <span className="text-3xl font-extrabold text-foreground">R$ {plan.price}</span>
-                  <span className="text-muted-foreground text-sm">/mês</span>
+                  <span className="text-muted-foreground text-sm ml-1">{plan.priceLabel}</span>
                 </div>
 
                 <ul className="space-y-2 mb-6 flex-1">
@@ -302,10 +290,10 @@ export default function Planos() {
                     className={`w-full rounded-xl font-semibold ${
                       plan.badge
                         ? "bg-amber-500 hover:bg-amber-600 text-white"
-                        : "bg-violet-600 hover:bg-violet-700 text-white"
+                        : "bg-primary hover:bg-primary/90 text-primary-foreground"
                     }`}
                   >
-                    {isTrialing || currentPlan ? "Assinar este plano" : "Assinar agora"}
+                    Comprar agora
                     <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 )}
@@ -315,7 +303,7 @@ export default function Planos() {
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          Pagamento seguro via Stripe. Cancele quando quiser. Sem fidelidade.
+          Pagamento seguro via Hotmart. Acesso vitalício — pague uma vez, use para sempre.
         </p>
       </div>
     </AppLayout>
