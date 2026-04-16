@@ -21,7 +21,7 @@ import {
 const PLAN_LABELS: Record<string, string> = {
   time_management: "Gestão de Tempo",
   budget: "Orçamento Doméstico",
-  combo: "Combo Completo",
+  combo: "Combo Promocional",
 };
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {

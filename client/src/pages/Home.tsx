@@ -57,7 +57,7 @@ const PLANS = [
   },
   {
     id: "combo",
-    name: "Combo Completo",
+    name: "Combo Promocional",
     price: "147,90",
     priceLabel: "acesso vitalício",
     description: "E-book + Sistema — tudo por um preço especial",
