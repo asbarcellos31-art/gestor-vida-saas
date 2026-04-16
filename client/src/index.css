@@ -105,7 +105,7 @@
   --sidebar-ring: oklch(0.72 0.12 75);
 }
 
-/* Dark mode = mesmas cores (sistema já é dark por padrão) */
+/* Dark mode = navy profundo (padrão do sistema) */
 .dark {
   --background: oklch(0.14 0.04 255);
   --foreground: oklch(0.93 0.015 75);
@@ -132,6 +132,54 @@
   --chart-4: oklch(0.60 0.20 20);
   --chart-5: oklch(0.60 0.16 240);
   --sidebar: oklch(0.11 0.04 255);
+  --sidebar-foreground: oklch(0.88 0.015 75);
+  --sidebar-primary: oklch(0.72 0.12 75);
+  --sidebar-primary-foreground: oklch(0.10 0.04 255);
+  --sidebar-accent: oklch(0.20 0.04 255);
+  --sidebar-accent-foreground: oklch(0.88 0.015 75);
+  --sidebar-border: oklch(0.22 0.04 255);
+  --sidebar-ring: oklch(0.72 0.12 75);
+}
+
+/* ============================================================
+   Tema Light — fundo branco-acinzentado + dourado + navy
+   ============================================================ */
+.light {
+  --background: oklch(0.97 0.005 255);
+  --foreground: oklch(0.18 0.04 255);
+
+  --card: oklch(1.00 0 0);
+  --card-foreground: oklch(0.18 0.04 255);
+
+  --popover: oklch(1.00 0 0);
+  --popover-foreground: oklch(0.18 0.04 255);
+
+  --primary: oklch(0.60 0.13 75);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --secondary: oklch(0.93 0.01 255);
+  --secondary-foreground: oklch(0.25 0.04 255);
+
+  --muted: oklch(0.93 0.01 255);
+  --muted-foreground: oklch(0.50 0.04 255);
+
+  --accent: oklch(0.93 0.01 255);
+  --accent-foreground: oklch(0.25 0.04 255);
+
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --border: oklch(0.88 0.01 255);
+  --input: oklch(0.93 0.01 255);
+  --ring: oklch(0.60 0.13 75);
+
+  --chart-1: oklch(0.60 0.13 75);
+  --chart-2: oklch(0.55 0.14 180);
+  --chart-3: oklch(0.65 0.14 85);
+  --chart-4: oklch(0.55 0.20 20);
+  --chart-5: oklch(0.50 0.16 240);
+
+  --sidebar: oklch(0.14 0.04 255);
   --sidebar-foreground: oklch(0.88 0.015 75);
   --sidebar-primary: oklch(0.72 0.12 75);
   --sidebar-primary-foreground: oklch(0.10 0.04 255);

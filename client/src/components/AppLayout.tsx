@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
+import { useTheme } from "@/contexts/ThemeContext";
 
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
@@ -22,10 +23,42 @@ import {
   Crown,
   SlidersHorizontal,
   Wrench,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { toast } from "sonner";
 
 const MONTHS = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <div className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-sidebar-accent/40">
+      <button
+        onClick={() => setTheme("dark")}
+        className={`flex-1 flex items-center justify-center gap-1.5 py-1 rounded-md text-xs font-medium transition-colors ${
+          theme === "dark"
+            ? "bg-sidebar-primary text-sidebar-primary-foreground"
+            : "text-sidebar-foreground/50 hover:text-sidebar-foreground"
+        }`}
+      >
+        <Moon className="w-3 h-3" />
+        Dark
+      </button>
+      <button
+        onClick={() => setTheme("light")}
+        className={`flex-1 flex items-center justify-center gap-1.5 py-1 rounded-md text-xs font-medium transition-colors ${
+          theme === "light"
+            ? "bg-sidebar-primary text-sidebar-primary-foreground"
+            : "text-sidebar-foreground/50 hover:text-sidebar-foreground"
+        }`}
+      >
+        <Sun className="w-3 h-3" />
+        Light
+      </button>
+    </div>
+  );
+}
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -280,8 +313,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       </nav>
 
-      {/* User info */}
-      <div className="p-3 border-t border-sidebar-border">
+      {/* User info + seletor de tema */}
+      <div className="p-3 border-t border-sidebar-border space-y-2">
+        {/* Seletor de tema */}
+        <ThemeToggle />
+        {/* Usuário */}
         <div className="flex items-center gap-3 px-2 py-2 rounded-lg">
           <div className="w-8 h-8 bg-sidebar-primary/20 rounded-full flex items-center justify-center">
             <span className="text-xs font-bold text-sidebar-primary">
