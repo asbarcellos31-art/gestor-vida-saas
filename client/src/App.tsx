@@ -24,6 +24,9 @@ import EsqueciSenha from "./pages/EsqueciSenha";
 import RedefinirSenha from "./pages/RedefinirSenha";
 import VideoPlayer from "./pages/VideoPlayer";
 import TutorialCompleto from "./pages/TutorialCompleto";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfUse from "./pages/TermsOfUse";
+import LGPDPage from "./pages/LGPDPage";
 
 function Router() {
   return (
@@ -53,6 +56,9 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/assinatura/sucesso" component={AssinaturaSucesso} />
       <Route path="/orcamento/configuracoes" component={OrcamentoSettings} />
+      <Route path="/politica-de-privacidade" component={PrivacyPolicy} />
+      <Route path="/termos-de-uso" component={TermsOfUse} />
+      <Route path="/lgpd" component={LGPDPage} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

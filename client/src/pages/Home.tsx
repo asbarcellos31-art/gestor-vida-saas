@@ -366,12 +366,21 @@ export default function Home() {
             <span className="font-semibold" style={{ color: "#C9A84C" }}>Gestor de Vida</span>
           </div>
           <p style={{ color: "#3A4A60" }}>© {new Date().getFullYear()} Gestor de Vida. Todos os direitos reservados.</p>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4 justify-center">
             <a href="mailto:contato@gestordevida.com.br" className="transition-colors" style={{ color: "#5A6A80" }}>
               Suporte
             </a>
             <a href="#planos" className="transition-colors" style={{ color: "#5A6A80" }}>
               Planos
+            </a>
+            <a href="/politica-de-privacidade" className="transition-colors" style={{ color: "#5A6A80" }}>
+              Privacidade
+            </a>
+            <a href="/termos-de-uso" className="transition-colors" style={{ color: "#5A6A80" }}>
+              Termos de Uso
+            </a>
+            <a href="/lgpd" className="transition-colors" style={{ color: "#5A6A80" }}>
+              LGPD
             </a>
           </div>
         </div>
