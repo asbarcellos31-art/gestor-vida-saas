@@ -1084,13 +1084,27 @@ export default function GestaoTempo() {
                 />
               </div>
               <div>
-                <Label>Data <span className="text-muted-foreground/70 text-xs">(vazio = backlog)</span></Label>
+                <div className="flex items-center justify-between mb-1">
+                  <Label>Data</Label>
+                  <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                    <Checkbox
+                      checked={!form.scheduledDate}
+                      onCheckedChange={(v) => setForm((f) => ({ ...f, scheduledDate: v ? "" : getTodayStr() }))}
+                    />
+                    <span className="text-xs text-muted-foreground">Definir depois</span>
+                  </label>
+                </div>
                 <Input
                   type="date"
                   value={form.scheduledDate}
                   onChange={(e) => setForm((f) => ({ ...f, scheduledDate: e.target.value }))}
-                  className="mt-1"
+                  className="mt-0"
+                  disabled={!form.scheduledDate}
+                  placeholder="Sem data (backlog)"
                 />
+                {!form.scheduledDate && (
+                  <p className="text-[11px] text-amber-500 mt-1">📋 Irá para o backlog</p>
+                )}
               </div>
             </div>
 
