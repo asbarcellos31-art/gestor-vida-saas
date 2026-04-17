@@ -18,6 +18,9 @@ import {
   expenseEntries,
   installmentBills,
   retirementConfig,
+  retirementProjections,
+  budgetEntries,
+  installments,
   categories,
   paymentMethods,
   familyMembers,
@@ -976,6 +979,26 @@ export async function adminSetUserPlan(userId: number, plan: "time_management" |
   } else {
     await db.insert(subscriptions).values({ userId, plan, status: "active" });
   }
+}
+
+// ── Admin: Excluir usuário e todos os seus dados ─────────────────────────────
+export async function adminDeleteUser(userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  // Apaga todos os dados do usuário em cascata
+  const tables = [
+    subscriptions, taskCategories, tasks, timeSessions, reminders,
+    incomeEntries, fixedBills, fixedBillLabels, billEntries, expenseEntries,
+    budgetEntries, installmentBills, installments, retirementConfig,
+    retirementProjections, categories, familyMembers, paymentMethods, authTokens,
+  ];
+  for (const table of tables) {
+    try {
+      await db.delete(table as any).where(eq((table as any).userId, userId));
+    } catch { /* ignora tabelas sem userId */ }
+  }
+  // Por último, apaga o próprio usuário
+  await db.delete(users).where(eq(users.id, userId));
 }
 
 // ── Task Categories (Categorias de Tarefa configuráveis pelo usuário) ──────────

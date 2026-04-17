@@ -17,6 +17,7 @@ import {
   getAllUsersWithSubscriptions,
   getAdminMetrics,
   adminSetUserPlan,
+  adminDeleteUser,
   getTasksByDate,
   getTasksByDateRange,
   getBacklogTasks,
@@ -1260,6 +1261,17 @@ const adminRouter = router({
     }))
     .mutation(async ({ input }) => {
       await adminSetUserPlan(input.userId, input.plan);
+      return { success: true };
+    }),
+
+  deleteUser: adminProcedure
+    .input(z.object({ userId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      // Impede que o admin exclua a si mesmo
+      if (ctx.user.id === input.userId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Você não pode excluir sua própria conta pelo painel admin." });
+      }
+      await adminDeleteUser(input.userId);
       return { success: true };
     }),
 });

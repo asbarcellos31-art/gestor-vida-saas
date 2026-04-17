@@ -16,6 +16,7 @@ import {
   Star,
   RefreshCw,
   ChevronDown,
+  Trash2,
 } from "lucide-react";
 
 const PLAN_LABELS: Record<string, string> = {
@@ -75,6 +76,22 @@ export default function Admin() {
     },
     onError: (e) => toast.error(e.message),
   });
+
+  const deleteUser = trpc.admin.deleteUser.useMutation({
+    onSuccess: () => {
+      utils.admin.users.invalidate();
+      utils.admin.metrics.invalidate();
+      toast.success("Usuário excluído com sucesso.");
+      setSelectedUser(null);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const handleDeleteUser = (userId: number, name: string) => {
+    if (!confirm(`Tem certeza que deseja excluir o usuário "${name}"?\n\nEsta ação é IRREVERSÍVEL e apagará todos os dados do usuário.`)) return;
+    if (!confirm(`CONFIRMAÇÃO FINAL: Excluir permanentemente "${name}" e todos os seus dados?`)) return;
+    deleteUser.mutate({ userId });
+  };
 
   const mrr = metrics ? (metrics.mrrCents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "R$ 0,00";
 
@@ -307,6 +324,18 @@ export default function Admin() {
                                   <XCircle className="w-3 h-3 mr-1" />
                                   Cancelar plano
                                 </Button>
+                                <div className="ml-auto">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={deleteUser.isPending}
+                                    onClick={() => handleDeleteUser(user.userId, user.name ?? "usuário")}
+                                    className="text-xs border-red-400 text-red-700 hover:bg-red-100 font-semibold"
+                                  >
+                                    <Trash2 className="w-3 h-3 mr-1" />
+                                    Excluir usuário
+                                  </Button>
+                                </div>
                               </div>
                             </td>
                           </tr>
