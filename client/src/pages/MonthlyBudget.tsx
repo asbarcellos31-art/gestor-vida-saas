@@ -295,6 +295,10 @@ export default function MonthlyBudget() {
     onSuccess: () => { utils.fixedBills.list.invalidate(); utils.dashboard.monthly.invalidate(); },
     onError: (err) => toast.error(`Erro ao salvar conta: ${err.message}`, { duration: 10000 }),
   });
+  const upsertBillMeta = trpc.fixedBillLabels.upsertMeta.useMutation({
+    onSuccess: () => { utils.fixedBillLabels.list.invalidate(); toast.success("Informações salvas!"); },
+    onError: () => toast.error("Erro ao salvar informações da conta"),
+  });
   // Estado para nova receita
   const [showAddIncome, setShowAddIncome] = useState(false);
   const [newIncomeDesc, setNewIncomeDesc] = useState("");
@@ -653,6 +657,8 @@ export default function MonthlyBudget() {
     setBillsDueDay(prev => ({ ...prev, [key]: dueDay }));
     setBillsCategory(prev => ({ ...prev, [key]: category }));
     setBillsDirty(true);
+    // Persiste no banco imediatamente
+    upsertBillMeta.mutate({ billKey: key, obs: obs || null, dueDay: dueDay || null, category: category || null });
   };
 
   const handleBillMember = (key: string, memberId: number | null) => {
@@ -961,9 +967,10 @@ export default function MonthlyBudget() {
             </CardHeader>
             <CardContent className="space-y-1.5">
               {(fixedBillLabels || []).filter(l => !l.hidden).map(f => {
-                const obs = billsObs[f.billKey] || "";
-                const dueDay = billsDueDay[f.billKey] || "";
-                const cat = billsCategory[f.billKey] || "";
+                // Prioriza dados do banco (fixedBillLabels), fallback para estado local
+                const obs = (f as any).obs || billsObs[f.billKey] || "";
+                const dueDay = (f as any).dueDay || billsDueDay[f.billKey] || "";
+                const cat = (f as any).category || billsCategory[f.billKey] || "";
                 const memberIdForBill = billsMember[f.billKey] ?? null;
                 const memberForBill = familyMembers?.find(m => m.id === memberIdForBill);
                 const isAutoCartoes = f.billKey === "cartoes" && cardTotals !== undefined;

@@ -572,6 +572,35 @@ const fixedBillLabelsRouter = router({
       }
       return { success: true };
     }),
+
+  upsertMeta: protectedProcedure
+    .input(z.object({
+      billKey: z.string(),
+      dueDay: z.string().optional().nullable(),
+      category: z.string().optional().nullable(),
+      obs: z.string().optional().nullable(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await requireBudgetAccess(ctx.user.id);
+      const { fixedBillLabels } = await import("../drizzle/schema");
+      const db = await getDb();
+      if (!db) return { success: false };
+      const existing = await db.select().from(fixedBillLabels)
+        .where(and(eq(fixedBillLabels.userId, ctx.user.id), eq(fixedBillLabels.billKey, input.billKey)));
+      const meta = {
+        dueDay: input.dueDay ?? null,
+        category: input.category ?? null,
+        obs: input.obs ?? null,
+      };
+      if (existing.length > 0) {
+        await db.update(fixedBillLabels)
+          .set(meta)
+          .where(and(eq(fixedBillLabels.userId, ctx.user.id), eq(fixedBillLabels.billKey, input.billKey)));
+      } else {
+        await db.insert(fixedBillLabels).values({ userId: ctx.user.id, billKey: input.billKey, label: input.billKey, hidden: 0, ...meta });
+      }
+      return { success: true };
+    }),
 });
 
 // ─── Expense Entries Router ───────────────────────────────────────────────────

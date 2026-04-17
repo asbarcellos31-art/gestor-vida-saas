@@ -153,6 +153,9 @@ export const fixedBillLabels = mysqlTable("fixed_bill_labels", {
   billKey: varchar("billKey", { length: 64 }).notNull(),
   label: varchar("label", { length: 128 }).notNull(),
   hidden: tinyint("hidden").default(0).notNull(),
+  dueDay: varchar("dueDay", { length: 4 }),       // dia de vencimento (ex: "10")
+  category: varchar("category", { length: 64 }),  // categoria da conta
+  obs: varchar("obs", { length: 512 }),            // observação livre
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
