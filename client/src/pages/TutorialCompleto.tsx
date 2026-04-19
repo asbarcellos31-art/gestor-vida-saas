@@ -254,6 +254,10 @@ const SECTIONS: Section[] = [
               <li><strong>Membro familiar</strong> — a quem pertence o gasto</li>
             </ul>
             <p>Clique em <strong>"Salvar"</strong>. A despesa será adicionada à lista e o saldo do mês será recalculado.</p>
+            <div className="mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+              <p className="text-sm font-semibold text-amber-400 mb-1">💳 Dica importante — Gastos no cartão</p>
+              <p className="text-sm text-foreground/80">Quando você seleciona <strong>"Cartão de crédito"</strong> ou <strong>"Cartão de débito"</strong> como forma de pagamento, o sistema soma esse valor automaticamente no totalizador de <strong>"Gastos no Cartão"</strong> do mês. Isso permite que você acompanhe em tempo real quanto já comprometeu no cartão — sem precisar calcular manualmente.</p>
+            </div>
           </div>
         ),
       },
