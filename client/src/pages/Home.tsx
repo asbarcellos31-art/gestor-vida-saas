@@ -615,47 +615,66 @@ export default function Home() {
               Depoimentos reais de quem decidiu começar.
             </p>
           </div>
-          {/* Placeholder para depoimentos — substituir pelos reais */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Em breve",
-                role: "Aguardando depoimentos reais",
-                text: "Este espaço será preenchido com relatos de quem já usa o sistema. Se você usa o Gestor de Vida, entre em contato e compartilhe sua experiência.",
-                stars: 5,
-              },
-              {
-                name: "Em breve",
-                role: "Aguardando depoimentos reais",
-                text: "Depoimentos reais têm muito mais impacto do que qualquer copy. Assim que tivermos os primeiros relatos, eles aparecem aqui.",
-                stars: 5,
-              },
-              {
-                name: "Em breve",
-                role: "Aguardando depoimentos reais",
-                text: "O processo funciona. Quando as primeiras pessoas começarem a ver resultado, este espaço vai contar essas histórias.",
-                stars: 5,
-              },
-            ].map((t, i) => (
-              <div
-                key={i}
-                className="p-7 rounded-2xl flex flex-col"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.15)" }}
-              >
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: t.stars }).map((_, s) => (
-                    <Star key={s} className="w-4 h-4 fill-current" style={{ color: "#C9A84C" }} />
-                  ))}
-                </div>
-                <p className="text-sm leading-relaxed flex-1 mb-6 italic" style={{ color: "#8A9BB5" }}>
-                  "{t.text}"
-                </p>
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: "#F0E6C8" }}>{t.name}</p>
-                  <p className="text-xs mt-0.5" style={{ color: "#5A6A80" }}>{t.role}</p>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Depoimento — Nayara Barcellos */}
+            <div
+              className="p-8 rounded-2xl flex flex-col"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}
+            >
+              <div className="flex gap-1 mb-5">
+                {Array.from({ length: 5 }).map((_, s) => (
+                  <Star key={s} className="w-4 h-4 fill-current" style={{ color: "#C9A84C" }} />
+                ))}
               </div>
-            ))}
+              <p className="text-sm leading-relaxed flex-1 mb-6" style={{ color: "#C8D8E8" }}>
+                "Eu vivia com aquela sensação constante de que estava sempre devendo algo a alguém — para os clientes, para a minha empresa, para os meus filhos, para mim mesma. Minha rotina era uma bagunça disfarçada de movimento. Adivinhava os gastos no final do mês e sempre tinha surpresa desagradável. Quando comecei a usar a gestão do tempo do Gestor de Vida, foi a primeira vez que eu realmente parei para olhar para o que eu estava fazendo com as minhas horas. Comecei a organizar minhas tarefas com antecedência, priorizando o que de fato gerava resultado. O estresse diminuiu porque eu parei de apagar incêndio e comecei a planejar. Consegui me dedicar mais aos meus clientes, entregar melhor, fechar mais projetos — e ainda sobrou energia para a minha família. O controle financeiro veio junto: quando você para de correr, você consegue olhar para os números. Hoje guardo para os meus sonhos. Isso antes parecia impossível."
+              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold" style={{ color: "#F0E6C8" }}>Nayara Barcellos</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#8A9BB5" }}>Designer de Interiores · Sócia · Mãe e Esposa</p>
+                </div>
+                <a
+                  href="https://instagram.com/naybarcellos"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold transition-opacity hover:opacity-80"
+                  style={{ color: "#C9A84C" }}
+                >
+                  @naybarcellos
+                </a>
+              </div>
+            </div>
+
+            {/* Depoimento — Fernanda Griggio */}
+            <div
+              className="p-8 rounded-2xl flex flex-col"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}
+            >
+              <div className="flex gap-1 mb-5">
+                {Array.from({ length: 5 }).map((_, s) => (
+                  <Star key={s} className="w-4 h-4 fill-current" style={{ color: "#C9A84C" }} />
+                ))}
+              </div>
+              <p className="text-sm leading-relaxed flex-1 mb-6" style={{ color: "#C8D8E8" }}>
+                "Eu já me organizava — agenda física, anotações, listas. Mas com dois filhos, parecia que o tempo simplesmente escorregava pelas mãos, e eu ficava voltando páginas e páginas para não deixar nada para trás. Quando comecei a usar a gestão do tempo do Gestor de Vida, ganhei uma visão que a agenda convencional nunca me deu: eu consigo ver de verdade o que precisa ser feito, o que está atrasado, e o que de fato está gerando resultado. Os relatórios semanais me ajudam a afinar minha produtividade semana a semana. No financeiro, eu já controlava em planilha — mas a união das três ferramentas mudou tudo. Quando você vê o tempo, o orçamento e a projeção da sua aposentadoria juntos, numa visão só, bate uma clareza diferente. Fiquei muito mais motivada a lapidar meu orçamento porque agora eu consigo enxergar o quanto cada ajuste antecipa os meus objetivos. É uma visão completa que eu não tinha antes."
+              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold" style={{ color: "#F0E6C8" }}>Fernanda Griggio</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#8A9BB5" }}>Consultora de Benefícios · Empresária · Mãe</p>
+                </div>
+                <a
+                  href="https://instagram.com/fernanda_griggio"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold transition-opacity hover:opacity-80"
+                  style={{ color: "#C9A84C" }}
+                >
+                  @fernanda_griggio
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
