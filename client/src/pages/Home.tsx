@@ -285,7 +285,7 @@ export default function Home() {
             Porque o problema nunca foi falta de dado. Foi falta de contato com a realidade. E esse contato só acontece quando você passa pelo processo. Quando você digita o número. Quando você vê, com os seus olhos, para onde o dinheiro foi. Quando você sente o peso de cada decisão.
           </p>
           <p className="text-xl font-bold leading-relaxed" style={{ color: "#C9A84C" }}>
-            Não adianta o sistema ser automático. Se você não passa pelo processo, o processo não passa por você.
+            Não existe fórmula secreta. É simples: é sobre método e persistência. Se você não passa pelo processo, o processo não passa por você.
           </p>
         </div>
       </section>
@@ -435,7 +435,7 @@ export default function Home() {
             style={{ background: "rgba(201,168,76,0.07)", border: "1px solid rgba(201,168,76,0.3)" }}
           >
             <p className="text-xl md:text-2xl font-bold leading-relaxed" style={{ color: "#E2C97E" }}>
-              "A teimosia de persistir no processo simples é o ativo mais raro que existe. O tempo recompensa quem não desiste — todo santo dia."
+              "Não existe fórmula secreta. Não existe atalho. É simples — e exatamente por ser simples, a maioria desiste. Método e persistência. Todo santo dia. É isso."
             </p>
           </div>
         </div>
@@ -549,7 +549,7 @@ export default function Home() {
             style={{ background: "rgba(201,168,76,0.07)", border: "1px solid rgba(201,168,76,0.3)" }}
           >
             <p className="text-lg md:text-xl font-semibold leading-relaxed" style={{ color: "#E2C97E" }}>
-              Todo santo dia. Sem glamour, sem viralizar, sem esperar a motivação aparecer. Só o processo — repetido, teimoso, consistente. É isso que constrói.
+              Não é sobre a ferramenta certa. Não é sobre o momento certo. É sobre método e persistência — repetidos todo santo dia, sem glamour, sem esperar a motivação aparecer. É isso que constrói.
             </p>
           </div>
         </div>
