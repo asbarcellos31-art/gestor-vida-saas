@@ -24,10 +24,10 @@ import { useLocation } from "wouter";
 const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png";
 
 // Screenshots reais do sistema (via storage proxy)
-const SCREEN_DASHBOARD = "/manus-storage/screen-dashboard_38579cc2.webp";
-const SCREEN_TEMPO = "/manus-storage/screen-gestao-tempo_479eb6d5.webp";
-const SCREEN_ORCAMENTO = "/manus-storage/screen-orcamento_6e59c8c9.webp";
-const SCREEN_APOSENTADORIA = "/manus-storage/screen-aposentadoria_9df06f7c.webp";
+const SCREEN_DASHBOARD = "/manus-storage/screen-dashboard_af493223.webp";
+const SCREEN_TEMPO = "/manus-storage/screen-gestao-tempo_9a49ef78.webp";
+const SCREEN_ORCAMENTO = "/manus-storage/screen-orcamento_7630f496.webp";
+const SCREEN_APOSENTADORIA = "/manus-storage/screen-aposentadoria_72e52397.webp";
 
 const PLANS = [
   {
@@ -551,6 +551,111 @@ export default function Home() {
             <p className="text-lg md:text-xl font-semibold leading-relaxed" style={{ color: "#E2C97E" }}>
               Não é sobre a ferramenta certa. Não é sobre o momento certo. É sobre método e persistência — repetidos todo santo dia, sem glamour, sem esperar a motivação aparecer. É isso que constrói.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── A origem do método ──────────────────────────────────────────────── */}
+      <section className="py-20 px-4" style={{ background: "#070E26" }}>
+        <div className="container max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>
+              Por que isso existe
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#F0E6C8" }}>
+              Nasceu de uma dor real
+            </h2>
+          </div>
+          <div
+            className="rounded-2xl p-8 md:p-12"
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(201,168,76,0.2)" }}
+          >
+            <div className="space-y-6 text-base leading-relaxed" style={{ color: "#C8D8E8" }}>
+              <p>
+                Durante anos, eu busquei uma forma de organizar minha vida. Tentei planilhas, aplicativos, métodos importados, sistemas complexos. Nada ficava. Ou era complicado demais para manter, ou simples demais para ser útil. E a sensação era sempre a mesma: tempo e dinheiro escorregando pelos dedos sem eu entender por quê.
+              </p>
+              <p>
+                Estudei. Apliquei. Errei. Ajustei. E depois de anos testando na prática, percebi algo que parecia óbvio, mas que ninguém havia me mostrado de forma clara:
+              </p>
+              <p
+                className="text-lg md:text-xl font-bold py-4 px-6 rounded-xl text-center"
+                style={{ color: "#E2C97E", background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.25)" }}
+              >
+                "Era simples. Não era fácil — mas era simples."
+              </p>
+              <p>
+                Gestão de tempo, controle financeiro e projeção de futuro. Três pilares. Conectados. Um leva ao outro. E o que faltava não era uma fórmula secreta — era um ponto de partida estruturado e a disciplina de repetir o processo.
+              </p>
+              <p>
+                O início é o mais difícil. Não porque o método seja complexo, mas porque quem está começando não tem ferramenta, não tem referência, não tem os dados organizados. Não sabe por onde começar. E sem começo, não há processo. Sem processo, não há resultado.
+              </p>
+              <p>
+                O Gestor de Vida foi criado para ser esse começo. Para quem tem vontade, mas ainda não tem estrutura. Para quem quer controle, mas não sabe como montar do zero. Para quem entende que o processo simples, repetido com teimosia, é o que constrói — e precisa de uma ferramenta que acompanhe esse processo sem complicar.
+              </p>
+            </div>
+            <div className="mt-8 pt-8" style={{ borderTop: "1px solid rgba(201,168,76,0.15)" }}>
+              <p className="text-sm font-semibold" style={{ color: "#C9A84C" }}>— Criador do Gestor de Vida</p>
+              <p className="text-xs mt-1" style={{ color: "#5A6A80" }}>Anos de busca, estudo e aplicação prática do método</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Depoimentos ─────────────────────────────────────────────────────── */}
+      <section className="py-20 px-4" style={{ background: "#0B1437" }}>
+        <div className="container max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>
+              Quem já usa
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#F0E6C8" }}>
+              O processo na vida real
+            </h2>
+            <p className="text-base mt-3" style={{ color: "#8A9BB5" }}>
+              Depoimentos reais de quem decidiu começar.
+            </p>
+          </div>
+          {/* Placeholder para depoimentos — substituir pelos reais */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Em breve",
+                role: "Aguardando depoimentos reais",
+                text: "Este espaço será preenchido com relatos de quem já usa o sistema. Se você usa o Gestor de Vida, entre em contato e compartilhe sua experiência.",
+                stars: 5,
+              },
+              {
+                name: "Em breve",
+                role: "Aguardando depoimentos reais",
+                text: "Depoimentos reais têm muito mais impacto do que qualquer copy. Assim que tivermos os primeiros relatos, eles aparecem aqui.",
+                stars: 5,
+              },
+              {
+                name: "Em breve",
+                role: "Aguardando depoimentos reais",
+                text: "O processo funciona. Quando as primeiras pessoas começarem a ver resultado, este espaço vai contar essas histórias.",
+                stars: 5,
+              },
+            ].map((t, i) => (
+              <div
+                key={i}
+                className="p-7 rounded-2xl flex flex-col"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.15)" }}
+              >
+                <div className="flex gap-1 mb-4">
+                  {Array.from({ length: t.stars }).map((_, s) => (
+                    <Star key={s} className="w-4 h-4 fill-current" style={{ color: "#C9A84C" }} />
+                  ))}
+                </div>
+                <p className="text-sm leading-relaxed flex-1 mb-6 italic" style={{ color: "#8A9BB5" }}>
+                  "{t.text}"
+                </p>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: "#F0E6C8" }}>{t.name}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#5A6A80" }}>{t.role}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

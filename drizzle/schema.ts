@@ -340,3 +340,25 @@ export const authTokens = mysqlTable("auth_tokens", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 export type AuthToken = typeof authTokens.$inferSelect;
+
+// ── Compras via Hotmart ───────────────────────────────────────────────────────
+// Registra cada evento de compra recebido via webhook do Hotmart.
+// Se o comprador ainda não tem conta, o acesso fica pendente e é liberado
+// automaticamente no primeiro login com o mesmo e-mail.
+export const hotmartPurchases = mysqlTable("hotmart_purchases", {
+  id: int("id").autoincrement().primaryKey(),
+  hotmartTransactionId: varchar("hotmartTransactionId", { length: 128 }).notNull().unique(),
+  buyerEmail: varchar("buyerEmail", { length: 320 }).notNull(),
+  buyerName: text("buyerName"),
+  productId: varchar("productId", { length: 64 }),
+  productName: text("productName"),
+  plan: mysqlEnum("plan", ["time_management", "budget", "combo"]).notNull(),
+  status: mysqlEnum("status", ["approved", "refunded", "cancelled", "chargeback"]).default("approved").notNull(),
+  userId: int("userId"), // null enquanto o comprador não tiver conta
+  accessGranted: boolean("accessGranted").default(false).notNull(),
+  rawPayload: text("rawPayload"), // payload completo para auditoria
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type HotmartPurchase = typeof hotmartPurchases.$inferSelect;
+export type InsertHotmartPurchase = typeof hotmartPurchases.$inferInsert;

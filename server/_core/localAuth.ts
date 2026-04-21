@@ -11,6 +11,7 @@ import { getSessionCookieOptions } from "./cookies";
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { nanoid } from "nanoid";
 import { sendWelcomeEmail, sendPasswordResetEmail } from "../email";
+import { checkAndGrantPendingHotmartAccess } from "../hotmart_webhook";
 
 const SALT_ROUNDS = 12;
 
@@ -180,6 +181,11 @@ export function registerLocalAuthRoutes(app: Express) {
       }
 
       await db.upsertUser({ openId: user.openId, lastSignedIn: new Date() });
+
+      // Verificar se há compras Hotmart pendentes para este e-mail
+      if (user.id && user.email) {
+        await checkAndGrantPendingHotmartAccess(user.id, user.email);
+      }
 
       const sessionToken = await sdk.signSession(
         { openId: user.openId, appId: process.env.VITE_APP_ID || "gestor-vida", name: user.name || "" },
