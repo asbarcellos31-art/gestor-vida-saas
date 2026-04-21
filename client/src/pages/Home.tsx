@@ -17,10 +17,17 @@ import {
   Flame,
   Brain,
   PenLine,
+  ChevronRight,
 } from "lucide-react";
 import { useLocation } from "wouter";
 
 const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png";
+
+// Screenshots reais do sistema (via storage proxy)
+const SCREEN_DASHBOARD = "/manus-storage/screen-dashboard_38579cc2.webp";
+const SCREEN_TEMPO = "/manus-storage/screen-gestao-tempo_479eb6d5.webp";
+const SCREEN_ORCAMENTO = "/manus-storage/screen-orcamento_6e59c8c9.webp";
+const SCREEN_APOSENTADORIA = "/manus-storage/screen-aposentadoria_9df06f7c.webp";
 
 const PLANS = [
   {
@@ -79,60 +86,72 @@ const PLANS = [
   },
 ];
 
-const FEATURES = [
+// O ciclo do método — cada etapa leva à próxima
+const CYCLE_STEPS = [
   {
-    icon: Target,
+    number: "01",
+    icon: Clock,
     title: "Gestão do Tempo",
+    subtitle: "O ponto de partida",
     description:
-      "Classifique suas tarefas em Importante, Urgente e Circunstancial. Você decide o que entra, o que fica e o que sai. Sem automação que pensa por você.",
+      "Tudo começa aqui. Você classifica suas tarefas como Importante, Urgente ou Circunstancial. Você define o que vai fazer hoje — e o que vai esperar. Parece simples. E é. Mas fazer isso todo dia, sem pular, sem improvisar, sem deixar a cabeça decidir no automático — isso exige disciplina.",
+    example:
+      "Exemplo: Camila, analista de RH, passava 3h por dia respondendo e-mails que podiam esperar. Ao classificar suas tarefas, percebeu que 60% do que fazia era Circunstancial — urgente para os outros, irrelevante para ela. Em 2 semanas, recuperou 1h30 por dia.",
+    screen: SCREEN_TEMPO,
+    screenLabel: "Tela de Gestão do Tempo — classificação e timer por tarefa",
+    color: "#3B82F6",
   },
   {
-    icon: PenLine,
-    title: "Lançamento Manual Intencional",
-    description:
-      "Cada gasto que você registra é um momento de consciência. Não é burocracia — é o contato direto com a sua realidade financeira.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Regra 50/30/20",
-    description:
-      "Visualize em tempo real como seus gastos se distribuem entre Essenciais, Estilo de Vida e Investimentos. O método só funciona se você alimentar.",
-  },
-  {
+    number: "02",
     icon: Zap,
-    title: "Projeção de Aposentadoria",
+    title: "Eficiência e Produtividade",
+    subtitle: "O que o tempo libera",
     description:
-      "Simule 3 cenários de rentabilidade e veja o que a consistência de hoje constrói no futuro. Números reais, sem promessa de atalho.",
+      "Quando você para de desperdiçar tempo com o que não importa, sobra tempo para o que importa. Isso não é motivação — é matemática. 1h30 a mais por dia são 45h por mês. São 540h por ano. O que você faria com 540h a mais de foco no que realmente move sua vida?",
+    example:
+      "Exemplo: Marcos, corretor autônomo, usava as tardes para tarefas administrativas. Ao reorganizar o tempo, passou a usar as tardes para prospecção — o período em que os clientes estão mais disponíveis. Em 60 dias, aumentou em 40% o número de reuniões realizadas.",
+    screen: SCREEN_DASHBOARD,
+    screenLabel: "Dashboard — Score de Produtividade e visão geral do dia",
+    color: "#10B981",
   },
   {
-    icon: BarChart3,
-    title: "Score de Produtividade",
+    number: "03",
+    icon: TrendingUp,
+    title: "Mais resultado, mais renda",
+    subtitle: "A consequência natural",
     description:
-      "Acompanhe seu desempenho nos últimos 30 dias. O score não mente — ele reflete exatamente o quanto você executou o processo.",
+      "Mais foco gera mais resultado. Mais resultado gera mais renda. Isso não é promessa — é a consequência lógica de usar o tempo certo nas coisas certas. E quando a renda aumenta, surge a pergunta que a maioria nunca responde: para onde está indo esse dinheiro a mais?",
+    example:
+      "Exemplo: Marcos fechou 2 contratos a mais por mês. R$3.200 a mais na conta. Mas no fim do mês, o dinheiro tinha sumido. Sem controle, mais renda virou mais gasto. Foi aí que o segundo pilar entrou.",
+    screen: null,
+    screenLabel: null,
+    color: "#F59E0B",
   },
   {
-    icon: Shield,
-    title: "Dados Privados e Isolados",
+    number: "04",
+    icon: Wallet,
+    title: "Controle do Orçamento",
+    subtitle: "O contato com a realidade",
     description:
-      "Seus dados são completamente privados. Nenhuma integração com banco, nenhum extrato automático. Você controla o que entra.",
-  },
-];
-
-const PILLARS = [
-  {
-    icon: Repeat2,
-    title: "Consistência acima de tudo",
-    text: "Não é o dia perfeito que muda a vida. É o processo repetido todos os dias — mesmo nos dias ruins, mesmo quando bate a preguiça, mesmo quando parece que não está funcionando. O resultado é filho da frequência.",
+      "Aqui está o coração do método financeiro: você lança cada gasto. Manualmente. Intencionalmente. Não tem integração com banco. Não tem importação de extrato. Porque o ato de lançar é o método. Quando você digita 'R$47,00 — delivery', você está tendo contato com a sua realidade. E esse contato muda comportamento.",
+    example:
+      "Exemplo: Camila descobriu que gastava R$680 por mês em delivery e assinaturas que mal usava. Não porque era irresponsável — mas porque nunca tinha parado para ver os números. Em 30 dias de lançamento manual, cortou R$420 em gastos invisíveis.",
+    screen: SCREEN_ORCAMENTO,
+    screenLabel: "Tela de Orçamento — lançamento de despesas e Regra 50/30/20",
+    color: "#8B5CF6",
   },
   {
-    icon: Brain,
-    title: "Simples não quer dizer fácil",
-    text: "Anotar um gasto é simples. Fazer isso todos os dias, sem exceção, durante meses — isso é difícil. Qualquer um entende o método em 5 minutos. Poucos têm a teimosia de aplicá-lo por 90 dias seguidos. Esses poucos são os que mudam de vida.",
-  },
-  {
-    icon: Flame,
-    title: "O tempo recompensa quem persiste",
-    text: "Não existe resultado financeiro ou de produtividade sem tempo. O mercado quer te vender velocidade. A realidade entrega resultado para quem persiste. Persistir no processo simples, dia após dia, é o ativo mais raro e mais valioso que existe.",
+    number: "05",
+    icon: Target,
+    title: "Projeção do Futuro",
+    subtitle: "O destino do processo",
+    description:
+      "Quando você controla o tempo e o dinheiro, aparece algo que a maioria nunca vê: sobra. E essa sobra, investida com consistência, muda o destino. O simulador de aposentadoria mostra 3 cenários reais — pessimista, regular e otimista — com base no que você realmente está guardando, não no que você acha que está guardando.",
+    example:
+      "Exemplo: Marcos, 34 anos, descobriu que investindo R$500/mês no cenário regular (8% a.a.), chegaria aos 65 anos com R$745.000 acumulados. Não é sorte. Não é herança. É o processo simples, repetido por 31 anos.",
+    screen: SCREEN_APOSENTADORIA,
+    screenLabel: "Tela de Aposentadoria — simulação em 3 cenários com dados reais do orçamento",
+    color: "#C9A84C",
   },
 ];
 
@@ -239,9 +258,9 @@ export default function Home() {
               variant="outline"
               className="px-8 py-6 text-lg rounded-xl"
               style={{ borderColor: "rgba(201,168,76,0.5)", color: "#C9A84C", background: "transparent" }}
-              onClick={() => document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => document.getElementById("metodo")?.scrollIntoView({ behavior: "smooth" })}
             >
-              Ver planos
+              Ver o método
             </Button>
           </div>
           <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>
@@ -250,100 +269,174 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── Manifesto / Filosofia ───────────────────────────────────────────── */}
+      {/* ─── Manifesto ───────────────────────────────────────────────────────── */}
       <section className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container max-w-3xl mx-auto text-center">
           <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>
-            Por que este sistema é diferente
+            A verdade que ninguém quer ouvir
           </p>
           <h2 className="text-3xl md:text-4xl font-extrabold mb-8 leading-tight" style={{ color: "#F0E6C8" }}>
             Simples não quer dizer fácil.
           </h2>
           <p className="text-lg leading-relaxed mb-6" style={{ color: "#8A9BB5" }}>
-            Existe uma diferença enorme entre um processo simples e um processo fácil. O Gestor de Vida é simples: você lança seus gastos, classifica suas tarefas, acompanha seus números. Qualquer pessoa entende em minutos.
+            O mercado quer te vender a ferramenta perfeita. A que faz tudo automático. A que conecta com o banco, importa o extrato, categoriza sozinha e te manda um relatório bonito no fim do mês. E você olha para o relatório, fala "que legal" — e não muda nada.
           </p>
           <p className="text-lg leading-relaxed mb-6" style={{ color: "#8A9BB5" }}>
-            Mas fazer isso todo dia — sem parar, sem desculpa, sem esperar que o sistema faça por você — isso é difícil. E é exatamente essa dificuldade que gera o resultado. Porque quando você lança um gasto, você não está só registrando um número. Você está tendo contato com a sua realidade. E esse contato muda comportamento.
+            Porque o problema nunca foi falta de dado. Foi falta de contato com a realidade. E esse contato só acontece quando você passa pelo processo. Quando você digita o número. Quando você vê, com os seus olhos, para onde o dinheiro foi. Quando você sente o peso de cada decisão.
           </p>
           <p className="text-xl font-bold leading-relaxed" style={{ color: "#C9A84C" }}>
-            Não adianta o sistema ser automático. Não adianta importar o extrato do banco ou do cartão. Se você não passa pelo processo, o processo não passa por você.
+            Não adianta o sistema ser automático. Se você não passa pelo processo, o processo não passa por você.
           </p>
         </div>
       </section>
 
-      {/* ─── 3 Pilares do Método ─────────────────────────────────────────────── */}
-      <section className="py-20 px-4" style={{ background: "#0D1B4B" }}>
-        <div className="container max-w-5xl mx-auto">
-          <div className="text-center mb-14">
+      {/* ─── O Ciclo do Método (5 etapas com prints) ─────────────────────────── */}
+      <section id="metodo" className="py-20 px-4" style={{ background: "#0D1B4B" }}>
+        <div className="container max-w-6xl mx-auto">
+          <div className="text-center mb-16">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>
-              A filosofia por trás do método
+              O método na prática
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#F0E6C8" }}>
-              O que separa quem muda de quem continua igual
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#F0E6C8" }}>
+              Como o ciclo funciona — do tempo ao futuro
             </h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: "#8A9BB5" }}>
+              Cada pilar alimenta o próximo. Não dá para pular etapa. Não dá para fazer só o financeiro sem organizar o tempo. O método é o ciclo completo.
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {PILLARS.map((p) => (
-              <div
-                key={p.title}
-                className="p-7 rounded-2xl flex flex-col gap-4"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}
-              >
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center"
-                  style={{ background: "rgba(201,168,76,0.15)" }}
+
+          {/* Seta de ciclo visual */}
+          <div className="flex items-center justify-center gap-2 mb-14 flex-wrap">
+            {["Tempo", "Eficiência", "Resultado", "Controle", "Futuro"].map((step, i) => (
+              <div key={step} className="flex items-center gap-2">
+                <span
+                  className="px-3 py-1 rounded-full text-sm font-semibold"
+                  style={{ background: "rgba(201,168,76,0.15)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.4)" }}
                 >
-                  <p.icon className="w-6 h-6" style={{ color: "#C9A84C" }} />
-                </div>
-                <h3 className="text-lg font-bold" style={{ color: "#F0E6C8" }}>{p.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#8A9BB5" }}>{p.text}</p>
+                  {step}
+                </span>
+                {i < 4 && <ChevronRight className="w-4 h-4" style={{ color: "#3A4A60" }} />}
               </div>
             ))}
           </div>
 
-          {/* Citação de impacto */}
+          {/* Etapas do ciclo */}
+          <div className="space-y-20">
+            {CYCLE_STEPS.map((step, index) => (
+              <div
+                key={step.number}
+                className={`grid grid-cols-1 lg:grid-cols-2 gap-10 items-center ${index % 2 === 1 ? "lg:flex-row-reverse" : ""}`}
+                style={{ direction: index % 2 === 1 ? "rtl" : "ltr" }}
+              >
+                {/* Conteúdo */}
+                <div style={{ direction: "ltr" }}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span
+                      className="text-4xl font-black"
+                      style={{ color: "rgba(201,168,76,0.2)", fontFamily: "monospace" }}
+                    >
+                      {step.number}
+                    </span>
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center"
+                      style={{ background: `${step.color}22`, border: `1px solid ${step.color}44` }}
+                    >
+                      <step.icon className="w-5 h-5" style={{ color: step.color }} />
+                    </div>
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: step.color }}>
+                    {step.subtitle}
+                  </p>
+                  <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: "#F0E6C8" }}>
+                    {step.title}
+                  </h3>
+                  <p className="text-base leading-relaxed mb-5" style={{ color: "#8A9BB5" }}>
+                    {step.description}
+                  </p>
+                  {/* Exemplo prático */}
+                  <div
+                    className="p-4 rounded-xl"
+                    style={{ background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.2)" }}
+                  >
+                    <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#C9A84C" }}>
+                      Exemplo real
+                    </p>
+                    <p className="text-sm leading-relaxed" style={{ color: "#C8D8E8" }}>
+                      {step.example}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Print do sistema ou placeholder */}
+                <div style={{ direction: "ltr" }}>
+                  {step.screen ? (
+                    <div
+                      className="rounded-2xl overflow-hidden"
+                      style={{ border: "1px solid rgba(201,168,76,0.2)", background: "#070E26" }}
+                    >
+                      <div
+                        className="px-4 py-2 flex items-center gap-2"
+                        style={{ background: "rgba(201,168,76,0.08)", borderBottom: "1px solid rgba(201,168,76,0.15)" }}
+                      >
+                        <div className="w-3 h-3 rounded-full" style={{ background: "#ef4444" }} />
+                        <div className="w-3 h-3 rounded-full" style={{ background: "#f59e0b" }} />
+                        <div className="w-3 h-3 rounded-full" style={{ background: "#10b981" }} />
+                        <span className="text-xs ml-2" style={{ color: "#5A6A80" }}>
+                          gestordevida.com.br
+                        </span>
+                      </div>
+                      <img
+                        src={step.screen}
+                        alt={step.screenLabel || step.title}
+                        className="w-full object-contain"
+                        style={{ maxHeight: "300px" }}
+                      />
+                      <div className="px-4 py-2">
+                        <p className="text-xs" style={{ color: "#5A6A80" }}>
+                          {step.screenLabel}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Etapa 03 — sem print, usa bloco de impacto */
+                    <div
+                      className="rounded-2xl p-8 text-center"
+                      style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(245,158,11,0.25)" }}
+                    >
+                      <p className="text-5xl font-black mb-3" style={{ color: "#F59E0B" }}>540h</p>
+                      <p className="text-lg font-semibold mb-2" style={{ color: "#F0E6C8" }}>
+                        a mais de foco por ano
+                      </p>
+                      <p className="text-sm leading-relaxed" style={{ color: "#8A9BB5" }}>
+                        1h30 recuperada por dia × 360 dias. Esse é o resultado matemático de parar de desperdiçar tempo com o que não importa.
+                      </p>
+                      <div className="mt-6 grid grid-cols-3 gap-4">
+                        {[
+                          { label: "por dia", value: "1h30" },
+                          { label: "por mês", value: "45h" },
+                          { label: "por ano", value: "540h" },
+                        ].map((item) => (
+                          <div key={item.label}>
+                            <p className="text-2xl font-bold" style={{ color: "#F59E0B" }}>{item.value}</p>
+                            <p className="text-xs" style={{ color: "#5A6A80" }}>{item.label}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Citação de fechamento do ciclo */}
           <div
-            className="mt-12 p-8 rounded-2xl text-center"
+            className="mt-20 p-8 rounded-2xl text-center"
             style={{ background: "rgba(201,168,76,0.07)", border: "1px solid rgba(201,168,76,0.3)" }}
           >
             <p className="text-xl md:text-2xl font-bold leading-relaxed" style={{ color: "#E2C97E" }}>
-              "A teimosia de persistir no processo simples é o ativo mais raro que existe. O tempo recompensa quem não desiste."
+              "A teimosia de persistir no processo simples é o ativo mais raro que existe. O tempo recompensa quem não desiste — todo santo dia."
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── O que o sistema faz ─────────────────────────────────────────────── */}
-      <section className="py-20 px-4" style={{ background: "#0B1437" }}>
-        <div className="container">
-          <div className="text-center mb-14">
-            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>
-              A ferramenta
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#F0E6C8" }}>
-              O que o Gestor de Vida entrega
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: "#8A9BB5" }}>
-              Três módulos integrados que cobrem os pilares que definem a qualidade de vida de qualquer pessoa: como você usa o tempo, como você usa o dinheiro e para onde você está indo.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="p-6 rounded-2xl"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.15)" }}
-              >
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: "rgba(201,168,76,0.15)" }}
-                >
-                  <f.icon className="w-6 h-6" style={{ color: "#C9A84C" }} />
-                </div>
-                <h3 className="font-semibold text-lg mb-2" style={{ color: "#F0E6C8" }}>{f.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#8A9BB5" }}>{f.description}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -408,8 +501,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── O resultado do método ───────────────────────────────────────────── */}
-      <section className="py-20 px-4" style={{ background: "#0D1B4B" }}>
+      {/* ─── O resultado em 30/90/365 dias ───────────────────────────────────── */}
+      <section className="py-20 px-4" style={{ background: "#0B1437" }}>
         <div className="container max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>
@@ -427,12 +520,12 @@ export default function Home() {
               {
                 number: "30 dias",
                 title: "Clareza",
-                text: "Você sabe exatamente para onde vai cada real. Sem surpresa no fim do mês. Sem a sensação de que o dinheiro sumiu.",
+                text: "Você sabe exatamente para onde vai cada real e cada hora. Sem surpresa no fim do mês. Sem a sensação de que o tempo e o dinheiro sumiram.",
               },
               {
                 number: "90 dias",
                 title: "Controle",
-                text: "O hábito está instalado. Você lança sem pensar. Você planeja a semana sem esforço. O processo virou rotina.",
+                text: "O hábito está instalado. Você lança sem pensar. Você planeja a semana sem esforço. O processo virou rotina — e a rotina virou resultado.",
               },
               {
                 number: "1 ano",
@@ -463,7 +556,7 @@ export default function Home() {
       </section>
 
       {/* ─── Plans ───────────────────────────────────────────────────────────── */}
-      <section id="planos" className="py-20 px-4" style={{ background: "#0B1437" }}>
+      <section id="planos" className="py-20 px-4" style={{ background: "#0D1B4B" }}>
         <div className="container">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>
