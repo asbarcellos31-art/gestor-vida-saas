@@ -679,6 +679,59 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── FAQ ─────────────────────────────────────────────────────────────── */}
+      <section id="faq" className="py-20 px-4" style={{ background: "#070E26" }}>
+        <div className="container max-w-3xl mx-auto">
+          <div className="text-center mb-14">
+            <p className="text-xs font-bold tracking-widest mb-3" style={{ color: "#C9A84C" }}>PERGUNTAS FREQUENTES</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-white">Antes de decidir, leia isso</h2>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: "Por que não tem integração com banco ou importação de extrato?",
+                a: "Porque integração automática é exatamente o que não funciona para mudar comportamento. Quando o app importa tudo sozinho, você olha para os números como se fossem dados de outra pessoa. O ato de lançar manualmente — digitar o valor, escolher a categoria, confirmar — é o que cria consciência. É o contato com a realidade que muda o hábito. Não é burocracia: é o método."
+              },
+              {
+                q: "Quanto tempo leva para ver resultado?",
+                a: "Em 30 dias de uso consistente, você já tem clareza total sobre para onde vai cada real e cada hora. Em 90 dias, o hábito está instalado e o processo virou rotina. Em 1 ano, você tem números reais para tomar decisões de vida — reserva, investimento, projeção. O resultado não depende da ferramenta: depende da sua consistência."
+              },
+              {
+                q: "É difícil de usar?",
+                a: "O sistema é simples — propositalmente. Não tem dezenas de menus, relatórios complexos ou configurações avançadas. Você lança, você vê, você decide. Mas simples não quer dizer fácil: fazer isso todo dia, sem pular, exige disciplina. A ferramenta não faz o trabalho por você — ela organiza o trabalho que você decide fazer."
+              },
+              {
+                q: "Preciso entender de finanças ou investimentos para usar?",
+                a: "Não. O sistema foi criado para quem está começando do zero. Você não precisa saber o que é taxa Selic, CDB ou previdência privada. Você precisa saber quanto ganha, quanto gasta e quanto quer guardar. O simulador de aposentadoria usa cenários simples (pessimista, regular, otimista) para mostrar o impacto do tempo e da consistência — sem jargão financeiro."
+              },
+              {
+                q: "Funciona no celular?",
+                a: "Sim. O sistema é responsivo e funciona em qualquer dispositivo — celular, tablet ou computador. Você pode lançar um gasto direto do celular logo após a compra, que é exatamente quando o lançamento manual faz mais sentido."
+              },
+              {
+                q: "O pagamento é único mesmo? Sem mensalidade?",
+                a: "Sim. Você paga uma vez e usa para sempre. Sem assinatura, sem cobrança recorrente, sem surpresa no cartão. O acesso ao sistema e todas as atualizações futuras estão incluídos no valor pago."
+              },
+              {
+                q: "E se eu quiser cancelar e pedir reembolso?",
+                a: "Você tem 7 dias de garantia após a compra, conforme o Código de Defesa do Consumidor. Se por qualquer motivo não ficar satisfeito, basta solicitar o reembolso pelo e-mail de suporte e o valor é devolvido integralmente, sem perguntas."
+              }
+            ].map((item, i) => (
+              <details key={i} className="group rounded-lg overflow-hidden" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.15)" }}>
+                <summary className="flex items-center justify-between p-5 cursor-pointer list-none" style={{ color: "#E8E0CC" }}>
+                  <span className="font-semibold pr-4">{item.q}</span>
+                  <span className="text-xl flex-shrink-0 transition-transform group-open:rotate-45" style={{ color: "#C9A84C" }}>+</span>
+                </summary>
+                <div className="px-5 pb-5 text-sm leading-relaxed" style={{ color: "rgba(232,224,204,0.75)" }}>
+                  {item.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ─── Plans ───────────────────────────────────────────────────────────── */}
       <section id="planos" className="py-20 px-4" style={{ background: "#0D1B4B" }}>
         <div className="container">
