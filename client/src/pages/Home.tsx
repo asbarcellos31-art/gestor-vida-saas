@@ -24,10 +24,10 @@ import { useLocation } from "wouter";
 const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png";
 
 // Screenshots reais do sistema (via storage proxy)
-const SCREEN_DASHBOARD = "/manus-storage/screen-dashboard_af493223.webp";
-const SCREEN_TEMPO = "/manus-storage/screen-gestao-tempo_9a49ef78.webp";
-const SCREEN_ORCAMENTO = "/manus-storage/screen-orcamento_7630f496.webp";
-const SCREEN_APOSENTADORIA = "/manus-storage/screen-aposentadoria_72e52397.webp";
+const SCREEN_DASHBOARD = "/manus-storage/screen-dashboard_35af3c8d.png";
+const SCREEN_TEMPO = "/manus-storage/screen-gestao-tempo_62792637.png";
+const SCREEN_ORCAMENTO = "/manus-storage/screen-orcamento_aec82c2e.png";
+const SCREEN_APOSENTADORIA = "/manus-storage/screen-aposentadoria_bea157f8.png";
 
 const PLANS = [
   {
