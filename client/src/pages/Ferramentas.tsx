@@ -232,14 +232,14 @@ const FINANCEIRO_SECTIONS: Section[] = [
 
 // ─── Guias de Instalação ─────────────────────────────────────────────────────
 const INSTALL_STEPS_IPHONE = [
-  { step: 1, icon: "🧭", title: "Abra o Safari", desc: "Acesse gestorvida.manus.space no navegador Safari (não funciona em outros navegadores no iPhone)" },
+  { step: 1, icon: "🧭", title: "Abra o Safari", desc: "Acesse gestordevida.com.br no navegador Safari (não funciona em outros navegadores no iPhone)" },
   { step: 2, icon: "⬆️", title: "Toque em Compartilhar", desc: 'Toque no ícone de compartilhamento — quadrado com seta para cima — na barra inferior do Safari' },
   { step: 3, icon: "➕", title: "Adicionar à Tela de Início", desc: 'Role a lista de opções e toque em "Adicionar à Tela de Início"' },
   { step: 4, icon: "✅", title: "Confirme e pronto!", desc: 'Toque em "Adicionar" no canto superior direito. O ícone do Gestão da Vida aparecerá na sua tela inicial' },
 ];
 
 const INSTALL_STEPS_ANDROID = [
-  { step: 1, icon: "🌐", title: "Abra o Chrome", desc: "Acesse gestorvida.manus.space no navegador Chrome" },
+  { step: 1, icon: "🌐", title: "Abra o Chrome", desc: "Acesse gestordevida.com.br no navegador Chrome" },
   { step: 2, icon: "⋮", title: "Menu de opções", desc: "Toque nos 3 pontos no canto superior direito da tela" },
   { step: 3, icon: "🏠", title: "Adicionar à tela inicial", desc: 'Toque em "Adicionar à tela inicial" ou "Instalar aplicativo"' },
   { step: 4, icon: "✅", title: "Confirme e pronto!", desc: "Toque em Adicionar/Instalar. O ícone aparecerá na sua tela inicial como um app" },
