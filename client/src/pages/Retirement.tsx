@@ -555,6 +555,53 @@ export default function Retirement() {
           </Card>
         )}
 
+        {/* Seção Ebook - Alocação Macro */}
+        <a
+          href="https://investidor-wpbvebdp.manus.space"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
+          <div
+            className="rounded-2xl p-8 border-2 hover:shadow-lg transition-all cursor-pointer"
+            style={{
+              background: "linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.12) 100%)",
+              borderColor: "rgba(168,85,247,0.4)",
+            }}
+          >
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="flex-1">
+                <div className="inline-block mb-3 px-3 py-1 rounded-full text-xs font-bold" style={{ background: "rgba(168,85,247,0.2)", color: "#A855F7" }}>
+                  📊 Recurso Gratuito
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: "#F0E6C8" }}>
+                  Ebook: Alocação Macro para Investidores
+                </h3>
+                <p className="text-base leading-relaxed mb-4" style={{ color: "#C8D8E8" }}>
+                  Aprenda como distribuir seu dinheiro de forma estratégica para alcançar sua independência financeira. Inclui planilha prática de alocação.
+                </p>
+                <div className="flex flex-wrap gap-3 text-sm" style={{ color: "#A0AEC0" }}>
+                  <span className="flex items-center gap-1">✓ Planilha de alocação</span>
+                  <span className="flex items-center gap-1">✓ Estratégias práticas</span>
+                  <span className="flex items-center gap-1">✓ Casos reais</span>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <Button
+                  className="font-bold px-8 py-6 text-base whitespace-nowrap"
+                  style={{
+                    background: "linear-gradient(135deg, #6366F1, #A855F7)",
+                    color: "white",
+                    border: "none",
+                  }}
+                >
+                  Acessar Ebook →
+                </Button>
+              </div>
+            </div>
+          </div>
+        </a>
+
         {/* Banner Consultor Barcellos Consultoria de Investimentos */}
         <a
           href="https://wa.me/5548991860742"
