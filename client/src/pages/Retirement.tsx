@@ -571,10 +571,7 @@ export default function Retirement() {
           >
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="flex-1">
-                <div className="inline-block mb-3 px-3 py-1 rounded-full text-xs font-bold" style={{ background: "rgba(168,85,247,0.2)", color: "#A855F7" }}>
-                  📊 Recurso Gratuito
-                </div>
-                <h3 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: "#F0E6C8" }}>
+                <h3 className="text-2xl md:text-3xl font-bold mb-3" style={{ color: "#F0E6C8" }}>
                   Ebook: Alocação Macro para Investidores
                 </h3>
                 <p className="text-base leading-relaxed mb-4" style={{ color: "#C8D8E8" }}>
