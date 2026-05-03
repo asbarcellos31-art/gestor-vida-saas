@@ -441,6 +441,146 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── OFERTA: Ebook Alocação Macro ──────────────────────────────────── */}
+      <section className="py-20 px-4" style={{ background: "linear-gradient(135deg, #0F1B35 0%, #1a2a4a 100%)" }}>
+        <div className="container max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Coluna Esquerda - Conteúdo */}
+            <div>
+              {/* Badge */}
+              <div className="inline-block mb-6 px-4 py-2 rounded-full" style={{ background: "rgba(255,193,7,0.2)", border: "1px solid rgba(255,193,7,0.5)" }}>
+                <span className="text-sm font-bold" style={{ color: "#FFC107" }}>⚡ OFERTA POR TEMPO LIMITADO</span>
+              </div>
+
+              {/* Título Principal */}
+              <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight" style={{ color: "#FFFFFF" }}>
+                PARE DE PERDER<br />
+                <span style={{ color: "#FFC107" }}>DINHEIRO NA BOLSA!</span>
+              </h2>
+
+              {/* Subtítulo */}
+              <p className="text-xl mb-8" style={{ color: "#C8D8E8" }}>
+                O segredo dos grandes investidores agora ao seu alcance por <span className="font-bold" style={{ color: "#FFC107" }}>menos de uma pizza por mês</span>
+              </p>
+
+              {/* Problemas */}
+              <div className="mb-8 space-y-4">
+                <p className="text-sm font-bold" style={{ color: "#8A9BB5" }}>Você está cansado de:</p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <X size={20} style={{ color: "#EF4444", flexShrink: 0, marginTop: "2px" }} />
+                    <span style={{ color: "#C8D8E8" }}>Ver seu dinheiro perder valor na poupança</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <X size={20} style={{ color: "#EF4444", flexShrink: 0, marginTop: "2px" }} />
+                    <span style={{ color: "#C8D8E8" }}>Não saber por onde começar a investir</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <X size={20} style={{ color: "#EF4444", flexShrink: 0, marginTop: "2px" }} />
+                    <span style={{ color: "#C8D8E8" }}>Pagar R$ 10k, R$ 15k, até R$ 45k em cursos que não funcionam</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <X size={20} style={{ color: "#EF4444", flexShrink: 0, marginTop: "2px" }} />
+                    <span style={{ color: "#C8D8E8" }}>Ficar preso enquanto outros multiplicam seu patrimônio</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* CTA Button */}
+              <button
+                onClick={() => window.open('https://investidor-wpbvebdp.manus.space', '_blank')}
+                className="w-full md:w-auto px-8 py-4 rounded-lg font-bold text-lg mb-6 transition-all hover:scale-105"
+                style={{ background: "#FFC107", color: "#000", border: "2px dashed #000" }}
+              >
+                QUERO MEU GUIA AGORA →
+              </button>
+
+              {/* Garantias */}
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={18} style={{ color: "#10B981" }} />
+                  <span style={{ color: "#C8D8E8" }}>Acesso imediato</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={18} style={{ color: "#10B981" }} />
+                  <span style={{ color: "#C8D8E8" }}>Sem compromisso</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={18} style={{ color: "#10B981" }} />
+                  <span style={{ color: "#C8D8E8" }}>Garantia 100%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Coluna Direita - Card com Estatísticas */}
+            <div className="flex justify-center">
+              <div
+                className="p-8 rounded-2xl text-center max-w-sm"
+                style={{
+                  background: "rgba(255,193,7,0.08)",
+                  border: "2px solid rgba(255,193,7,0.3)",
+                  backdropFilter: "blur(10px)"
+                }}
+              >
+                <div className="mb-6">
+                  <TrendingUp size={48} style={{ color: "#FFC107", margin: "0 auto" }} />
+                </div>
+                <p className="text-5xl font-black mb-3" style={{ color: "#FFC107" }}>+342%</p>
+                <p className="text-base mb-6" style={{ color: "#C8D8E8" }}>Retorno médio de investidores que seguem a estratégia de alocação correta</p>
+                <div className="space-y-3 text-left">
+                  <p className="text-sm font-bold" style={{ color: "#8A9BB5" }}>Você vai receber:</p>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={18} style={{ color: "#10B981" }} />
+                    <span style={{ color: "#C8D8E8" }}>Ebook Completo</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={18} style={{ color: "#10B981" }} />
+                    <span style={{ color: "#C8D8E8" }}>Guia Prático</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={18} style={{ color: "#10B981" }} />
+                    <span style={{ color: "#C8D8E8" }}>Planilha Automatizada</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabela de Comparação */}
+          <div className="mt-20">
+            <h3 className="text-2xl font-bold text-center mb-10" style={{ color: "#F0E6C8" }}>COMPARE E DECIDA</h3>
+            <p className="text-center mb-8" style={{ color: "#8A9BB5" }}>Veja quanto você economiza escolhendo nosso guia</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr style={{ borderBottom: "2px solid rgba(255,193,7,0.3)" }}>
+                    <th className="text-left py-4 px-4" style={{ color: "#F0E6C8" }}>Produto</th>
+                    <th className="text-right py-4 px-4" style={{ color: "#F0E6C8" }}>Preço Mercado</th>
+                    <th className="text-right py-4 px-4" style={{ color: "#FFC107" }}>Nosso Guia</th>
+                    <th className="text-right py-4 px-4" style={{ color: "#10B981" }}>Sua Economia</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { name: "Curso Especialização em Alocação", market: "R$ 18.000", guide: "R$ 99,90", save: "R$ 17.900,10" },
+                    { name: "Mentoria de Investimentos", market: "R$ 15.000", guide: "R$ 99,90", save: "R$ 14.900,10" },
+                    { name: "MBA em Finanças", market: "R$ 45.000", guide: "R$ 99,90", save: "R$ 44.900,10" },
+                    { name: "Bootcamp de Investimentos", market: "R$ 15.000", guide: "R$ 99,90", save: "R$ 14.900,10" },
+                  ].map((row, idx) => (
+                    <tr key={idx} style={{ borderBottom: "1px solid rgba(255,193,7,0.1)" }}>
+                      <td className="py-4 px-4" style={{ color: "#C8D8E8" }}>{row.name}</td>
+                      <td className="text-right py-4 px-4" style={{ color: "#8A9BB5" }}>{row.market}</td>
+                      <td className="text-right py-4 px-4 font-bold" style={{ color: "#FFC107" }}>{row.guide}</td>
+                      <td className="text-right py-4 px-4 font-bold" style={{ color: "#10B981" }}>{row.save}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── Para quem é / Para quem NÃO é ──────────────────────────────────── */}
       <section className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container max-w-4xl mx-auto">
