@@ -6,7 +6,7 @@
   },
   "deploy": {
     "numReplicas": 1,
-    "startCommand": "NODE_ENV=production node --loader tsx/esm server/_core/index.ts",
+    "startCommand": "NODE_ENV=production node --import tsx/esm server/_core/index.ts",
     "restartPolicyMaxRetries": 5
   }
 }
