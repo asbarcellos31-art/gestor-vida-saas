@@ -5,7 +5,7 @@ COPY package.json ./
 RUN pnpm install --no-frozen-lockfile
 COPY . .
 RUN rm -rf dist
-RUN pnpm exec vite build || true
+RUN pnpm exec vite build 2>&1 | tee /tmp/vite-build.log; cat /tmp/vite-build.log
 RUN pnpm exec esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
 EXPOSE 3000
 ENV NODE_ENV=production
