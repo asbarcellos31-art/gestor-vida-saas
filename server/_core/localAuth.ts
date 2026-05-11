@@ -64,8 +64,6 @@ export function registerLocalAuthRoutes(app: Express) {
         return;
       }
 
-      // Criar trial de 5 dias automaticamente
-      await db.createTrialSubscription(user.id, "combo");
 
       // Enviar e-mail de boas-vindas (não bloqueia o cadastro)
       sendWelcomeEmail(emailLower, name.trim()).catch(() => {});
