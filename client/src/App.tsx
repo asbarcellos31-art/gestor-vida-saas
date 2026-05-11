@@ -27,6 +27,35 @@ import TutorialCompleto from "./pages/TutorialCompleto";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import LGPDPage from "./pages/LGPDPage";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
+
+const HOTMART_URL = "https://pay.hotmart.com/M105784997J?checkoutMode=2";
+
+function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  const { user, loading } = useAuth();
+  const { data: subscription, isLoading: subLoading } = trpc.subscription.get.useQuery(
+    undefined,
+    { enabled: !!user }
+  );
+
+  if (loading || subLoading) return null;
+
+  if (!user) {
+    window.location.href = "/login";
+    return null;
+  }
+
+  const plan = (subscription as any)?.plan;
+  const isAdmin = (subscription as any)?.isAdmin;
+
+  if (!plan && !isAdmin) {
+    window.location.href = HOTMART_URL;
+    return null;
+  }
+
+  return <Component />;
+}
 
 function Router() {
   return (
@@ -36,29 +65,29 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/esqueci-senha" component={EsqueciSenha} />
       <Route path="/redefinir-senha" component={RedefinirSenha} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/gestao-tempo" component={GestaoTempo} />
-      <Route path="/orcamento/dashboard" component={OrcamentoDashboard} />
-      <Route path="/orcamento/:year/:month">
-        {(params) => <MonthlyBudget key={`${params.year}-${params.month}`} />}
-      </Route>
-      <Route path="/orcamento" component={MonthlyBudget} />
-      <Route path="/parcelados" component={Installments} />
-      <Route path="/aposentadoria" component={Retirement} />
-      <Route path="/planos" component={Planos} />
-      <Route path="/trial-expirado" component={TrialExpired} />
-      <Route path="/aprender" component={Aprender} />
-      <Route path="/ferramentas" component={Ferramentas} />
-      <Route path="/tutorial-completo" component={TutorialCompleto} />
-      <Route path="/tutorial/:id">
-        {(params: { id?: string }) => <VideoPlayer id={params.id ?? ""} />}
-      </Route>
-      <Route path="/admin" component={Admin} />
-      <Route path="/assinatura/sucesso" component={AssinaturaSucesso} />
-      <Route path="/orcamento/configuracoes" component={OrcamentoSettings} />
       <Route path="/politica-de-privacidade" component={PrivacyPolicy} />
       <Route path="/termos-de-uso" component={TermsOfUse} />
       <Route path="/lgpd" component={LGPDPage} />
+      <Route path="/dashboard">{() => <ProtectedRoute component={Dashboard} />}</Route>
+      <Route path="/gestao-tempo">{() => <ProtectedRoute component={GestaoTempo} />}</Route>
+      <Route path="/orcamento/dashboard">{() => <ProtectedRoute component={OrcamentoDashboard} />}</Route>
+      <Route path="/orcamento/:year/:month">
+        {(params) => <ProtectedRoute component={() => <MonthlyBudget key={`${params.year}-${params.month}`} />} />}
+      </Route>
+      <Route path="/orcamento">{() => <ProtectedRoute component={MonthlyBudget} />}</Route>
+      <Route path="/parcelados">{() => <ProtectedRoute component={Installments} />}</Route>
+      <Route path="/aposentadoria">{() => <ProtectedRoute component={Retirement} />}</Route>
+      <Route path="/planos" component={Planos} />
+      <Route path="/trial-expirado" component={TrialExpired} />
+      <Route path="/aprender">{() => <ProtectedRoute component={Aprender} />}</Route>
+      <Route path="/ferramentas">{() => <ProtectedRoute component={Ferramentas} />}</Route>
+      <Route path="/tutorial-completo">{() => <ProtectedRoute component={TutorialCompleto} />}</Route>
+      <Route path="/tutorial/:id">
+        {(params: { id?: string }) => <ProtectedRoute component={() => <VideoPlayer id={params.id ?? ""} />} />}
+      </Route>
+      <Route path="/admin" component={Admin} />
+      <Route path="/assinatura/sucesso" component={AssinaturaSucesso} />
+      <Route path="/orcamento/configuracoes">{() => <ProtectedRoute component={OrcamentoSettings} />}</Route>
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
