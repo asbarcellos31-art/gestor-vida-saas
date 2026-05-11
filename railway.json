@@ -6,7 +6,6 @@
   },
   "deploy": {
     "numReplicas": 1,
-    "startCommand": "NODE_ENV=production node dist/index.js",
     "restartPolicyMaxRetries": 5
   }
 }
