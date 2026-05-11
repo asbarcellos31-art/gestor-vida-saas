@@ -2,20 +2,18 @@ import { trpc } from "@/lib/trpc";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import {
-  Clock,
-  Wallet,
   Star,
   CheckCircle2,
   X,
   ArrowRight,
   Zap,
   ExternalLink,
-  CreditCard,
   BookOpen,
   Infinity,
 } from "lucide-react";
+
+const HOTMART_URL = "https://pay.hotmart.com/M105784997J?checkoutMode=2";
 
 const PLANS = [
   {
@@ -78,38 +76,19 @@ const PLANS = [
 ];
 
 export default function Planos() {
-  const utils = trpc.useUtils();
   const { data: subscription } = trpc.subscription.get.useQuery();
-
-  const createCheckout = trpc.stripe.createCheckoutSession.useMutation({
-    onSuccess: (data) => {
-      if (data.url) {
-        toast.info("Redirecionando para o checkout seguro...");
-        window.open(data.url, "_blank");
-      }
-    },
-    onError: (e) => toast.error(e.message),
-  });
-
-  const createPortal = trpc.stripe.createPortalSession.useMutation({
-    onSuccess: (data) => {
-      if (data.url) {
-        toast.info("Abrindo portal de pagamento...");
-        window.open(data.url, "_blank");
-      }
-    },
-    onError: (e) => toast.error(e.message),
-  });
 
   const sub = subscription as {
     plan?: string;
     status?: string;
     isAdmin?: boolean;
-    stripeCustomerId?: string | null;
   } | null;
 
   const currentPlan = sub?.plan;
-  const hasStripeSubscription = !!(sub as any)?.stripeCustomerId;
+
+  const handleBuy = () => {
+    window.open(HOTMART_URL, "_blank");
+  };
 
   return (
     <AppLayout>
@@ -123,45 +102,27 @@ export default function Planos() {
           </p>
         </div>
 
-        {/* Plano ativo */}
         {sub && !sub.isAdmin && currentPlan && (
-          <div className="mb-8 p-4 rounded-xl bg-emerald-900/20 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                <Zap className="w-5 h-5 text-emerald-400" />
-              </div>
-              <div>
-                <p className="font-semibold text-foreground">
-                  Acesso ativo: {PLANS.find((p) => p.id === currentPlan)?.name ?? currentPlan}
-                </p>
-                <p className="text-sm text-muted-foreground">Acesso vitalício — sem mensalidade</p>
-              </div>
+          <div className="mb-8 p-4 rounded-xl bg-emerald-900/20 border border-emerald-500/30 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+              <Zap className="w-5 h-5 text-emerald-400" />
             </div>
-            {hasStripeSubscription && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => createPortal.mutate({ origin: window.location.origin })}
-                disabled={createPortal.isPending}
-                className="border-primary/30 text-primary hover:bg-primary/10"
-              >
-                <CreditCard className="w-4 h-4 mr-1" />
-                Gerenciar pagamento
-                <ExternalLink className="w-3 h-3 ml-1" />
-              </Button>
-            )}
+            <div>
+              <p className="font-semibold text-foreground">
+                Acesso ativo: {PLANS.find((p) => p.id === currentPlan)?.name ?? currentPlan}
+              </p>
+              <p className="text-sm text-muted-foreground">Acesso vitalício — sem mensalidade</p>
+            </div>
           </div>
         )}
 
-        {/* Destaque combo */}
         <div className="mb-6 p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 flex items-center gap-3">
           <Star className="w-5 h-5 text-amber-400 flex-shrink-0" />
           <p className="text-sm text-foreground">
-            <span className="font-bold text-amber-400">Melhor custo-benefício:</span> E-book (R$ 19,90) + Sistema vitalício (R$ 250,00) separados custam R$ 269,90 — no Combo você paga apenas <span className="font-bold text-amber-400">R$ 147,90</span> e economiza R$ 122,00.
+            <span className="font-bold text-amber-400">Melhor custo-benefício:</span> E-book + Sistema separados custam R$ 269,90 — no Combo você paga apenas <span className="font-bold text-amber-400">R$ 147,90</span> e economiza R$ 122,00.
           </p>
         </div>
 
-        {/* Plans grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PLANS.map((plan) => {
             const isCurrentPlan = currentPlan === plan.id;
@@ -220,10 +181,7 @@ export default function Planos() {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() =>
-                      createCheckout.mutate({ plan: plan.id, origin: window.location.origin })
-                    }
-                    disabled={createCheckout.isPending}
+                    onClick={handleBuy}
                     className={`w-full rounded-xl font-semibold ${
                       plan.badge
                         ? "bg-amber-500 hover:bg-amber-600 text-white"
@@ -231,7 +189,7 @@ export default function Planos() {
                     }`}
                   >
                     Comprar agora
-                    <ArrowRight className="w-4 h-4 ml-1" />
+                    <ExternalLink className="w-4 h-4 ml-1" />
                   </Button>
                 )}
               </div>
@@ -240,7 +198,7 @@ export default function Planos() {
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          Pagamento seguro. Acesso vitalício — pague uma vez, use para sempre. Sem mensalidade.
+          Pagamento seguro via Hotmart. Acesso vitalício — pague uma vez, use para sempre.
         </p>
       </div>
     </AppLayout>
