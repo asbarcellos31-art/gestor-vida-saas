@@ -5,7 +5,7 @@ nixPkgs = ['nodejs_20', 'pnpm-10_x']
 cmds = ['npm install -g corepack@0.24.1 && corepack enable && pnpm install --no-frozen-lockfile']
 
 [phases.build]
-cmds = ['pnpm run build']
+cmds = ['rm -rf dist && pnpm run build']
 
 [start]
 cmd = 'NODE_ENV=production node dist/index.js'
