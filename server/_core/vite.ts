@@ -15,7 +15,6 @@ export async function setupVite(app: Express, server: Server) {
     server: { middlewareMode: true, hmr: { server }, allowedHosts: true as const },
     appType: "custom",
   });
-
   app.use(vite.middlewares);
   app.use("*", async (req, res, next) => {
     try {
@@ -32,12 +31,10 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(__dirname, "..", "public");
-
+  const distPath = path.resolve(__dirname, "..", "..", "dist", "public");
   if (!fs.existsSync(distPath)) {
     console.error(`Could not find build directory: ${distPath}`);
   }
-
   app.use(express.static(distPath));
   app.use("*", (_req, res) => {
     res.sendFile(path.resolve(distPath, "index.html"));
