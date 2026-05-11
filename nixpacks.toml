@@ -1,11 +1,5 @@
-[phases.setup]
-nixPkgs = ['nodejs_20', 'pnpm-10_x']
-
-[phases.install]
-cmds = ['npm install -g corepack@0.24.1 && corepack enable && pnpm install --no-frozen-lockfile']
-
 [phases.build]
-cmds = ['npx vite build && npx esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist']
+cmds = ['pnpm install --no-frozen-lockfile && pnpm run build']
 
 [start]
 cmd = 'NODE_ENV=production node dist/index.js'
