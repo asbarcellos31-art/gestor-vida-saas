@@ -104,8 +104,8 @@ export async function handleHotmartWebhook(req: Request, res: Response) {
       }
     }
 
-    const payload: HotmartPayload = req.body;
-    const event = payload?.event ?? "";
+   const payload: HotmartPayload = req.body?.data ? req.body : { event: req.body?.event, data: req.body };
+const event = payload?.event ?? req.body?.event ?? "";
 
     console.log(`[Hotmart Webhook] Evento recebido: ${event}`);
 
