@@ -10,6 +10,7 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { handleStripeWebhook } from "../stripe_webhook";
 import { handleHotmartWebhook } from "../hotmart_webhook";
+import { startUserMonitor } from "./userMonitor";
 import { registerStorageProxy } from "./storageProxy";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -73,7 +74,8 @@ async function startServer() {
   const port = parseInt(process.env.PORT || "3000");
 
 server.listen(port, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${port}/`);
+    console.log(`Server running on port ${port}`);
+    startUserMonitor();
   });
 }
 
