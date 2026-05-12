@@ -49,12 +49,10 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   const plan = (subscription as any)?.plan;
   const isAdmin = (subscription as any)?.isAdmin;
 
- if (!subLoading && !plan && !isAdmin) {
+  if (subscription !== undefined && !plan && !isAdmin) {
     window.location.href = HOTMART_URL;
     return null;
   }
-
-  if (subLoading) return null;
 
   return <Component />;
 }
