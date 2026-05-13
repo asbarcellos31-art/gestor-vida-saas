@@ -6,6 +6,46 @@ const OFFER_EBOOK = "cu6bor2b";
 const OFFER_SISTEMA = "l8k18cwx";
 const OFFER_COMBO = "401asx1p";
 
+export async function checkAndGrantPendingHotmartAccess(userId: number, email: string): Promise<void> {
+  try {
+    const db = await getDb();
+    if (!db) return;
+
+    const purchases = await db.execute(
+      `SELECT plan FROM hotmart_purchases WHERE email = ? AND plan != 'ebook' LIMIT 1`,
+      [email]
+    ) as any[];
+
+    const rows = purchases[0] as any[];
+    if (!rows || rows.length === 0) return;
+
+    const plan = rows[0].plan;
+
+    const existing = await db.execute(
+      `SELECT id FROM subscriptions WHERE userId = ? LIMIT 1`,
+      [userId]
+    ) as any[];
+
+    const existingRows = existing[0] as any[];
+
+    if (existingRows && existingRows.length > 0) {
+      await db.execute(
+        `UPDATE subscriptions SET plan = ?, status = 'active', updatedAt = NOW() WHERE userId = ?`,
+        [plan, userId]
+      );
+    } else {
+      await db.execute(
+        `INSERT INTO subscriptions (userId, plan, status, createdAt, updatedAt) VALUES (?, ?, 'active', NOW(), NOW())`,
+        [userId, plan]
+      );
+    }
+
+    console.log(`[Hotmart] Acesso pendente liberado para ${email} — plano: ${plan}`);
+  } catch (err) {
+    console.error("[Hotmart] Erro ao verificar acesso pendente:", err);
+  }
+}
+
 export async function handleHotmartWebhook(req: Request, res: Response) {
   try {
     const body = req.body;
@@ -38,39 +78,26 @@ export async function handleHotmartWebhook(req: Request, res: Response) {
     }
 
     const isEbook = offerCode === OFFER_EBOOK;
-    const isSistema = offerCode === OFFER_SISTEMA;
     const isCombo = offerCode === OFFER_COMBO || !offerCode;
+    const plan = isCombo ? "combo" : "budget";
 
-    const approvedEvents = [
-      "PURCHASE_APPROVED",
-      "PURCHASE_COMPLETE",
-      "purchase.approved",
-      "purchase.complete",
-    ];
+    const approvedEvents = ["PURCHASE_APPROVED", "PURCHASE_COMPLETE", "purchase.approved", "purchase.complete"];
 
     if (!approvedEvents.includes(event) && event !== "") {
       console.log(`[Hotmart Webhook] Evento ignorado: ${event}`);
       return res.status(200).json({ received: true });
     }
 
-    console.log(`[Hotmart Webhook] Compra aprovada — email: ${buyerEmail} | oferta: ${offerCode} | ebook: ${isEbook} | sistema: ${isSistema} | combo: ${isCombo}`);
+    console.log(`[Hotmart Webhook] Compra — email: ${buyerEmail} | oferta: ${offerCode} | ebook: ${isEbook}`);
 
     if (isEbook) {
-      // Só e-book — não libera acesso ao sistema
       console.log(`[Hotmart Webhook] Oferta e-book — sem acesso ao sistema para ${buyerEmail}`);
       return res.status(200).json({ received: true, access: "ebook_only" });
     }
 
-    // Sistema ou Combo — libera acesso
     const db = await getDb();
-    if (!db) {
-      console.error("[Hotmart Webhook] DB indisponível");
-      return res.status(500).json({ error: "DB unavailable" });
-    }
+    if (!db) return res.status(500).json({ error: "DB unavailable" });
 
-    const plan = isCombo ? "combo" : "budget";
-
-    // Salva compra no banco
     await db.execute(
       `INSERT INTO hotmart_purchases (email, name, offer_code, plan, created_at)
        VALUES (?, ?, ?, ?, NOW())
@@ -78,23 +105,20 @@ export async function handleHotmartWebhook(req: Request, res: Response) {
       [buyerEmail, buyerName, offerCode, plan, offerCode, plan]
     );
 
-    // Verifica se usuário já tem conta
-    const users = await db.execute(
-      `SELECT id FROM users WHERE email = ? LIMIT 1`,
-      [buyerEmail]
-    );
-
+    const users = await db.execute(`SELECT id FROM users WHERE email = ? LIMIT 1`, [buyerEmail]) as any[];
     const userRows = users[0] as any[];
 
-    if (userRows.length > 0) {
+    if (userRows && userRows.length > 0) {
       const userId = userRows[0].id;
-      await db.execute(
-        `INSERT INTO subscriptions (userId, plan, status, createdAt, updatedAt)
-         VALUES (?, ?, 'active', NOW(), NOW())
-         ON DUPLICATE KEY UPDATE plan = ?, status = 'active', updatedAt = NOW()`,
-        [userId, plan, plan]
-      );
-      console.log(`[Hotmart Webhook] Assinatura ativada para usuário existente: ${buyerEmail}`);
+      const existing = await db.execute(`SELECT id FROM subscriptions WHERE userId = ? LIMIT 1`, [userId]) as any[];
+      const existingRows = existing[0] as any[];
+
+      if (existingRows && existingRows.length > 0) {
+        await db.execute(`UPDATE subscriptions SET plan = ?, status = 'active', updatedAt = NOW() WHERE userId = ?`, [plan, userId]);
+      } else {
+        await db.execute(`INSERT INTO subscriptions (userId, plan, status, createdAt, updatedAt) VALUES (?, ?, 'active', NOW(), NOW())`, [userId, plan]);
+      }
+      console.log(`[Hotmart Webhook] Assinatura ativada para: ${buyerEmail}`);
     } else {
       console.log(`[Hotmart Webhook] Comprador ${buyerEmail} ainda não tem conta — acesso pendente`);
       sendPostPurchaseEmail(buyerEmail, buyerName).catch(() => {});
