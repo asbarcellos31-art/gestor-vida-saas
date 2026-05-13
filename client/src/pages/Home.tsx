@@ -28,6 +28,10 @@ const SCREEN_TEMPO = "https://files.manuscdn.com/user_upload_by_module/session_f
 const SCREEN_ORCAMENTO = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663348080686/noAKfgniWZfoKskx.png";
 const SCREEN_APOSENTADORIA = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663348080686/FYaeNAYzYrOsATYY.png";
 
+const HOTMART_EBOOK = "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=cu6bor2b";
+const HOTMART_SISTEMA = "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=l8k18cwx";
+const HOTMART_COMBO = "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=401asx1p";
+
 const PLANS = [
   {
     id: "time_management",
@@ -37,6 +41,7 @@ const PLANS = [
     description: "Método 3 Pilares da Vida — guia completo em PDF",
     icon: Clock,
     color: "from-amber-600 to-yellow-700",
+    hotmartUrl: HOTMART_EBOOK,
     features: [
       "E-book: Método 3 Pilares da Vida",
       "Gestão de Tempo, Dinheiro e Futuro",
@@ -53,6 +58,7 @@ const PLANS = [
     description: "Acesso completo e permanente ao sistema Gestor de Vida",
     icon: Wallet,
     color: "from-amber-700 to-amber-900",
+    hotmartUrl: HOTMART_SISTEMA,
     features: [
       "Gestão do Tempo completa",
       "Orçamento Doméstico completo",
@@ -73,6 +79,7 @@ const PLANS = [
     icon: Star,
     color: "from-yellow-500 to-amber-600",
     badge: "Melhor Oferta",
+    hotmartUrl: HOTMART_COMBO,
     features: [
       "E-book: Método 3 Pilares da Vida",
       "Acesso vitalício ao sistema completo",
@@ -151,7 +158,15 @@ export default function Home() {
     if (isAuthenticated) {
       navigate("/dashboard");
     } else {
-      navigate("/cadastro");
+      window.location.href = HOTMART_COMBO;
+    }
+  };
+
+  const handlePlanClick = (hotmartUrl: string) => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    } else {
+      window.location.href = hotmartUrl;
     }
   };
 
@@ -171,7 +186,7 @@ export default function Home() {
             ) : (
               <>
                 <Button variant="ghost" onClick={() => navigate("/login")} style={{ color: "#C9A84C" }}>Entrar</Button>
-                <Button onClick={() => navigate("/cadastro")} style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }} className="font-semibold">Começar agora</Button>
+                <Button onClick={() => window.location.href = HOTMART_COMBO} style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }} className="font-semibold">Começar agora</Button>
               </>
             )}
           </div>
@@ -284,7 +299,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── Comparativo ─────────────────────────────────────────────────────── */}
       <section className="py-20 px-4" style={{ background: "linear-gradient(135deg, #0F1B35 0%, #1a2a4a 100%)" }}>
         <div className="container max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -473,10 +487,10 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {PLANS.map((plan) => (
-              <div key={plan.id} className="relative rounded-2xl p-5 sm:p-8 flex flex-col" style={{ background: plan.badge ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.04)", border: plan.badge ? "2px solid rgba(201,168,76,0.6)" : "1px solid rgba(201,168,76,0.15)" }}>
-                {plan.badge && (
+              <div key={plan.id} className="relative rounded-2xl p-5 sm:p-8 flex flex-col" style={{ background: (plan as any).badge ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.04)", border: (plan as any).badge ? "2px solid rgba(201,168,76,0.6)" : "1px solid rgba(201,168,76,0.15)" }}>
+                {(plan as any).badge && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="border-0 px-4 py-1 text-sm font-semibold" style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}>{plan.badge}</Badge>
+                    <Badge className="border-0 px-4 py-1 text-sm font-semibold" style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}>{(plan as any).badge}</Badge>
                   </div>
                 )}
                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${plan.color} flex items-center justify-center mb-5`}>
@@ -500,7 +514,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <Button onClick={() => handleGetStarted()} className="w-full rounded-xl py-5 font-semibold" style={plan.badge ? { background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" } : { background: "rgba(201,168,76,0.15)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.4)" }}>
+                <Button onClick={() => handlePlanClick(plan.hotmartUrl)} className="w-full rounded-xl py-5 font-semibold" style={(plan as any).badge ? { background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" } : { background: "rgba(201,168,76,0.15)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.4)" }}>
                   Comprar agora <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </div>
@@ -538,8 +552,3 @@ export default function Home() {
             <a href="/termos-de-uso" className="transition-colors" style={{ color: "#5A6A80" }}>Termos de Uso</a>
             <a href="/lgpd" className="transition-colors" style={{ color: "#5A6A80" }}>LGPD</a>
           </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
