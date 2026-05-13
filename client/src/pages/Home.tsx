@@ -552,3 +552,7 @@ export default function Home() {
             <a href="/termos-de-uso" className="transition-colors" style={{ color: "#5A6A80" }}>Termos de Uso</a>
             <a href="/lgpd" className="transition-colors" style={{ color: "#5A6A80" }}>LGPD</a>
           </div>
+      </footer>
+    </div>
+  );
+}
