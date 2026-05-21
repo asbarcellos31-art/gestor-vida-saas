@@ -20,6 +20,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useLocation } from "wouter";
+import { trackInitiateCheckout } from "@/lib/pixel";
 
 const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png";
 
@@ -158,14 +159,26 @@ export default function Home() {
     if (isAuthenticated) {
       navigate("/dashboard");
     } else {
+      trackInitiateCheckout({
+        content_name: "Combo Promocional",
+        content_category: "SaaS",
+        value: 147.90,
+        currency: "BRL",
+      });
       window.location.href = HOTMART_COMBO;
     }
   };
 
-  const handlePlanClick = (hotmartUrl: string) => {
+  const handlePlanClick = (hotmartUrl: string, planName: string, price: string) => {
     if (isAuthenticated) {
       navigate("/dashboard");
     } else {
+      trackInitiateCheckout({
+        content_name: planName,
+        content_category: "SaaS",
+        value: parseFloat(price.replace(",", ".")),
+        currency: "BRL",
+      });
       window.location.href = hotmartUrl;
     }
   };
@@ -186,7 +199,7 @@ export default function Home() {
             ) : (
               <>
                 <Button variant="ghost" onClick={() => navigate("/login")} style={{ color: "#C9A84C" }}>Entrar</Button>
-                <Button onClick={() => window.location.href = HOTMART_COMBO} style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }} className="font-semibold">Começar agora</Button>
+                <Button onClick={() => handleGetStarted()} style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }} className="font-semibold">Começar agora</Button>
               </>
             )}
           </div>
@@ -514,7 +527,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <Button onClick={() => handlePlanClick(plan.hotmartUrl)} className="w-full rounded-xl py-5 font-semibold" style={(plan as any).badge ? { background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" } : { background: "rgba(201,168,76,0.15)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.4)" }}>
+                <Button onClick={() => handlePlanClick(plan.hotmartUrl, plan.name, plan.price)} className="w-full rounded-xl py-5 font-semibold" style={(plan as any).badge ? { background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" } : { background: "rgba(201,168,76,0.15)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.4)" }}>
                   Comprar agora <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </div>
