@@ -29,6 +29,9 @@ import TermsOfUse from "./pages/TermsOfUse";
 import LGPDPage from "./pages/LGPDPage";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { initPixel, trackPageView } from "@/lib/pixel";
+import { useEffect } from "react";
+import { useLocation } from "wouter";
 
 const HOTMART_URL = "https://pay.hotmart.com/M105784997J?checkoutMode=2";
 
@@ -58,6 +61,16 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
 }
 
 function Router() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    initPixel();
+  }, []);
+
+  useEffect(() => {
+    trackPageView();
+  }, [location]);
+
   return (
     <Switch>
       <Route path="/" component={Home} />
