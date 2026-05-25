@@ -54,7 +54,7 @@ const PLANS = [
   {
     id: "budget",
     name: "Sistema Vitalício",
-    price: "250,00",
+    price: "159,90",
     priceLabel: "acesso vitalício",
     description: "Acesso completo e permanente ao sistema Gestor de Vida",
     icon: Wallet,
@@ -74,7 +74,7 @@ const PLANS = [
   {
     id: "combo",
     name: "Combo Promocional",
-    price: "147,90",
+    price: "99,90",
     priceLabel: "acesso vitalício",
     description: "E-book + Sistema — tudo por um preço especial",
     icon: Star,
@@ -97,9 +97,9 @@ const CYCLE_STEPS = [
   {
     number: "01",
     icon: Clock,
-    title: "Gestão do Tempo",
-    subtitle: "O ponto de partida",
-    description: "Tudo começa aqui. Você classifica suas tarefas como Importante, Urgente ou Circunstancial. Você define o que vai fazer hoje — e o que vai esperar. Parece simples. E é. Mas fazer isso todo dia, sem pular, sem improvisar, sem deixar a cabeça decidir no automático — isso exige disciplina.",
+    title: "Pare de manter pendências ocupando espaço mental o dia inteiro.",
+    subtitle: "Clareza sobre o que importa",
+    description: "Você classifica cada tarefa como Importante, Urgente ou Circunstancial. O sistema organiza sua atenção — não apenas sua agenda. Quando você sabe exatamente o que fazer agora, a mente para de gastar energia tentando lembrar de tudo.",
     example: "Exemplo: Camila, analista de RH, passava 3h por dia respondendo e-mails que podiam esperar. Ao classificar suas tarefas, percebeu que 60% do que fazia era Circunstancial — urgente para os outros, irrelevante para ela. Em 2 semanas, recuperou 1h30 por dia.",
     screen: SCREEN_TEMPO,
     screenLabel: "Tela de Gestão do Tempo — classificação e timer por tarefa",
@@ -108,9 +108,9 @@ const CYCLE_STEPS = [
   {
     number: "02",
     icon: Zap,
-    title: "Eficiência e Produtividade",
-    subtitle: "O que o tempo libera",
-    description: "Quando você para de desperdiçar tempo com o que não importa, sobra tempo para o que importa. Isso não é motivação — é matemática. 1h30 a mais por dia são 45h por mês. São 540h por ano. O que você faria com 540h a mais de foco no que realmente move sua vida?",
+    title: "Quando a atenção se concentra, o tempo se expande.",
+    subtitle: "Execução sem fricção",
+    description: "Não é sobre trabalhar mais horas. É sobre parar de fragmentar o foco entre tarefas que não deveriam estar competindo. 1h30 a mais de atenção por dia são 540h por ano — sem mudar sua rotina, apenas reorganizando sua atenção.",
     example: "Exemplo: Marcos, corretor autônomo, usava as tardes para tarefas administrativas. Ao reorganizar o tempo, passou a usar as tardes para prospecção — o período em que os clientes estão mais disponíveis. Em 60 dias, aumentou em 40% o número de reuniões realizadas.",
     screen: SCREEN_DASHBOARD,
     screenLabel: "Dashboard — Score de Produtividade e visão geral do dia",
@@ -119,9 +119,9 @@ const CYCLE_STEPS = [
   {
     number: "03",
     icon: TrendingUp,
-    title: "Mais resultado, mais renda",
+    title: "Mais resultado não resolve se o dinheiro continua invisível.",
     subtitle: "A consequência natural",
-    description: "Mais foco gera mais resultado. Mais resultado gera mais renda. Isso não é promessa — é a consequência lógica de usar o tempo certo nas coisas certas. E quando a renda aumenta, surge a pergunta que a maioria nunca responde: para onde está indo esse dinheiro a mais?",
+    description: "Foco gera resultado. Resultado gera renda. Mas renda sem estrutura financeira vira consumo automático. A maioria das pessoas não perde dinheiro por irresponsabilidade — perde por falta de visibilidade. É aí que o segundo pilar entra.",
     example: "Exemplo: Marcos fechou 2 contratos a mais por mês. R$3.200 a mais na conta. Mas no fim do mês, o dinheiro tinha sumido. Sem controle, mais renda virou mais gasto. Foi aí que o segundo pilar entrou.",
     screen: null,
     screenLabel: null,
@@ -130,9 +130,9 @@ const CYCLE_STEPS = [
   {
     number: "04",
     icon: Wallet,
-    title: "Controle do Orçamento",
-    subtitle: "O contato com a realidade",
-    description: "Aqui está o coração do método financeiro: você lança cada gasto. Manualmente. Intencionalmente. Não tem integração com banco. Não tem importação de extrato. Porque o ato de lançar é o método. Quando você digita 'R$47,00 — delivery', você está tendo contato com a sua realidade. E esse contato muda comportamento.",
+    title: "Tenha clareza financeira sem depender de planilhas confusas.",
+    subtitle: "Contato com a realidade",
+    description: "Você lança cada gasto. Manualmente. Intencionalmente. Não tem integração automática com banco porque integração automática não muda comportamento. Quando você digita 'R$47,00 — delivery', você está tendo contato com a sua realidade. E esse contato é o que muda tudo.",
     example: "Exemplo: Camila descobriu que gastava R$680 por mês em delivery e assinaturas que mal usava. Não porque era irresponsável — mas porque nunca tinha parado para ver os números. Em 30 dias de lançamento manual, cortou R$420 em gastos invisíveis.",
     screen: SCREEN_ORCAMENTO,
     screenLabel: "Tela de Orçamento — lançamento de despesas e Regra 50/30/20",
@@ -141,9 +141,9 @@ const CYCLE_STEPS = [
   {
     number: "05",
     icon: Target,
-    title: "Projeção do Futuro",
-    subtitle: "O destino do processo",
-    description: "Quando você controla o tempo e o dinheiro, aparece algo que a maioria nunca vê: sobra. E essa sobra, investida com consistência, muda o destino. O simulador de aposentadoria mostra 3 cenários reais — pessimista, regular e otimista — com base no que você realmente está guardando, não no que você acha que está guardando.",
+    title: "Veja, em números reais, para onde suas decisões de hoje estão te levando.",
+    subtitle: "Direção concreta",
+    description: "O simulador de aposentadoria mostra 3 cenários baseados no que você realmente está guardando — não no que você acha que está guardando. Pessimista, regular e otimista. Sem jargão financeiro, sem promessa vaga. Só números reais e o impacto do tempo.",
     example: "Exemplo: Marcos, 34 anos, descobriu que investindo R$500/mês no cenário regular (8% a.a.), chegaria aos 65 anos com R$745.000 acumulados. Não é sorte. Não é herança. É o processo simples, repetido por 31 anos.",
     screen: SCREEN_APOSENTADORIA,
     screenLabel: "Tela de Aposentadoria — simulação em 3 cenários com dados reais do orçamento",
@@ -162,10 +162,10 @@ export default function Home() {
       trackInitiateCheckout({
         content_name: "Combo Promocional",
         content_category: "SaaS",
-        value: 147.90,
+        value: 99.90,
         currency: "BRL",
       });
-      window.location.href = HOTMART_COMBO;
+      setTimeout(() => { window.location.href = HOTMART_COMBO; }, 300);
     }
   };
 
@@ -179,7 +179,7 @@ export default function Home() {
         value: parseFloat(price.replace(",", ".")),
         currency: "BRL",
       });
-      window.location.href = hotmartUrl;
+      setTimeout(() => { window.location.href = hotmartUrl; }, 300);
     }
   };
 
@@ -206,51 +206,71 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* HERO */}
       <section className="pt-36 pb-24 px-4" style={{ background: "linear-gradient(180deg,#0D1B4B 0%,#0B1437 100%)" }}>
         <div className="container text-center max-w-4xl mx-auto">
           <Badge className="mb-6 border" style={{ background: "rgba(201,168,76,0.15)", color: "#E2C97E", borderColor: "rgba(201,168,76,0.4)" }}>
-            🎁 Pagamento único — sem mensalidade, sem recorrência
+            Sistema operacional pessoal — pagamento único, sem mensalidade
           </Badge>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight" style={{ color: "#F0E6C8" }}>
-            O sistema que exige <span style={{ color: "#C9A84C" }}>a sua participação</span> para funcionar
+            Sua rotina não está pesada.<br />
+            <span style={{ color: "#C9A84C" }}>Ela está fragmentada.</span>
           </h1>
           <p className="text-lg sm:text-xl mb-6 max-w-2xl mx-auto leading-relaxed" style={{ color: "#8A9BB5" }}>
-            Gestor de Vida é uma ferramenta de gestão do tempo e das finanças pessoais baseada no <strong style={{ color: "#C9A84C" }}>Método 3 Pilares</strong>: Tempo, Dinheiro e Futuro. Não tem integração automática com banco. Não importa extrato. Não pensa por você.
+            O Gestor de Vida foi criado para pessoas que sentem que estão sempre ocupadas, mas raramente em controle. Centralize tarefas, finanças e decisões em um único sistema pensado para reduzir fricção mental e devolver clareza para sua rotina.
           </p>
           <p className="text-base sm:text-lg mb-10 max-w-xl mx-auto leading-relaxed font-medium" style={{ color: "#C9A84C" }}>
             Você lança. Você enxerga. Você decide. Esse contato com a realidade é o método.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => handleGetStarted()} className="px-8 py-6 text-lg rounded-xl font-semibold" style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}>
-              Quero começar agora <ArrowRight className="w-5 h-5 ml-2" />
+              Quero recuperar o controle <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <Button size="lg" variant="outline" className="px-8 py-6 text-lg rounded-xl" style={{ borderColor: "rgba(201,168,76,0.5)", color: "#C9A84C", background: "transparent" }} onClick={() => document.getElementById("metodo")?.scrollIntoView({ behavior: "smooth" })}>
-              Ver o método
+              Ver como funciona
             </Button>
           </div>
-          <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>E-book R$ 19,90 · Sistema R$ 250,00 · Combo R$ 147,90 — pague uma vez, use para sempre.</p>
+          <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>E-book R$ 19,90 · Sistema R$ 159,90 · Combo R$ 99,90 — pague uma vez, use para sempre.</p>
         </div>
       </section>
 
+      {/* IDENTIFICAÇÃO */}
       <section className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container max-w-3xl mx-auto text-center">
-          <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>A verdade que ninguém quer ouvir</p>
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-8 leading-tight" style={{ color: "#F0E6C8" }}>Simples não quer dizer fácil.</h2>
-          <p className="text-lg leading-relaxed mb-6" style={{ color: "#8A9BB5" }}>O mercado quer te vender a ferramenta perfeita. A que faz tudo automático. A que conecta com o banco, importa o extrato, categoriza sozinha e te manda um relatório bonito no fim do mês. E você olha para o relatório, fala "que legal" — e não muda nada.</p>
-          <p className="text-lg leading-relaxed mb-6" style={{ color: "#8A9BB5" }}>Porque o problema nunca foi falta de dado. Foi falta de contato com a realidade. E esse contato só acontece quando você passa pelo processo. Quando você digita o número. Quando você vê, com os seus olhos, para onde o dinheiro foi. Quando você sente o peso de cada decisão.</p>
-          <p className="text-xl font-bold leading-relaxed" style={{ color: "#C9A84C" }}>Não existe fórmula secreta. É simples: é sobre método e persistência. Se você não passa pelo processo, o processo não passa por você.</p>
+          <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>O diagnóstico real</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-8 leading-tight" style={{ color: "#F0E6C8" }}>A maioria das pessoas não sofre por falta de disciplina.</h2>
+          <p className="text-lg leading-relaxed mb-6" style={{ color: "#8A9BB5" }}>Sofre por excesso de informação, tarefas espalhadas, decisões acumuladas e sensação constante de atraso. A mente moderna vive fragmentada — e quando tudo está fragmentado:</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8 text-left">
+            {["foco diminui", "ansiedade aumenta", "decisões cansam", "produtividade vira esforço", "rotina vira sobrevivência", "sensação de atraso constante"].map((item) => (
+              <div key={item} className="flex items-center gap-2 text-sm p-3 rounded-lg" style={{ background: "rgba(255,255,255,0.03)", color: "#8A9BB5" }}>
+                <span style={{ color: "#ef4444" }}>—</span> {item}
+              </div>
+            ))}
+          </div>
+          <p className="text-xl font-bold leading-relaxed" style={{ color: "#C9A84C" }}>O problema não é preguiça. O problema é fricção mental.</p>
         </div>
       </section>
 
-      <section id="metodo" className="py-20 px-4" style={{ background: "#0D1B4B" }}>
+      {/* MECANISMO */}
+      <section className="py-20 px-4" style={{ background: "#0D1B4B" }}>
+        <div className="container max-w-3xl mx-auto text-center">
+          <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>O mecanismo</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-8 leading-tight" style={{ color: "#F0E6C8" }}>O Gestor de Vida não foi criado para organizar tarefas.</h2>
+          <p className="text-lg leading-relaxed mb-6" style={{ color: "#8A9BB5" }}>Foi criado para reduzir a carga cognitiva da sua rotina. Ao invés de depender da memória, da força de vontade ou de dezenas de aplicativos separados, você concentra sua vida operacional em um único ambiente.</p>
+          <p className="text-lg leading-relaxed" style={{ color: "#8A9BB5" }}>Você para de gastar energia tentando lembrar de tudo. E começa a executar com clareza.</p>
+        </div>
+      </section>
+
+      {/* MÉTODO */}
+      <section id="metodo" className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>O método na prática</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#F0E6C8" }}>Como o ciclo funciona — do tempo ao futuro</h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: "#8A9BB5" }}>Cada pilar alimenta o próximo. Não dá para pular etapa. Não dá para fazer só o financeiro sem organizar o tempo. O método é o ciclo completo.</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#F0E6C8" }}>Três pilares. Um ambiente. Zero fricção.</h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: "#8A9BB5" }}>Cada pilar alimenta o próximo. Não dá para pular etapa. O método é o ciclo completo.</p>
           </div>
           <div className="flex items-center justify-center gap-2 mb-14 flex-wrap">
-            {["Tempo", "Eficiência", "Resultado", "Controle", "Futuro"].map((step, i) => (
+            {["Clareza", "Execução", "Resultado", "Controle", "Direção"].map((step, i) => (
               <div key={step} className="flex items-center gap-2">
                 <span className="px-3 py-1 rounded-full text-sm font-semibold" style={{ background: "rgba(201,168,76,0.15)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.4)" }}>{step}</span>
                 {i < 4 && <ChevronRight className="w-4 h-4" style={{ color: "#3A4A60" }} />}
@@ -291,7 +311,7 @@ export default function Home() {
                     <div className="rounded-2xl p-8 text-center" style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(245,158,11,0.25)" }}>
                       <p className="text-5xl font-black mb-3" style={{ color: "#F59E0B" }}>540h</p>
                       <p className="text-lg font-semibold mb-2" style={{ color: "#F0E6C8" }}>a mais de foco por ano</p>
-                      <p className="text-sm leading-relaxed" style={{ color: "#8A9BB5" }}>1h30 recuperada por dia × 360 dias. Esse é o resultado matemático de parar de desperdiçar tempo com o que não importa.</p>
+                      <p className="text-sm leading-relaxed" style={{ color: "#8A9BB5" }}>1h30 recuperada por dia × 360 dias. Esse é o resultado matemático de parar de desperdiçar atenção com o que não importa.</p>
                       <div className="mt-6 grid grid-cols-3 gap-4">
                         {[{ label: "por dia", value: "1h30" }, { label: "por mês", value: "45h" }, { label: "por ano", value: "540h" }].map((item) => (
                           <div key={item.label}>
@@ -312,6 +332,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* COMPARATIVO */}
       <section className="py-20 px-4" style={{ background: "linear-gradient(135deg, #0F1B35 0%, #1a2a4a 100%)" }}>
         <div className="container max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -331,10 +352,10 @@ export default function Home() {
               </thead>
               <tbody>
                 {[
-                  { name: "Curso de Gestão do Tempo", market: "R$ 1.200", ours: "R$ 147,90", save: "R$ 1.052,10" },
-                  { name: "Planilha de Orçamento Doméstico (premium)", market: "R$ 297", ours: "R$ 147,90", save: "R$ 149,10" },
-                  { name: "Mentoria de Organização Financeira Pessoal", market: "R$ 3.000", ours: "R$ 147,90", save: "R$ 2.852,10" },
-                  { name: "Curso de Planejamento de Aposentadoria", market: "R$ 897", ours: "R$ 147,90", save: "R$ 749,10" },
+                  { name: "Curso de Gestão do Tempo", market: "R$ 1.200", ours: "R$ 99,90", save: "R$ 1.100,10" },
+                  { name: "Planilha de Orçamento Doméstico (premium)", market: "R$ 297", ours: "R$ 99,90", save: "R$ 197,10" },
+                  { name: "Mentoria de Organização Financeira Pessoal", market: "R$ 3.000", ours: "R$ 99,90", save: "R$ 2.900,10" },
+                  { name: "Curso de Planejamento de Aposentadoria", market: "R$ 897", ours: "R$ 99,90", save: "R$ 797,10" },
                 ].map((row, idx) => (
                   <tr key={idx} style={{ borderBottom: "1px solid rgba(201,168,76,0.1)", background: idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent" }}>
                     <td className="py-4 px-6" style={{ color: "#C8D8E8" }}>{row.name}</td>
@@ -350,6 +371,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* PARA QUEM É */}
       <section className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -360,7 +382,13 @@ export default function Home() {
             <div className="p-7 rounded-2xl" style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.25)" }}>
               <p className="text-xs font-bold uppercase tracking-widest mb-5" style={{ color: "#10b981" }}>✓ Este sistema é para você se...</p>
               <ul className="space-y-3">
-                {["Você quer entender para onde vai o seu dinheiro, não só ver um gráfico automático", "Você aceita que o processo exige disciplina diária e está disposto a isso", "Você quer construir um hábito real de gestão, não terceirizar para um app", "Você entende que resultado vem de consistência, não de ferramenta perfeita", "Você está cansado de começar e parar e quer um método simples para seguir"].map((item) => (
+                {[
+                  "Você sente que está sempre ocupado, mas raramente em controle",
+                  "Você quer clareza financeira sem depender de relatórios automáticos que não mudam nada",
+                  "Você entende que o processo exige disciplina diária e está disposto a isso",
+                  "Você quer construir um hábito real de gestão, não terceirizar para um app",
+                  "Você está cansado de começar e parar e quer um método simples para seguir",
+                ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm" style={{ color: "#C8D8E8" }}>
                     <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#10b981" }} />{item}
                   </li>
@@ -370,7 +398,13 @@ export default function Home() {
             <div className="p-7 rounded-2xl" style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)" }}>
               <p className="text-xs font-bold uppercase tracking-widest mb-5" style={{ color: "#ef4444" }}>✗ Este sistema não é para você se...</p>
               <ul className="space-y-3">
-                {["Você quer que o sistema importe o extrato e faça tudo automaticamente", "Você acredita que a ferramenta certa vai resolver sem esforço da sua parte", "Você quer resultado sem processo — atalho sem caminho", "Você não está disposto a lançar seus gastos manualmente todos os dias", "Você quer complexidade: dashboards cheios de dados que você nunca vai usar"].map((item) => (
+                {[
+                  "Você quer que o sistema importe o extrato e faça tudo automaticamente",
+                  "Você acredita que a ferramenta certa vai resolver sem esforço da sua parte",
+                  "Você quer resultado sem processo — atalho sem caminho",
+                  "Você não está disposto a lançar seus gastos manualmente todos os dias",
+                  "Você quer complexidade: dashboards cheios de dados que você nunca vai usar",
+                ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm" style={{ color: "#8A9BB5" }}>
                     <X className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#ef4444" }} />{item}
                   </li>
@@ -381,6 +415,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* RESULTADO */}
       <section className="py-20 px-4" style={{ background: "#0B1437" }}>
         <div className="container max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -407,7 +442,18 @@ export default function Home() {
         </div>
       </section>
 
+      {/* BLOCO FILOSÓFICO */}
       <section className="py-20 px-4" style={{ background: "#070E26" }}>
+        <div className="container max-w-3xl mx-auto text-center">
+          <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>O contexto</p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 leading-tight" style={{ color: "#F0E6C8" }}>Nunca foi tão fácil perder o controle da própria vida.</h2>
+          <p className="text-lg leading-relaxed mb-6" style={{ color: "#8A9BB5" }}>Vivemos cercados de notificações, excesso de informação e múltiplas demandas simultâneas. A consequência não é apenas improdutividade. É sensação constante de mente ocupada.</p>
+          <p className="text-lg leading-relaxed" style={{ color: "#8A9BB5" }}>O Gestor de Vida nasce como uma resposta para esse novo cenário. Não como mais um aplicativo de tarefas. Como um sistema operacional para a sua vida — que reduz fricção, centraliza decisões e devolve clareza para a sua rotina.</p>
+        </div>
+      </section>
+
+      {/* HISTÓRIA */}
+      <section className="py-20 px-4" style={{ background: "#0B1437" }}>
         <div className="container max-w-3xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>Por que isso existe</p>
@@ -419,7 +465,7 @@ export default function Home() {
               <p>Estudei. Apliquei. Errei. Ajustei. E depois de anos testando na prática, percebi algo que parecia óbvio, mas que ninguém havia me mostrado de forma clara:</p>
               <p className="text-lg md:text-xl font-bold py-4 px-6 rounded-xl text-center" style={{ color: "#E2C97E", background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.25)" }}>"Era simples. Não era fácil — mas era simples."</p>
               <p>Gestão de tempo, controle financeiro e projeção de futuro. Três pilares. Conectados. Um leva ao outro. E o que faltava não era uma fórmula secreta — era um ponto de partida estruturado e a disciplina de repetir o processo.</p>
-              <p>O Gestor de Vida foi criado para ser esse começo. Para quem tem vontade, mas ainda não tem estrutura. Para quem quer controle, mas não sabe como montar do zero. Para quem entende que o processo simples, repetido com teimosia, é o que constrói — e precisa de uma ferramenta que acompanhe esse processo sem complicar.</p>
+              <p>O Gestor de Vida foi criado para ser esse começo. Para quem tem vontade, mas ainda não tem estrutura. Para quem quer controle, mas não sabe como montar do zero.</p>
             </div>
             <div className="mt-8 pt-8" style={{ borderTop: "1px solid rgba(201,168,76,0.15)" }}>
               <p className="text-sm font-semibold" style={{ color: "#C9A84C" }}>— Criador do Gestor de Vida</p>
@@ -429,12 +475,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 px-4" style={{ background: "#0B1437" }}>
+      {/* DEPOIMENTOS */}
+      <section className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>Quem já usa</p>
-            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#F0E6C8" }}>O processo na vida real</h2>
-            <p className="text-base mt-3" style={{ color: "#8A9BB5" }}>Depoimentos reais de quem decidiu começar.</p>
+            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#F0E6C8" }}>Pessoas reais. Rotinas reais.</h2>
+            <p className="text-base mt-3" style={{ color: "#8A9BB5" }}>Depoimentos de quem decidiu começar.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <div className="p-8 rounded-2xl flex flex-col" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
@@ -463,7 +510,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="faq" className="py-20 px-4" style={{ background: "#070E26" }}>
+      {/* FAQ */}
+      <section id="faq" className="py-20 px-4" style={{ background: "#0D1B4B" }}>
         <div className="container max-w-3xl mx-auto">
           <div className="text-center mb-14">
             <p className="text-xs font-bold tracking-widest mb-3" style={{ color: "#C9A84C" }}>PERGUNTAS FREQUENTES</p>
@@ -471,12 +519,12 @@ export default function Home() {
           </div>
           <div className="space-y-4">
             {[
-              { q: "Por que não tem integração com banco ou importação de extrato?", a: "Porque integração automática é exatamente o que não funciona para mudar comportamento. Quando o app importa tudo sozinho, você olha para os números como se fossem dados de outra pessoa. O ato de lançar manualmente — digitar o valor, escolher a categoria, confirmar — é o que cria consciência. É o contato com a realidade que muda o hábito. Não é burocracia: é o método." },
+              { q: "Por que não tem integração com banco ou importação de extrato?", a: "Porque integração automática não muda comportamento. Quando o app importa tudo sozinho, você olha para os números como se fossem dados de outra pessoa. O ato de lançar manualmente — digitar o valor, escolher a categoria, confirmar — é o que cria consciência. É o contato com a realidade que muda o hábito. Não é burocracia: é o método." },
               { q: "Quanto tempo leva para ver resultado?", a: "Em 30 dias de uso consistente, você já tem clareza total sobre para onde vai cada real e cada hora. Em 90 dias, o hábito está instalado e o processo virou rotina. Em 1 ano, você tem números reais para tomar decisões de vida — reserva, investimento, projeção. O resultado não depende da ferramenta: depende da sua consistência." },
               { q: "É difícil de usar?", a: "O sistema é simples — propositalmente. Não tem dezenas de menus, relatórios complexos ou configurações avançadas. Você lança, você vê, você decide. Mas simples não quer dizer fácil: fazer isso todo dia, sem pular, exige disciplina. A ferramenta não faz o trabalho por você — ela organiza o trabalho que você decide fazer." },
-              { q: "Preciso entender de finanças ou investimentos para usar?", a: "Não. O sistema foi criado para quem está começando do zero. Você não precisa saber o que é taxa Selic, CDB ou previdência privada. Você precisa saber quanto ganha, quanto gasta e quanto quer guardar. O simulador de aposentadoria usa cenários simples (pessimista, regular, otimista) para mostrar o impacto do tempo e da consistência — sem jargão financeiro." },
-              { q: "Funciona no celular?", a: "Sim. O sistema é responsivo e funciona em qualquer dispositivo — celular, tablet ou computador. Você pode lançar um gasto direto do celular logo após a compra, que é exatamente quando o lançamento manual faz mais sentido." },
-              { q: "O pagamento é único mesmo? Sem mensalidade?", a: "Sim. Você paga uma vez e usa para sempre. Sem assinatura, sem cobrança recorrente, sem surpresa no cartão. O acesso ao sistema e todas as atualizações futuras estão incluídos no valor pago." },
+              { q: "Preciso entender de finanças ou investimentos para usar?", a: "Não. O sistema foi criado para quem está começando do zero. Você precisa saber quanto ganha, quanto gasta e quanto quer guardar. O simulador de aposentadoria usa cenários simples (pessimista, regular, otimista) para mostrar o impacto do tempo e da consistência — sem jargão financeiro." },
+              { q: "Funciona no celular?", a: "Sim. O sistema é responsivo e funciona em qualquer dispositivo — celular, tablet ou computador." },
+              { q: "O pagamento é único mesmo? Sem mensalidade?", a: "Sim. Você paga uma vez e usa para sempre. Sem assinatura, sem cobrança recorrente, sem surpresa no cartão." },
               { q: "E se eu quiser cancelar e pedir reembolso?", a: "Você tem 7 dias de garantia após a compra, conforme o Código de Defesa do Consumidor. Se por qualquer motivo não ficar satisfeito, basta solicitar o reembolso pelo e-mail de suporte e o valor é devolvido integralmente, sem perguntas." },
             ].map((item, i) => (
               <details key={i} className="group rounded-lg overflow-hidden" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.15)" }}>
@@ -491,7 +539,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="planos" className="py-20 px-4" style={{ background: "#0D1B4B" }}>
+      {/* PLANOS */}
+      <section id="planos" className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>Investimento</p>
@@ -536,6 +585,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* CTA FINAL */}
       <section className="py-24 px-4" style={{ background: "linear-gradient(135deg,#0D1B4B 0%,#1A2B5E 100%)", borderTop: "1px solid rgba(201,168,76,0.2)" }}>
         <div className="container text-center max-w-3xl mx-auto">
           <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>A decisão é agora</p>
@@ -543,14 +593,15 @@ export default function Home() {
             O processo não começa quando você se sentir pronto.<br />
             <span style={{ color: "#C9A84C" }}>Ele começa quando você decide começar.</span>
           </h2>
-          <p className="text-lg mb-10 leading-relaxed" style={{ color: "#8A9BB5" }}>Você pode continuar esperando a motivação perfeita, o momento certo, a ferramenta ideal. Ou pode começar hoje — com o processo simples, teimoso e consistente que o tempo vai recompensar.</p>
+          <p className="text-lg mb-10 leading-relaxed" style={{ color: "#8A9BB5" }}>Você pode continuar esperando a motivação perfeita, o momento certo, a ferramenta ideal. Ou pode começar hoje — com o processo simples, consistente e honesto que o tempo vai recompensar.</p>
           <Button size="lg" onClick={() => handleGetStarted()} className="px-10 py-6 text-lg rounded-xl font-semibold" style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}>
-            Quero o Combo — R$ 147,90 <ArrowRight className="w-5 h-5 ml-2" />
+            Quero o Combo — R$ 99,90 <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
           <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>Pagamento único · Acesso vitalício · Garantia de 7 dias</p>
         </div>
       </section>
 
+      {/* FOOTER */}
       <footer className="py-10 px-4 text-sm" style={{ background: "#070E26", borderTop: "1px solid rgba(201,168,76,0.15)" }}>
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
