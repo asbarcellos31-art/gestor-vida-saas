@@ -173,10 +173,13 @@ export default function Home() {
     if (isAuthenticated) {
       navigate("/dashboard");
     } else {
+      const numericPrice = parseFloat(price.replace(",", "."));
+      localStorage.setItem("lastPurchaseValue", String(numericPrice));
+      localStorage.setItem("lastPurchaseName", planName);
       trackInitiateCheckout({
         content_name: planName,
         content_category: "SaaS",
-        value: parseFloat(price.replace(",", ".")),
+        value: numericPrice,
         currency: "BRL",
       });
       setTimeout(() => { window.location.href = hotmartUrl; }, 300);

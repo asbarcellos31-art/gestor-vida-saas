@@ -10,7 +10,11 @@ export default function AssinaturaSucesso() {
   const utils = trpc.useUtils();
 
   useEffect(() => {
-    trackPurchase({ currency: "BRL", value: 0 });
+    const value = parseFloat(localStorage.getItem("lastPurchaseValue") || "0");
+    const content_name = localStorage.getItem("lastPurchaseName") || "Gestor de Vida";
+    trackPurchase({ currency: "BRL", value, content_name });
+    localStorage.removeItem("lastPurchaseValue");
+    localStorage.removeItem("lastPurchaseName");
     const timer = setTimeout(() => {
       utils.subscription.get.invalidate();
     }, 2000);
