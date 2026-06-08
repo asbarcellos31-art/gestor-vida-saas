@@ -3,13 +3,14 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, ArrowRight, Zap } from "lucide-react";
+import { trackPurchase } from "@/lib/pixel";
 
 export default function AssinaturaSucesso() {
   const [, navigate] = useLocation();
   const utils = trpc.useUtils();
 
   useEffect(() => {
-    // Invalidar o cache da subscription para buscar o status atualizado
+    trackPurchase({ currency: "BRL", value: 0 });
     const timer = setTimeout(() => {
       utils.subscription.get.invalidate();
     }, 2000);
