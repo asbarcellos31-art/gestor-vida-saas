@@ -546,12 +546,12 @@ export default function MonthlyBudget() {
   // Metrics
   const totalIncome = (incomeData || []).reduce((s, e) => s + parseNum(e.amount), 0);
   const totalBillEntries = (billEntries || []).reduce((s, e) => s + parseNum(e.amount), 0);
-  // Para o campo cartoes, usa cardTotals.total diretamente (evita valor desatualizado do banco antes do cardTotals chegar)
+  // Cartões: sempre usa o total calculado dinamicamente das despesas de cartão
   const cartoesParaTotal = cardTotals !== undefined ? cardTotals.total : 0;
   const totalBillsFixed = (billsData || []).reduce((s, b) => {
-    if (b.billKey === 'cartoes') return s + cartoesParaTotal;
+    if (b.billKey === 'cartoes') return s; // nunca usa o valor do banco — cardTotals é autoritativo
     return s + parseNum(b.amount);
-  }, 0);
+  }, 0) + cartoesParaTotal;
   const totalBills = totalBillsFixed + totalBillEntries;
   const totalExpenses = (expenses || []).reduce((s, e) => s + parseNum(e.amount), 0);
   // Total filtrado por categoria/vínculo
