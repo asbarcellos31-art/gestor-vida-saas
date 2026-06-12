@@ -848,10 +848,16 @@ const retirementRouter = router({
       const cardKeys: string[] = userPayMethods.length > 0
         ? userPayMethods.filter((p) => p.isCard).map((p) => p.key)
         : DEFAULT_CARD_KEYS;
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+
       const saldoMap: Record<string, number> = {};
       const allYears = Array.from(new Set(incomes.map((i) => i.year))).sort();
       for (const yr of allYears) {
         for (let m = 1; m <= 12; m++) {
+          // Não incluir meses futuros (além do mês vigente)
+          if (yr > currentYear || (yr === currentYear && m > currentMonth)) break;
           const monthIncomeEntries = incomes.filter((i) => i.year === yr && i.month === m);
           const monthBillRows = bills.filter((b) => b.year === yr && b.month === m);
           const monthExpenses = expenses.filter((e) => e.year === yr && e.month === m);
@@ -875,13 +881,17 @@ const retirementRouter = router({
           const totalSaidas = billsSemCartoes + cartoesRealtime;
           const saldo = totalIncome - totalSaidas;
           if (totalIncome > 0 || totalSaidas > 0) {
-            saldoMap[`${yr}-${m}`] = saldo;
+            saldoMap[`${yr}-${String(m).padStart(2, "0")}`] = saldo;
           }
         }
       }
-      const realContributions = Object.values(saldoMap).filter((s) => s > 0);
-      const hasRealData = realContributions.length > 0;
-      const avgRealContribution = hasRealData ? realContributions.reduce((s, v) => s + v, 0) / realContributions.length : 0;
+      // Ordenar meses cronologicamente e zerar déficits (mês negativo = aporte 0, não pulado)
+      const allSaldoEntries = Object.entries(saldoMap).sort(([a], [b]) => a.localeCompare(b));
+      const hasRealData = allSaldoEntries.length > 0;
+      const realContributions = allSaldoEntries.map(([, s]) => Math.max(0, s));
+      const avgRealContribution = hasRealData
+        ? realContributions.reduce((s, v) => s + v, 0) / realContributions.length
+        : 0;
       const realContributionsFull: number[] = [];
       for (let i = 0; i < monthsToRetirement; i++) {
         realContributionsFull.push(i < realContributions.length ? realContributions[i] : avgRealContribution);
@@ -890,9 +900,9 @@ const retirementRouter = router({
         pessimista: calcRetirementScenario(6, monthsToRetirement, input.initialAmount, realContributionsFull, 0),
         regular: calcRetirementScenario(8, monthsToRetirement, input.initialAmount, realContributionsFull, 0),
         otimista: calcRetirementScenario(10, monthsToRetirement, input.initialAmount, realContributionsFull, 0),
-        mesesComDados: realContributions.length,
+        mesesComDados: allSaldoEntries.length,
         mediaMensalReal: avgRealContribution,
-        saldosPorMes: Object.entries(saldoMap).map(([key, saldo]) => ({ periodo: key, saldo })),
+        saldosPorMes: allSaldoEntries.map(([key, saldo]) => ({ periodo: key, saldo })),
       } : null;
       return {
         currentAge, yearsToRetirement, monthsToRetirement, almejada, real,
