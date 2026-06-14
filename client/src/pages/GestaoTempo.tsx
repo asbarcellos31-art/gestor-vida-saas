@@ -182,6 +182,7 @@ export default function GestaoTempo() {
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [newCatName, setNewCatName] = useState("");
   const [newCatEmoji, setNewCatEmoji] = useState("📋");
+  const [recurringDeleteTask, setRecurringDeleteTask] = useState<{ id: number; title: string; scheduledDate?: string | null } | null>(null);
 
   const weekDates = useMemo(() => getWeekDates(selectedDate), [selectedDate]);
 
@@ -279,6 +280,25 @@ export default function GestaoTempo() {
     },
     onError: (e) => toast.error(e.message),
   });
+
+  const snoozeToTomorrow = trpc.tasks.update.useMutation({
+    onSuccess: () => {
+      utils.tasks.byDate.invalidate();
+      utils.tasks.byDateRange.invalidate();
+      utils.tasks.backlog.invalidate();
+      setRecurringDeleteTask(null);
+      toast.success("Tarefa movida para amanhã");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const handleDeleteTask = (task: { id: number; title: string; scheduledDate?: string | null; isRecurring?: boolean }) => {
+    if (task.isRecurring) {
+      setRecurringDeleteTask({ id: task.id, title: task.title, scheduledDate: task.scheduledDate });
+    } else {
+      deleteTask.mutate({ id: task.id });
+    }
+  };
 
   const createCategory = trpc.taskCategories.create.useMutation({
     onSuccess: () => {
@@ -655,7 +675,7 @@ export default function GestaoTempo() {
                                     <Edit2 className="w-3.5 h-3.5" />
                                   </button>
                                   <button
-                                    onClick={() => deleteTask.mutate({ id: task.id })}
+                                    onClick={() => handleDeleteTask(task)}
                                     className="p-1.5 rounded-lg text-muted-foreground/70 hover:text-red-500 hover:bg-red-50 transition-colors"
                                     title="Excluir"
                                   >
@@ -719,7 +739,7 @@ export default function GestaoTempo() {
                                           <Edit2 className="w-3.5 h-3.5" />
                                         </button>
                                         <button
-                                          onClick={() => deleteTask.mutate({ id: task.id })}
+                                          onClick={() => handleDeleteTask(task)}
                                           title="Excluir"
                                           className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-red-500 hover:bg-red-50 transition-colors"
                                         >
@@ -860,7 +880,7 @@ export default function GestaoTempo() {
                             <span className="truncate flex-1">{t.title}</span>
                             <span className="text-[10px] opacity-60 group-hover:hidden">{t.durationMinutes}min</span>
                             <button
-                              onClick={() => deleteTask.mutate({ id: t.id })}
+                              onClick={() => handleDeleteTask(t)}
                               className="hidden group-hover:flex items-center justify-center w-4 h-4 rounded text-red-400 hover:text-red-600 hover:bg-red-100 transition-colors flex-shrink-0"
                               title="Excluir"
                             >
@@ -907,7 +927,7 @@ export default function GestaoTempo() {
                                 <span className="truncate flex-1">{t.title}</span>
                                 {t.status !== "completed" && (
                                   <button
-                                    onClick={() => deleteTask.mutate({ id: t.id })}
+                                    onClick={() => handleDeleteTask(t)}
                                     className="hidden group-hover:flex items-center justify-center w-3.5 h-3.5 rounded text-red-400 hover:text-red-600 flex-shrink-0"
                                     title="Excluir"
                                   >
@@ -1171,6 +1191,64 @@ export default function GestaoTempo() {
                 className="flex-1 bg-blue-600 hover:bg-blue-700"
               >
                 {editingTask ? "Salvar alterações" : "Criar Tarefa"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Recurring Delete Dialog ─────────────────────────────────────────── */}
+      <Dialog open={!!recurringDeleteTask} onOpenChange={(o) => { if (!o) setRecurringDeleteTask(null); }}>
+        <DialogContent className="max-w-sm mx-4 sm:mx-auto">
+          <DialogHeader>
+            <DialogTitle>Excluir tarefa recorrente</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 mt-1">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">"{recurringDeleteTask?.title}"</span> é uma tarefa recorrente. Como deseja excluir?
+            </p>
+            <div className="flex flex-col gap-2 pt-1">
+              <Button
+                variant="outline"
+                className="justify-start h-auto py-3 px-4"
+                onClick={() => {
+                  if (!recurringDeleteTask) return;
+                  if (!recurringDeleteTask.scheduledDate) {
+                    // Backlog recurring → move para amanhã
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    const tomorrowStr = tomorrow.toISOString().split("T")[0];
+                    snoozeToTomorrow.mutate({ id: recurringDeleteTask.id, scheduledDate: tomorrowStr });
+                  } else {
+                    // Dated recurring → remove só essa ocorrência
+                    deleteTask.mutate({ id: recurringDeleteTask.id });
+                    setRecurringDeleteTask(null);
+                    toast.success("Ocorrência removida");
+                  }
+                }}
+              >
+                <div className="text-left">
+                  <p className="font-medium text-sm">Só hoje</p>
+                  <p className="text-xs text-muted-foreground">
+                    {recurringDeleteTask?.scheduledDate
+                      ? "Remove apenas essa ocorrência"
+                      : "Move para amanhã — aparece novamente depois"}
+                  </p>
+                </div>
+              </Button>
+              <Button
+                variant="destructive"
+                className="justify-start h-auto py-3 px-4"
+                onClick={() => {
+                  if (!recurringDeleteTask) return;
+                  deleteTask.mutate({ id: recurringDeleteTask.id });
+                  setRecurringDeleteTask(null);
+                }}
+              >
+                <div className="text-left">
+                  <p className="font-medium text-sm">Excluir tudo</p>
+                  <p className="text-xs opacity-80">Remove permanentemente de todos os dias</p>
+                </div>
               </Button>
             </div>
           </div>
