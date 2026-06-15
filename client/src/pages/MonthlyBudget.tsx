@@ -498,8 +498,11 @@ export default function MonthlyBudget() {
     try { setBillsDueDay(JSON.parse((billsData as any).billsDueDay || "{}")); } catch { setBillsDueDay({}); }
     try { setBillsCategory(JSON.parse((billsData as any).billsCategory || "{}")); } catch { setBillsCategory({}); }
     try { setBillsMember(JSON.parse((billsData as any).billsMember || "{}")); } catch { setBillsMember({}); }
-    try { setBillsPaid(JSON.parse((billsData as any).billsPaid || "{}")); } catch { setBillsPaid({}); }
     try { setBillsLabels(JSON.parse((billsData as any).billsLabels || "{}")); } catch { setBillsLabels({}); }
+    // billsData é um array de rows — lê paid de cada row diretamente
+    const paidMap: Record<string, boolean> = {};
+    (billsData as any[]).forEach(b => { if (b.billKey) paidMap[b.billKey] = !!b.paid; });
+    setBillsPaid(paidMap);
     setBillsDirty(false);
   }, [billsData]);
 
