@@ -42,6 +42,34 @@ async function startServer() {
   // Hotmart webhook — libera acesso após compra aprovada no Hotmart
   app.post("/api/hotmart/webhook", handleHotmartWebhook);
 
+  // Endpoint temporário — dispara email para a compra mais recente
+  app.post("/api/admin/resend-last-purchase", async (req, res) => {
+    const secret = req.headers["x-admin-secret"];
+    if (secret !== "gv-resend-2026") return res.status(403).json({ error: "Forbidden" });
+    try {
+      const { getDb } = await import("../db");
+      const { sendPostPurchaseEmail, sendAccessActivatedEmail } = await import("../email");
+      const db = await getDb();
+      if (!db) return res.status(500).json({ error: "DB unavailable" });
+      const [rows] = await db.execute(
+        `SELECT hp.email, hp.name, hp.plan, u.id as userId
+         FROM hotmart_purchases hp
+         LEFT JOIN users u ON u.email = hp.email
+         ORDER BY hp.created_at DESC LIMIT 1`
+      ) as any[];
+      const last = (rows as any[])[0];
+      if (!last) return res.status(404).json({ error: "Nenhuma compra encontrada" });
+      if (last.userId) {
+        await sendAccessActivatedEmail(last.email, last.name);
+      } else {
+        await sendPostPurchaseEmail(last.email, last.name);
+      }
+      return res.json({ ok: true, email: last.email, name: last.name, hasAccount: !!last.userId });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
