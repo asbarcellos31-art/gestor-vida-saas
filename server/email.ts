@@ -89,6 +89,31 @@ export async function sendPostPurchaseEmail(to: string, name: string | null): Pr
   }
 }
 
+export async function sendAccessActivatedEmail(to: string, name: string | null): Promise<boolean> {
+  if (!isConfigured) return false;
+  const firstName = name ? name.split(" ")[0] : "Cliente";
+  const loginUrl = "https://www.gestordevida.com.br/login";
+  const html = baseTemplate(`
+    <h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0 0 8px;">Parabéns pela sua compra, ${firstName}! 🎉</h1>
+    <p style="color:#a5b4fc;font-size:15px;margin:0 0 24px;">Seu acesso ao <strong style="color:#fbbf24;">Gestor de Vida</strong> foi ativado com sucesso.</p>
+    <p style="color:#c7d2fe;font-size:14px;line-height:1.7;margin:0 0 28px;">Sua conta já está pronta — é só entrar e começar a organizar os seus <strong>3 Pilares da Vida</strong>.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+      <tr><td align="center">
+        <a href="${loginUrl}" style="display:inline-block;background:linear-gradient(135deg,#C9A84C,#E2C97E);color:#0B1437;font-size:16px;font-weight:700;padding:16px 40px;border-radius:8px;text-decoration:none;">Acessar minha conta →</a>
+      </td></tr>
+    </table>
+    <p style="color:#9ca3af;font-size:13px;margin:0;padding:16px;background:#0f0e2a;border-radius:8px;border-left:3px solid #fbbf24;">💡 Use o e-mail <strong style="color:#fbbf24;">${to}</strong> para entrar na plataforma.</p>
+  `);
+  try {
+    await sgMail.send({ to, from: { email: FROM_EMAIL, name: FROM_NAME }, subject: "Seu acesso ao Gestor de Vida foi ativado! 🎉", html });
+    console.log(`[Email] Acesso ativado enviado para ${to}`);
+    return true;
+  } catch (err) {
+    console.error("[Email] Erro ao enviar email de acesso ativado:", err);
+    return false;
+  }
+}
+
 export async function sendPasswordResetEmail(to: string, name: string, resetToken: string, origin: string): Promise<boolean> {
   if (!isConfigured) return false;
   const firstName = name.split(" ")[0];

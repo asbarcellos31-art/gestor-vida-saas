@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { sendPostPurchaseEmail } from "./email";
+import { sendPostPurchaseEmail, sendAccessActivatedEmail } from "./email";
 import { getDb } from "./db";
 
 const OFFER_EBOOK = "cu6bor2b";
@@ -119,6 +119,7 @@ export async function handleHotmartWebhook(req: Request, res: Response) {
         await db.execute(`INSERT INTO subscriptions (userId, plan, status, createdAt, updatedAt) VALUES (?, ?, 'active', NOW(), NOW())`, [userId, plan]);
       }
       console.log(`[Hotmart Webhook] Assinatura ativada para: ${buyerEmail}`);
+      sendAccessActivatedEmail(buyerEmail, buyerName).catch(() => {});
     } else {
       console.log(`[Hotmart Webhook] Comprador ${buyerEmail} ainda não tem conta — acesso pendente`);
       sendPostPurchaseEmail(buyerEmail, buyerName).catch(() => {});
