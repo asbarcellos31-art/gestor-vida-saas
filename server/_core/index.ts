@@ -47,24 +47,27 @@ async function startServer() {
     const secret = req.headers["x-admin-secret"];
     if (secret !== "gv-resend-2026") return res.status(403).json({ error: "Forbidden" });
     try {
-      const { getDb } = await import("../db");
+      const mysql2 = await import("mysql2/promise");
       const { sendPostPurchaseEmail, sendAccessActivatedEmail } = await import("../email");
-      const db = await getDb();
-      if (!db) return res.status(500).json({ error: "DB unavailable" });
-      const [rows] = await db.execute(
-        `SELECT hp.email, hp.name, hp.plan, u.id as userId
-         FROM hotmart_purchases hp
-         LEFT JOIN users u ON u.email = hp.email
-         ORDER BY hp.created_at DESC LIMIT 1`
-      ) as any[];
+      const conn = await mysql2.createConnection(process.env.DATABASE_URL!);
+      const [cols] = await conn.query(`DESCRIBE hotmart_purchases`) as any[];
+      const colNames = (cols as any[]).map((c:any) => c.Field);
+      const dateCol = colNames.find((c:string) => c.includes('creat') || c.includes('date') || c.includes('at')) || colNames[colNames.length-1];
+      const [rows] = await conn.query(`SELECT * FROM hotmart_purchases ORDER BY ${dateCol} DESC LIMIT 5`) as any[];
       const last = (rows as any[])[0];
-      if (!last) return res.status(404).json({ error: "Nenhuma compra encontrada" });
-      if (last.userId) {
-        await sendAccessActivatedEmail(last.email, last.name);
+      if (!last) { await conn.end(); return res.status(404).json({ error: "Nenhuma compra encontrada", cols: colNames }); }
+      const buyerEmail = last.email || last.buyer_email || last.comprador_email;
+      const buyerName = last.name || last.buyer_name || last.nome;
+      const [userRows] = await conn.query(`SELECT id FROM users WHERE email = ? LIMIT 1`, [buyerEmail]) as any[];
+      const hasAccount = (userRows as any[]).length > 0;
+      await conn.end();
+      if (hasAccount) {
+        await sendAccessActivatedEmail(buyerEmail, buyerName);
       } else {
-        await sendPostPurchaseEmail(last.email, last.name);
+        await sendPostPurchaseEmail(buyerEmail, buyerName);
       }
-      return res.json({ ok: true, email: last.email, name: last.name, hasAccount: !!last.userId });
+      const all = (rows as any[]).map((r: any) => ({ email: r.email||r.buyer_email, name: r.name||r.buyer_name }));
+      return res.json({ ok: true, email: buyerEmail, name: buyerName, hasAccount, cols: colNames, ultimas: all });
     } catch (err: any) {
       return res.status(500).json({ error: err.message });
     }

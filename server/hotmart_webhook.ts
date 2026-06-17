@@ -99,10 +99,10 @@ export async function handleHotmartWebhook(req: Request, res: Response) {
     if (!db) return res.status(500).json({ error: "DB unavailable" });
 
     await db.execute(
-      `INSERT INTO hotmart_purchases (email, name, offer_code, plan, created_at)
-       VALUES (?, ?, ?, ?, NOW())
-       ON DUPLICATE KEY UPDATE offer_code = ?, plan = ?, updated_at = NOW()`,
-      [buyerEmail, buyerName, offerCode, plan, offerCode, plan]
+      `INSERT INTO hotmart_purchases (buyerEmail, buyerName, plan, status, createdAt)
+       VALUES (?, ?, ?, 'APPROVED', NOW())
+       ON DUPLICATE KEY UPDATE plan = ?, status = 'APPROVED', updatedAt = NOW()`,
+      [buyerEmail, buyerName, plan, plan]
     );
 
     const users = await db.execute(`SELECT id FROM users WHERE email = ? LIMIT 1`, [buyerEmail]) as any[];
