@@ -11,6 +11,7 @@ import { serveStatic, setupVite } from "./vite";
 import { handleStripeWebhook } from "../stripe_webhook";
 import { handleHotmartWebhook } from "../hotmart_webhook";
 import { startUserMonitor } from "./userMonitor";
+import { ensureStorageUpgradesTable, ensureBudgetTables } from "../db";
 import { registerStorageProxy } from "./storageProxy";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -107,6 +108,8 @@ async function startServer() {
 server.listen(port, "0.0.0.0", () => {
     console.log(`Server running on port ${port}`);
     startUserMonitor();
+    ensureStorageUpgradesTable().catch(console.error);
+    ensureBudgetTables().catch(console.error);
   });
 }
 

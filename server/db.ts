@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray, isNull, lte, or } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser,
@@ -1068,4 +1068,128 @@ export async function getUserById(id: number) {
   if (!db) return undefined;
   const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
   return result[0];
+}
+
+// ── Storage por usuário ────────────────────────────────────────────────────────
+// Estima o uso de armazenamento do usuário contando linhas nas tabelas de dados.
+// Multiplica pelo tamanho médio estimado por linha de cada tabela.
+const USER_TABLE_SIZES = [
+  { table: tasks, avgBytes: 512 },
+  { table: timeSessions, avgBytes: 128 },
+  { table: reminders, avgBytes: 256 },
+  { table: incomeEntries, avgBytes: 256 },
+  { table: fixedBills, avgBytes: 256 },
+  { table: fixedBillLabels, avgBytes: 192 },
+  { table: billEntries, avgBytes: 256 },
+  { table: expenseEntries, avgBytes: 384 },
+  { table: budgetEntries, avgBytes: 320 },
+  { table: installmentBills, avgBytes: 384 },
+  { table: installments, avgBytes: 256 },
+  { table: retirementConfig, avgBytes: 512 },
+  { table: categories, avgBytes: 128 },
+  { table: familyMembers, avgBytes: 128 },
+  { table: paymentMethods, avgBytes: 192 },
+  { table: taskCategories, avgBytes: 128 },
+] as const;
+
+export async function getUserStorageBytes(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  try {
+    const counts = await Promise.all(
+      USER_TABLE_SIZES.map(({ table, avgBytes }) =>
+        db.select({ cnt: sql<number>`COUNT(*)` }).from(table as any)
+          .where(eq((table as any).userId, userId))
+          .then((rows) => Number(rows[0]?.cnt ?? 0) * avgBytes)
+      )
+    );
+    return counts.reduce((sum, v) => sum + v, 0);
+  } catch { return 0; }
+}
+
+// ── Garante tabelas de orçamento (categories + payment_methods) ───────────────
+export async function ensureBudgetTables(): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS categories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT NOT NULL,
+        name VARCHAR(64) NOT NULL,
+        rule ENUM('Essenciais (50%)', 'Estilo de Vida (30%)', 'Investimentos/Dívidas (20%)') NOT NULL,
+        sortOrder INT NOT NULL DEFAULT 0,
+        createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_userId (userId)
+      )
+    `);
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS payment_methods (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT NOT NULL,
+        \`key\` VARCHAR(64) NOT NULL,
+        label VARCHAR(64) NOT NULL,
+        icon VARCHAR(8) NOT NULL DEFAULT '💳',
+        colorClass VARCHAR(128) NOT NULL DEFAULT 'bg-gray-100 text-gray-700 border-gray-300',
+        isCard TINYINT(1) NOT NULL DEFAULT 0,
+        sortOrder INT NOT NULL DEFAULT 0,
+        createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_userId (userId)
+      )
+    `);
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS family_members (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT NOT NULL,
+        name VARCHAR(64) NOT NULL,
+        emoji VARCHAR(8) NOT NULL DEFAULT '👤',
+        color VARCHAR(32) NOT NULL DEFAULT '#6366f1',
+        sortOrder INT NOT NULL DEFAULT 0,
+        createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_userId (userId)
+      )
+    `);
+  } catch (err) {
+    console.error("[DB] Erro ao criar tabelas de orçamento:", err);
+  }
+}
+
+// ── Storage Upgrades (compras de espaço extra via Hotmart) ────────────────────
+export async function ensureStorageUpgradesTable(): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS storage_upgrades (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT NOT NULL,
+        additionalMB INT NOT NULL DEFAULT 100,
+        source VARCHAR(128),
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_userId (userId)
+      )
+    `);
+  } catch (err) {
+    console.error("[DB] Erro ao criar storage_upgrades:", err);
+  }
+}
+
+export async function getUserExtraStorageMB(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  try {
+    const result = await db.execute(
+      sql`SELECT COALESCE(SUM(additionalMB), 0) as total FROM storage_upgrades WHERE userId = ${userId}`
+    );
+    const rows = result[0] as any[];
+    return Number(rows[0]?.total ?? 0);
+  } catch { return 0; }
+}
+
+export async function recordStorageUpgrade(userId: number, additionalMB: number, source: string): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.execute(
+    sql`INSERT INTO storage_upgrades (userId, additionalMB, source) VALUES (${userId}, ${additionalMB}, ${source})`
+  );
 }
