@@ -78,6 +78,8 @@ import {
   getTaskCategories,
   createTaskCategory,
   updateTaskCategory,
+  getUserStorageBytes,
+  getUserExtraStorageMB,
   deleteTaskCategory,
 } from "./db";
 
@@ -96,8 +98,11 @@ async function isAdminUser(userId: number): Promise<boolean> {
   const { users } = await import("../drizzle/schema");
   const conn = await getDb();
   if (!conn) return false;
-  const result = await conn.select({ role: users.role }).from(users).where(eq(users.id, userId)).limit(1);
-  return result[0]?.role === "admin";
+  const result = await conn.select({ role: users.role, email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
+  if (result[0]?.role === "admin") return true;
+  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+  if (adminEmail && result[0]?.email?.toLowerCase().trim() === adminEmail) return true;
+  return false;
 }
 
 async function requireTimeAccess(userId: number) {
@@ -1286,6 +1291,38 @@ const adminRouter = router({
     }),
 });
 
+// ─── Storage Router ───────────────────────────────────────────────────────────
+const STORAGE_BASE_MB: Record<string, number> = {
+  time_management: 25,
+  budget: 50,
+  combo: 100,
+};
+const DEFAULT_LIMIT_MB = 10;
+const STORAGE_EXTRA_MB_PER_PURCHASE = 100; // cada compra de R$19,90 = +100MB
+
+const storageRouter = router({
+  usage: protectedProcedure.query(async ({ ctx }) => {
+    const sub = await getActiveSubscription(ctx.user.id);
+    const plan = sub?.plan ?? null;
+    const baseMB = plan ? (STORAGE_BASE_MB[plan] ?? DEFAULT_LIMIT_MB) : DEFAULT_LIMIT_MB;
+    const [usedBytes, extraMB] = await Promise.all([
+      getUserStorageBytes(ctx.user.id),
+      getUserExtraStorageMB(ctx.user.id),
+    ]);
+    const limitMB = baseMB + extraMB;
+    const usedMB = usedBytes / 1024 / 1024;
+    const percent = Math.min(100, (usedMB / limitMB) * 100);
+    return {
+      usedMB: parseFloat(usedMB.toFixed(3)),
+      limitMB,
+      baseMB,
+      extraMB,
+      percent: parseFloat(percent.toFixed(1)),
+      plan,
+    };
+  }),
+});
+
 // ─── App Router ───────────────────────────────────────────────────────────────
 export const appRouter = router({
   system: systemRouter,
@@ -1311,8 +1348,9 @@ export const appRouter = router({
   paymentMethods: paymentMethodsRouter,
   members: membersRouter,
   dashboard: dashboardRouter,
-   billEntries: billEntriesRouter,
+  billEntries: billEntriesRouter,
   stripe: stripeRouter,
+  storage: storageRouter,
   admin: adminRouter,
 });
 export type AppRouter = typeof appRouter;
