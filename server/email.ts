@@ -52,7 +52,12 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<boolea
       <tr><td style="height:8px;"></td></tr>
       <tr><td style="padding:10px 16px;background:#0f0e2a;border-radius:8px;"><span style="color:#c084fc;font-size:18px;">🚀</span><span style="color:#e2e8f0;font-size:14px;margin-left:10px;"><strong>Futuro</strong> — Projete sua aposentadoria e metas</span></td></tr>
     </table>
-    <p style="color:#9ca3af;font-size:13px;margin:0;">Acesse o sistema e comece agora!</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+      <tr><td align="center">
+        <a href="https://www.gestordevida.com.br" style="display:inline-block;background:linear-gradient(135deg,#C9A84C,#E2C97E);color:#0B1437;font-size:16px;font-weight:700;padding:16px 40px;border-radius:8px;text-decoration:none;">Acessar Meu Painel →</a>
+      </td></tr>
+    </table>
+    <p style="color:#9ca3af;font-size:13px;margin:0;text-align:center;">Qualquer dúvida, responda este e-mail.</p>
   `);
   try {
     await sgMail.send({ to, from: { email: FROM_EMAIL, name: FROM_NAME }, subject: `Bem-vindo ao Gestor de Vida, ${firstName}!`, html });
