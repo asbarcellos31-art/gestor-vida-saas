@@ -33,10 +33,10 @@ import {
 // ─── Paleta ────────────────────────────────────────────────────────────────
 const GOLD = "#C9A84C";
 const GOLD_LIGHT = "#E2C97E";
-const NAVY_BORDER = "rgba(201,168,76,0.2)";
-const NAVY_CARD = "rgba(255,255,255,0.04)";
-const TEXT_PRIMARY = "#F0E6C8";
-const TEXT_MUTED = "#8A9BB5";
+const NAVY_BORDER = "var(--gv-navy-border)";
+const NAVY_CARD = "var(--gv-card-bg)";
+const TEXT_PRIMARY = "var(--gv-text-primary)";
+const TEXT_MUTED = "var(--gv-text-muted)";
 
 const DONUT_COLORS = [GOLD, "#3A6B8A", "#2A4A6A"];
 const BAR_COLORS = [GOLD, "#3A6B8A", "#8B3A3A"];
@@ -58,7 +58,7 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
     return (
       <div
         className="rounded-xl px-3 py-2 text-sm shadow-lg"
-        style={{ background: "#0D1B4B", border: "1px solid rgba(201,168,76,0.3)", color: TEXT_PRIMARY }}
+        style={{ background: "var(--gv-tooltip-bg)", border: "1px solid rgba(201,168,76,0.3)", color: TEXT_PRIMARY }}
       >
         {label && <p className="font-semibold mb-1" style={{ color: GOLD }}>{label}</p>}
         {payload.map((p) => (

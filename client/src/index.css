@@ -50,6 +50,13 @@
 :root {
   --radius: 0.625rem;
 
+  /* Variáveis de tema para componentes com inline style */
+  --gv-text-primary: #F0E6C8;
+  --gv-text-muted: #8A9BB5;
+  --gv-card-bg: rgba(255,255,255,0.04);
+  --gv-navy-border: rgba(201,168,76,0.2);
+  --gv-tooltip-bg: #0D1B4B;
+
   /* Backgrounds — dark navy profundo */
   --background: oklch(0.14 0.04 255);
   --foreground: oklch(0.93 0.015 75);
@@ -146,6 +153,13 @@
    Mais contraste, textos escuros nítidos
    ============================================================ */
 .light {
+  /* Variáveis de tema para componentes com inline style */
+  --gv-text-primary: #1a2a4a;
+  --gv-text-muted: #3a4a6a;
+  --gv-card-bg: rgba(255,255,255,0.8);
+  --gv-navy-border: rgba(100,130,180,0.25);
+  --gv-tooltip-bg: #e8edf5;
+
   --background: oklch(0.93 0.012 240);
   --foreground: oklch(0.12 0.05 255);
 
