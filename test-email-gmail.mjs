@@ -74,7 +74,7 @@ const html = `
 
               <!-- CTA Button -->
               <div style="text-align:center;margin:32px 0 16px;">
-                <a href="https://gestorvida.manus.space/dashboard" 
+                <a href="https://www.gestordevida.com.br"
                    style="background:linear-gradient(135deg,#d4af37,#b8960c);color:#0a0f1e;text-decoration:none;padding:14px 40px;border-radius:8px;font-weight:700;font-size:16px;letter-spacing:1px;display:inline-block;">
                   ACESSAR MEU PAINEL →
                 </a>
@@ -108,7 +108,7 @@ const msg = {
   from: { email: 'contato@gestordevida.com.br', name: 'Gestor de Vida' },
   subject: '🎉 Bem-vindo ao Gestor de Vida — Seu trial de 5 dias começa agora!',
   html: html,
-  text: 'Bem-vindo ao Gestor de Vida! Sua conta foi criada com sucesso. Acesse: https://gestorvida.manus.space/dashboard'
+  text: 'Bem-vindo ao Gestor de Vida! Sua conta foi criada com sucesso. Acesse: https://www.gestordevida.com.br'
 };
 
 try {

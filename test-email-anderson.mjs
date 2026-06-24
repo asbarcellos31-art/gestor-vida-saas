@@ -82,7 +82,7 @@ const html = baseTemplate(`
   <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
     <tr>
       <td align="center">
-        <a href="https://gestorvida.manus.space"
+        <a href="https://www.gestordevida.com.br"
            style="display:inline-block;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:8px;text-decoration:none;letter-spacing:0.5px;">
           Acessar o Gestor de Vida →
         </a>
