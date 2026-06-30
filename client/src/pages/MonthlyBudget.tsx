@@ -304,6 +304,8 @@ export default function MonthlyBudget() {
   const [newIncomeDesc, setNewIncomeDesc] = useState("");
   const [newIncomeAmount, setNewIncomeAmount] = useState("");
   const [newIncomeCategory, setNewIncomeCategory] = useState("");
+  // Estado para edição inline de receita
+  const [editingIncome, setEditingIncome] = useState<{ id: number; description: string; amount: string; category: string } | null>(null);
   const deleteIncomeMut = trpc.income.delete.useMutation({
     onSuccess: () => { utils.income.list.invalidate(); utils.dashboard.monthly.invalidate(); },
     onError: () => toast.error("Erro ao remover receita"),
@@ -907,17 +909,55 @@ export default function MonthlyBudget() {
                 <p className="text-sm text-muted-foreground text-center py-4">Nenhuma receita cadastrada. Clique em "Adicionar" para incluir.</p>
               )}
               {(incomeData || []).map(entry => (
-                <div key={entry.id} className="flex items-center gap-2 group">
-                  <label className="text-sm text-muted-foreground flex-1 truncate">{entry.description}</label>
-                  {entry.category && <span className="text-xs text-muted-foreground/60 hidden sm:block">{entry.category}</span>}
-                  <span className="text-sm font-medium text-emerald-600 flex-shrink-0">{fmt(parseNum(entry.amount))}</span>
-                  <button
-                    onClick={() => deleteIncomeMut.mutate({ id: entry.id })}
-                    className="opacity-0 group-hover:opacity-100 text-muted-foreground/40 hover:text-red-500 transition-all flex-shrink-0"
-                    title="Remover"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                <div key={entry.id}>
+                  {editingIncome?.id === entry.id ? (
+                    <div className="flex flex-col gap-2 p-3 bg-muted/30 rounded-lg border border-dashed border-emerald-300">
+                      <Input
+                        placeholder="Descrição"
+                        value={editingIncome.description}
+                        onChange={e => setEditingIncome(prev => prev && ({ ...prev, description: e.target.value }))}
+                        className="h-8 text-sm"
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <CurrencyInput value={editingIncome.amount} onChange={v => setEditingIncome(prev => prev && ({ ...prev, amount: v }))} placeholder="Valor" />
+                        <Select value={editingIncome.category} onValueChange={v => setEditingIncome(prev => prev && ({ ...prev, category: v }))}>
+                          <SelectTrigger className="h-8 text-xs flex-1"><SelectValue placeholder="Categoria" /></SelectTrigger>
+                          <SelectContent>
+                            {activeCategories.map(c => <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" className="flex-1 h-8 text-xs" disabled={updateIncomeMut.isPending || !editingIncome.description.trim() || !editingIncome.amount} onClick={() => {
+                          updateIncomeMut.mutate({ id: editingIncome.id, description: editingIncome.description, amount: editingIncome.amount, category: editingIncome.category || null }, { onSuccess: () => setEditingIncome(null) });
+                        }}>
+                          <Save className="w-3 h-3 mr-1" /> Salvar
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setEditingIncome(null)}>Cancelar</Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 group">
+                      <label className="text-sm text-muted-foreground flex-1 truncate">{entry.description}</label>
+                      {entry.category && <span className="text-xs text-muted-foreground/60 hidden sm:block">{entry.category}</span>}
+                      <span className="text-sm font-medium text-emerald-600 flex-shrink-0">{fmt(parseNum(entry.amount))}</span>
+                      <button
+                        onClick={() => setEditingIncome({ id: entry.id, description: entry.description, amount: String(parseNum(entry.amount)), category: entry.category || "" })}
+                        className="opacity-0 group-hover:opacity-100 text-muted-foreground/40 hover:text-blue-500 transition-all flex-shrink-0"
+                        title="Editar"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => deleteIncomeMut.mutate({ id: entry.id })}
+                        className="opacity-0 group-hover:opacity-100 text-muted-foreground/40 hover:text-red-500 transition-all flex-shrink-0"
+                        title="Remover"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
               {showAddIncome && (
