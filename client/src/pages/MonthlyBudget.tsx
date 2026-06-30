@@ -1062,7 +1062,7 @@ export default function MonthlyBudget() {
                       onChange={v => {
                         if (!isAutoCartoes) {
                           setBillsValues(prev => ({ ...prev, [f.billKey]: v }));
-                          saveBillMut.mutate({ year, month, billKey: f.billKey, amount: v, paid: billsPaid[f.billKey] || false });
+                          if (v !== "") saveBillMut.mutate({ year, month, billKey: f.billKey, amount: v, paid: billsPaid[f.billKey] || false });
                         }
                       }}
                       placeholder={isAutoCartoes ? "Auto" : "0,00"}
