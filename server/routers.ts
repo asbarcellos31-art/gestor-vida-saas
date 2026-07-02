@@ -740,6 +740,8 @@ const installmentsRouter = router({
       installmentAmount: z.string().optional(),
       totalInstallments: z.number().optional(),
       currentInstallment: z.number().optional(),
+      startYear: z.number().optional(),
+      startMonth: z.number().min(1).max(12).optional(),
       paid: z.boolean().optional(),
       category: z.string().optional(),
       paymentMethod: z.string().optional(),

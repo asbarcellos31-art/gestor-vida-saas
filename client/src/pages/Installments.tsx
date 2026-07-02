@@ -73,6 +73,8 @@ export default function Installments() {
     description: string;
     installmentAmount: string;
     totalInstallments: string;
+    startYear: string;
+    startMonth: string;
     category: string;
     paymentMethod: string;
     isRecurring: boolean;
@@ -152,6 +154,8 @@ export default function Installments() {
       description: editForm.description,
       installmentAmount: editForm.installmentAmount,
       totalInstallments: editForm.isRecurring ? 9999 : parseInt(editForm.totalInstallments),
+      startYear: editForm.isRecurring ? undefined : parseInt(editForm.startYear),
+      startMonth: editForm.isRecurring ? undefined : parseInt(editForm.startMonth),
       category: editForm.category,
       paymentMethod: editForm.paymentMethod,
       memberId: editForm.memberId,
@@ -470,6 +474,32 @@ export default function Installments() {
                     </div>
                   )}
                 </div>
+                {!editForm.isRecurring && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Mês de Início</Label>
+                      <Select value={editForm.startMonth} onValueChange={v => setEditForm(f => f ? ({ ...f, startMonth: v }) : f)}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {MONTHS_FULL.map((m, i) => (
+                            <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Ano de Início</Label>
+                      <Input
+                        className="mt-1"
+                        type="number"
+                        value={editForm.startYear}
+                        onChange={e => setEditForm(f => f ? ({ ...f, startYear: e.target.value }) : f)}
+                      />
+                    </div>
+                  </div>
+                )}
                 <div>
                   <Label>Categoria</Label>
                   <Select value={editForm.category} onValueChange={v => setEditForm(f => f ? ({ ...f, category: v }) : f)}>
@@ -626,6 +656,8 @@ export default function Installments() {
                           description: inst.description || "",
                           installmentAmount: String(parseNum(inst.installmentAmount)),
                           totalInstallments: String(inst.totalInstallments),
+                          startYear: String(inst.startYear),
+                          startMonth: String(inst.startMonth),
                           category: inst.category || "Assinaturas",
                           paymentMethod: (inst as any).paymentMethod || "cartao_1",
                           isRecurring: true,
@@ -730,6 +762,8 @@ export default function Installments() {
                               description: inst.description || "",
                               installmentAmount: String(parseNum(inst.installmentAmount)),
                               totalInstallments: String(inst.totalInstallments),
+                              startYear: String(inst.startYear),
+                              startMonth: String(inst.startMonth),
                               category: inst.category || "Parcelados",
                               paymentMethod: (inst as any).paymentMethod || "cartao_1",
                               isRecurring: false,
