@@ -12,6 +12,7 @@ import {
   BookOpen,
   Infinity,
 } from "lucide-react";
+import { trackInitiateCheckout } from "@/lib/pixel";
 
 const HOTMART_URL = "https://pay.hotmart.com/M105784997J?checkoutMode=2";
 
@@ -86,7 +87,10 @@ export default function Planos() {
 
   const currentPlan = sub?.plan;
 
-  const handleBuy = () => {
+  const handleBuy = (plan: typeof PLANS[number]) => {
+    localStorage.setItem("lastPurchaseValue", plan.price.replace(",", "."));
+    localStorage.setItem("lastPurchaseName", plan.name);
+    trackInitiateCheckout({ currency: "BRL", value: parseFloat(plan.price.replace(",", ".")), content_name: plan.name });
     window.open(HOTMART_URL, "_blank");
   };
 
@@ -181,7 +185,7 @@ export default function Planos() {
                   </Button>
                 ) : (
                   <Button
-                    onClick={handleBuy}
+                    onClick={() => handleBuy(plan)}
                     className={`w-full rounded-xl font-semibold ${
                       plan.badge
                         ? "bg-amber-500 hover:bg-amber-600 text-white"
