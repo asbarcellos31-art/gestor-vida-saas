@@ -457,9 +457,9 @@ const SECTIONS: Section[] = [
           <div className="space-y-3 text-sm text-foreground/90">
             <p>Acesse <strong>Planos</strong> na sidebar. O sistema oferece três opções de pagamento único — sem mensalidade, sem recorrência:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong>E-book</strong> — R$ 19,90 (pagamento único) — Guia PDF Método 3 Pilares da Vida</li>
-              <li><strong>Sistema Vitalício</strong> — R$ 250,00 (acesso vitalício) — todos os módulos do sistema</li>
-              <li><strong>Combo Promocional</strong> — R$ 147,90 (acesso vitalício) — E-book + Sistema com desconto</li>
+              <li><strong>E-book</strong> — R$ 29,90 (pagamento único) — Guia PDF Método 3 Pilares da Vida</li>
+              <li><strong>Sistema Vitalício</strong> — R$ 39,90 (acesso vitalício) — todos os módulos do sistema</li>
+              <li><strong>Combo Promocional</strong> — R$ 49,90 (acesso vitalício) — E-book + Sistema com desconto</li>
             </ul>
             <p>Clique em <strong>"Comprar agora"</strong> no plano desejado. Você será redirecionado para a página de pagamento segura. Pague uma vez e use para sempre.</p>
           </div>

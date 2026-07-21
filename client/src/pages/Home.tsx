@@ -37,7 +37,7 @@ const PLANS = [
   {
     id: "time_management",
     name: "E-book",
-    price: "19,90",
+    price: "29,90",
     priceLabel: "pagamento único",
     description: "Método 3 Pilares da Vida — guia completo em PDF",
     icon: Clock,
@@ -54,7 +54,7 @@ const PLANS = [
   {
     id: "budget",
     name: "Sistema Vitalício",
-    price: "159,90",
+    price: "39,90",
     priceLabel: "acesso vitalício",
     description: "Acesso completo e permanente ao sistema Gestor de Vida",
     icon: Wallet,
@@ -74,7 +74,7 @@ const PLANS = [
   {
     id: "combo",
     name: "Combo Promocional",
-    price: "99,90",
+    price: "49,90",
     priceLabel: "acesso vitalício",
     description: "E-book + Sistema — tudo por um preço especial",
     icon: Star,
@@ -162,7 +162,7 @@ export default function Home() {
       trackInitiateCheckout({
         content_name: "Combo Promocional",
         content_category: "SaaS",
-        value: 99.90,
+        value: 49.90,
         currency: "BRL",
       });
       setTimeout(() => { window.location.href = HOTMART_COMBO; }, 300);
@@ -233,7 +233,7 @@ export default function Home() {
               Ver como funciona
             </Button>
           </div>
-          <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>E-book R$ 19,90 · Sistema R$ 159,90 · Combo R$ 99,90 — pague uma vez, use para sempre.</p>
+          <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>E-book R$ 29,90 · Sistema R$ 39,90 · Combo R$ 49,90 — pague uma vez, use para sempre.</p>
         </div>
       </section>
 
@@ -355,10 +355,10 @@ export default function Home() {
               </thead>
               <tbody>
                 {[
-                  { name: "Curso de Gestão do Tempo", market: "R$ 1.200", ours: "R$ 99,90", save: "R$ 1.100,10" },
-                  { name: "Planilha de Orçamento Doméstico (premium)", market: "R$ 297", ours: "R$ 99,90", save: "R$ 197,10" },
-                  { name: "Mentoria de Organização Financeira Pessoal", market: "R$ 3.000", ours: "R$ 99,90", save: "R$ 2.900,10" },
-                  { name: "Curso de Planejamento de Aposentadoria", market: "R$ 897", ours: "R$ 99,90", save: "R$ 797,10" },
+                  { name: "Curso de Gestão do Tempo", market: "R$ 1.200", ours: "R$ 49,90", save: "R$ 1.150,10" },
+                  { name: "Planilha de Orçamento Doméstico (premium)", market: "R$ 297", ours: "R$ 49,90", save: "R$ 247,10" },
+                  { name: "Mentoria de Organização Financeira Pessoal", market: "R$ 3.000", ours: "R$ 49,90", save: "R$ 2.950,10" },
+                  { name: "Curso de Planejamento de Aposentadoria", market: "R$ 897", ours: "R$ 49,90", save: "R$ 847,10" },
                 ].map((row, idx) => (
                   <tr key={idx} style={{ borderBottom: "1px solid rgba(201,168,76,0.1)", background: idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent" }}>
                     <td className="py-4 px-6" style={{ color: "#C8D8E8" }}>{row.name}</td>
@@ -509,6 +509,28 @@ export default function Home() {
                 <a href="https://instagram.com/fernanda_griggio" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold" style={{ color: "#C9A84C" }}>@fernanda_griggio</a>
               </div>
             </div>
+            <div className="p-8 rounded-2xl flex flex-col" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
+              <div className="flex gap-1 mb-5">{Array.from({ length: 5 }).map((_, s) => (<Star key={s} className="w-4 h-4 fill-current" style={{ color: "#C9A84C" }} />))}</div>
+              <p className="text-sm leading-relaxed flex-1 mb-6" style={{ color: "#C8D8E8" }}>"Trabalhava 10h por dia e no final do mês não sobrava nada. Achava que era questão de ganhar mais. Comecei a usar o Gestor de Vida e na primeira semana já percebi que gastava R$340 em coisas que nem lembrava de ter comprado. Só de ver os números na tela já mudou meu comportamento. Em 60 dias cortei R$680 de gastos invisíveis — sem mudar minha renda, sem me privar de nada importante. O simulador de aposentadoria foi o que mais me chocou: percebi que investindo só R$300 a mais por mês, antecipo minha aposentadoria em 4 anos. Hoje durmo diferente. Não porque resolvi tudo — mas porque sei exatamente onde estou e para onde estou indo."</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold" style={{ color: "#F0E6C8" }}>Rafael Mendonça</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#8A9BB5" }}>Analista de TI · São Paulo</p>
+                </div>
+                <span className="text-xs font-semibold" style={{ color: "#C9A84C" }}>usuário verificado</span>
+              </div>
+            </div>
+            <div className="p-8 rounded-2xl flex flex-col" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
+              <div className="flex gap-1 mb-5">{Array.from({ length: 5 }).map((_, s) => (<Star key={s} className="w-4 h-4 fill-current" style={{ color: "#C9A84C" }} />))}</div>
+              <p className="text-sm leading-relaxed flex-1 mb-6" style={{ color: "#C8D8E8" }}>"Comprei achando que era mais um app de finanças. Não é. É um método que usa o app como ferramenta. Essa diferença muda tudo. A parte de tempo foi onde mais senti impacto: eu era daquelas pessoas que chegava no fim do dia exausta mas sem saber o que tinha feito de útil. Quando comecei a classificar as tarefas, percebi que passava a tarde inteira em 'urgente para os outros' e deixava o que era importante para mim para o dia seguinte — que nunca chegava. Em 3 semanas isso mudou. Hoje tenho blocos de tempo protegidos para o que importa. Finalizei um projeto que estava parado há 7 meses. Isso tem valor que não cabe num preço."</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold" style={{ color: "#F0E6C8" }}>Juliana Castro</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#8A9BB5" }}>Psicóloga · Curitiba</p>
+                </div>
+                <span className="text-xs font-semibold" style={{ color: "#C9A84C" }}>usuário verificado</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -598,7 +620,7 @@ export default function Home() {
           </h2>
           <p className="text-lg mb-10 leading-relaxed" style={{ color: "#8A9BB5" }}>Você pode continuar esperando a motivação perfeita, o momento certo, a ferramenta ideal. Ou pode começar hoje — com o processo simples, consistente e honesto que o tempo vai recompensar.</p>
           <Button size="lg" onClick={() => handleGetStarted()} className="px-10 py-6 text-lg rounded-xl font-semibold" style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}>
-            Quero o Combo — R$ 99,90 <ArrowRight className="w-5 h-5 ml-2" />
+            Quero o Combo — R$ 49,90 <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
           <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>Pagamento único · Acesso vitalício · Garantia de 7 dias</p>
         </div>
