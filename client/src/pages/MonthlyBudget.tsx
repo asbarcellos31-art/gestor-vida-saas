@@ -511,32 +511,39 @@ export default function MonthlyBudget() {
   // Controla se a replicação já foi feita para este mês (evita re-rodar após save/refetch)
   const replicationDoneRef = useRef(false);
 
-  // Quando o mês atual NÃO tem dados e o mês anterior carrega,
-  // replica apenas datas de vencimento, categorias e membros (NÃO os valores monetários)
+  // Quando o mês atual NÃO tem dados, pré-preenche os valores do mês anterior
   // Só roda UMA VEZ por mês (replicationDoneRef garante isso)
   useEffect(() => {
-    // Aguarda a query do mês atual terminar completamente (sem loading nem fetching)
     if (billsLoading || billsFetching) return;
-    // Se já tem dados salvos no banco — não replica nada
-    if (billsData) return;
-    // Se já replicou neste mês — não replica de novo
+    if (billsData && (billsData as any[]).length > 0) return;
     if (replicationDoneRef.current) return;
-    // Só replica se o mês anterior tem dados
-    if (!prevBillsData) return;
+    if (!prevBillsData || (prevBillsData as any[]).length === 0) return;
+    if (!fixedBillLabels) return;
     replicationDoneRef.current = true;
-    try {
-      const prevDueDays = JSON.parse((prevBillsData as any).billsDueDay || "{}");
-      if (Object.keys(prevDueDays).length > 0) setBillsDueDay(prevDueDays);
-    } catch { /* ignora */ }
-    try {
-      const prevCat = JSON.parse((prevBillsData as any).billsCategory || "{}");
-      if (Object.keys(prevCat).length > 0) setBillsCategory(prevCat);
-    } catch { /* ignora */ }
-    try {
-      const prevMember = JSON.parse((prevBillsData as any).billsMember || "{}");
-      if (Object.keys(prevMember).length > 0) setBillsMember(prevMember);
-    } catch { /* ignora */ }
-  }, [billsLoading, billsFetching, billsData, prevBillsData]);
+
+    const prevRows = prevBillsData as any[];
+    const activeBills = (fixedBillLabels as any[]).filter(l => !l.hidden && l.billKey !== "cartoes");
+    const prevVals: Record<string, string> = {};
+    const missing: string[] = [];
+
+    activeBills.forEach(label => {
+      const prevRow = prevRows.find(b => b.billKey === label.billKey);
+      const val = parseNum(prevRow?.amount);
+      if (val > 0) {
+        prevVals[label.billKey] = String(val.toFixed(2));
+      } else {
+        missing.push(label.label || label.billKey);
+      }
+    });
+
+    if (Object.keys(prevVals).length > 0) {
+      setBillsValues(prev => ({ ...prev, ...prevVals }));
+    }
+    if (missing.length > 0) {
+      const prevMonthName = MONTHS_FULL[prevMonth - 1];
+      toast.info(`Sem valor em ${prevMonthName}: ${missing.join(", ")}`);
+    }
+  }, [billsLoading, billsFetching, billsData, prevBillsData, fixedBillLabels]);
 
   // Auto-Cartões: quando cardTotals chega do backend, preenche o campo "cartoes" automaticamente
   useEffect(() => {
