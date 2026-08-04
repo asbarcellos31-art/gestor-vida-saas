@@ -505,6 +505,14 @@ export default function MonthlyBudget() {
     setBillsDirty(false);
   }, [billsData]);
 
+  // Carrega categorias das contas a pagar do banco (fixedBillLabels)
+  useEffect(() => {
+    if (!fixedBillLabels) return;
+    const cats: Record<string, string> = {};
+    (fixedBillLabels as any[]).forEach(l => { if (l.category) cats[l.billKey] = l.category; });
+    setBillsCategory(cats);
+  }, [fixedBillLabels]);
+
   // Puxa valores do mês anterior para as contas a pagar (acionado pelo botão)
   const [isPullingPrev, setIsPullingPrev] = useState(false);
   const handlePullPrevMonth = async () => {
@@ -626,20 +634,16 @@ export default function MonthlyBudget() {
     else if (rule === "Estilo de Vida (30%)") groupTotals.estiloVida += val;
     else if (rule === "Investimentos/Dívidas (20%)") groupTotals.investimentos += val;
   });
-  // 2) Contas a pagar fixas — usa categoria configurada ou padrão do campo
-  // IMPORTANTE: o campo "cartoes" é preenchido automaticamente com o total dos parcelados.
-  // Os parcelados já são contados individualmente por categoria acima, então "cartoes" é EXCLUÍDO
-  // para evitar dupla contagem.
-  FIXED_BILLS_FIELDS.forEach(f => {
-    if (f.key === "cartoes") return; // Excluir: parcelados já somados individualmente acima
-    const val = parseNum(billsValues[f.key]);
+  // 2) Contas a pagar fixas — cartoes EXCLUÍDO (parcelados já somados acima individualmente)
+  (fixedBillLabels || []).filter((l: any) => !l.hidden && l.billKey !== "cartoes").forEach((label: any) => {
+    const row = (billsData || []).find((b: any) => b.billKey === label.billKey);
+    const val = parseNum(row?.amount);
     if (val <= 0) return;
-    const cat = billsCategory[f.key] || f.defaultCategory;
+    const cat = label.category || "Outros";
     const rule = activeCategoryRules[cat];
     if (rule === "Essenciais (50%)") groupTotals.essenciais += val;
     else if (rule === "Estilo de Vida (30%)") groupTotals.estiloVida += val;
     else if (rule === "Investimentos/Dívidas (20%)") groupTotals.investimentos += val;
-    // Se categoria não mapeada, não soma em nenhum grupo
   });
 
   const handleSaveIncome = () => {
