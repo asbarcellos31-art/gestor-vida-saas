@@ -489,59 +489,37 @@ export default function MonthlyBudget() {
     }
   }, [incomeData]);
 
-  // Load bills data
-  // Carrega dados do mês atual quando existem
+  // Carrega dados do mês atual quando existem (billsData é array de rows)
   useEffect(() => {
     if (!billsData) return;
+    const billsArray = billsData as any[];
     const vals: Record<string, string> = {};
-    FIXED_BILLS_FIELDS.forEach(f => { vals[f.key] = String(parseNum((billsData as any)[f.key])); });
+    FIXED_BILLS_FIELDS.forEach(f => {
+      const row = billsArray.find((b: any) => b.billKey === f.key);
+      vals[f.key] = row ? String(parseNum(row.amount)) : "";
+    });
     setBillsValues(vals);
-    try { setBillsObs(JSON.parse((billsData as any).billsObs || "{}")); } catch { setBillsObs({}); }
-    try { setBillsDueDay(JSON.parse((billsData as any).billsDueDay || "{}")); } catch { setBillsDueDay({}); }
-    try { setBillsCategory(JSON.parse((billsData as any).billsCategory || "{}")); } catch { setBillsCategory({}); }
-    try { setBillsMember(JSON.parse((billsData as any).billsMember || "{}")); } catch { setBillsMember({}); }
-    try { setBillsLabels(JSON.parse((billsData as any).billsLabels || "{}")); } catch { setBillsLabels({}); }
-    // billsData é um array de rows — lê paid de cada row diretamente
     const paidMap: Record<string, boolean> = {};
-    (billsData as any[]).forEach(b => { if (b.billKey) paidMap[b.billKey] = !!b.paid; });
+    billsArray.forEach((b: any) => { if (b.billKey) paidMap[b.billKey] = !!b.paid; });
     setBillsPaid(paidMap);
     setBillsDirty(false);
   }, [billsData]);
 
-  // Controla se a replicação já foi feita para este mês (evita re-rodar após save/refetch)
-  const replicationDoneRef = useRef(false);
-
-  // Quando o mês atual NÃO tem dados, pré-preenche os valores do mês anterior
-  // Só roda UMA VEZ por mês (replicationDoneRef garante isso)
+  // Toast: avisa contas sem valor no mês anterior (quando mês atual ainda não tem dados)
+  const prevMissingToastRef = useRef(false);
   useEffect(() => {
     if (billsLoading || billsFetching) return;
-    if (billsData && (billsData as any[]).length > 0) return;
-    if (replicationDoneRef.current) return;
-    if (!prevBillsData || (prevBillsData as any[]).length === 0) return;
-    if (!fixedBillLabels) return;
-    replicationDoneRef.current = true;
-
+    if ((billsData as any[])?.length > 0) return;
+    if (!prevBillsData || !fixedBillLabels) return;
+    if (prevMissingToastRef.current) return;
+    prevMissingToastRef.current = true;
     const prevRows = prevBillsData as any[];
-    const activeBills = (fixedBillLabels as any[]).filter(l => !l.hidden && l.billKey !== "cartoes");
-    const prevVals: Record<string, string> = {};
-    const missing: string[] = [];
-
-    activeBills.forEach(label => {
-      const prevRow = prevRows.find(b => b.billKey === label.billKey);
-      const val = parseNum(prevRow?.amount);
-      if (val > 0) {
-        prevVals[label.billKey] = String(val.toFixed(2));
-      } else {
-        missing.push(label.label || label.billKey);
-      }
-    });
-
-    if (Object.keys(prevVals).length > 0) {
-      setBillsValues(prev => ({ ...prev, ...prevVals }));
-    }
+    const missing = (fixedBillLabels as any[])
+      .filter(l => !l.hidden && l.billKey !== "cartoes")
+      .filter(l => !prevRows.find((b: any) => b.billKey === l.billKey && parseNum(b.amount) > 0))
+      .map(l => l.label || l.billKey);
     if (missing.length > 0) {
-      const prevMonthName = MONTHS_FULL[prevMonth - 1];
-      toast.info(`Sem valor em ${prevMonthName}: ${missing.join(", ")}`);
+      toast.info(`Sem valor em ${MONTHS_FULL[prevMonth - 1]}: ${missing.join(", ")}`);
     }
   }, [billsLoading, billsFetching, billsData, prevBillsData, fixedBillLabels]);
 
@@ -1065,7 +1043,7 @@ export default function MonthlyBudget() {
                       )}
                     </div>
                     <CurrencyInput
-                      value={billData ? String(parseNum(billData.amount)) : billsValues[f.billKey] || "0"}
+                      value={billData ? String(parseNum(billData.amount)) : (billsValues[f.billKey] || String(parseNum((prevBillsData as any[] || []).find((b: any) => b.billKey === f.billKey)?.amount) || 0))}
                       onChange={v => {
                         if (!isAutoCartoes) {
                           setBillsValues(prev => ({ ...prev, [f.billKey]: v }));
