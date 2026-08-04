@@ -259,11 +259,9 @@ export default function MonthlyBudget() {
     ? userCategories.map(c => c.name)
     : CATEGORIES;
 
-  const activeCategoryRules: Record<string, string> = {};
+  const activeCategoryRules: Record<string, string> = { ...CATEGORY_RULES };
   if (userCategories && userCategories.length > 0) {
     userCategories.forEach(c => { activeCategoryRules[c.name] = c.rule; });
-  } else {
-    Object.assign(activeCategoryRules, CATEGORY_RULES);
   }
 
   // Formas de pagamento dinâmicas: usa as do banco se disponíveis, senão as padrão
