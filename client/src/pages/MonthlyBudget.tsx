@@ -505,23 +505,33 @@ export default function MonthlyBudget() {
     setBillsDirty(false);
   }, [billsData]);
 
-  // Toast: avisa contas sem valor no mês anterior (quando mês atual ainda não tem dados)
-  const prevMissingToastRef = useRef(false);
-  useEffect(() => {
-    if (billsLoading || billsFetching) return;
-    if ((billsData as any[])?.length > 0) return;
+  // Puxa valores do mês anterior para as contas a pagar (acionado pelo botão)
+  const [isPullingPrev, setIsPullingPrev] = useState(false);
+  const handlePullPrevMonth = async () => {
     if (!prevBillsData || !fixedBillLabels) return;
-    if (prevMissingToastRef.current) return;
-    prevMissingToastRef.current = true;
+    setIsPullingPrev(true);
     const prevRows = prevBillsData as any[];
-    const missing = (fixedBillLabels as any[])
-      .filter(l => !l.hidden && l.billKey !== "cartoes")
-      .filter(l => !prevRows.find((b: any) => b.billKey === l.billKey && parseNum(b.amount) > 0))
-      .map(l => l.label || l.billKey);
+    const activeBills = (fixedBillLabels as any[]).filter(l => !l.hidden && l.billKey !== "cartoes");
+    const missing: string[] = [];
+    const saves: Promise<any>[] = [];
+    activeBills.forEach(label => {
+      const prevRow = prevRows.find((b: any) => b.billKey === label.billKey);
+      const val = parseNum(prevRow?.amount);
+      if (val > 0) {
+        saves.push(saveBillMut.mutateAsync({ year, month, billKey: label.billKey, amount: String(val.toFixed(2)), paid: false }));
+        setBillsValues(prev => ({ ...prev, [label.billKey]: String(val.toFixed(2)) }));
+      } else {
+        missing.push(label.label || label.billKey);
+      }
+    });
+    await Promise.all(saves);
+    setIsPullingPrev(false);
     if (missing.length > 0) {
       toast.info(`Sem valor em ${MONTHS_FULL[prevMonth - 1]}: ${missing.join(", ")}`);
+    } else {
+      toast.success("Valores do mês anterior importados!");
     }
-  }, [billsLoading, billsFetching, billsData, prevBillsData, fixedBillLabels]);
+  };
 
   // Auto-Cartões: quando cardTotals chega do backend, preenche o campo "cartoes" automaticamente
   useEffect(() => {
@@ -988,8 +998,18 @@ export default function MonthlyBudget() {
                   Contas a Pagar
                 </CardTitle>
                 <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground gap-1"
+                    onClick={handlePullPrevMonth}
+                    disabled={isPullingPrev || !prevBillsData}
+                    title={`Puxar valores de ${MONTHS_FULL[prevMonth - 1]}`}
+                  >
+                    <RefreshCw className={`w-3 h-3 ${isPullingPrev ? "animate-spin" : ""}`} />
+                    {MONTHS_FULL[prevMonth - 1]}
+                  </Button>
                   <span className="text-sm font-bold text-red-600">{fmt(totalBills)}</span>
-
                 </div>
               </div>
             </CardHeader>
@@ -1043,7 +1063,7 @@ export default function MonthlyBudget() {
                       )}
                     </div>
                     <CurrencyInput
-                      value={billData ? String(parseNum(billData.amount)) : (billsValues[f.billKey] || String(parseNum((prevBillsData as any[] || []).find((b: any) => b.billKey === f.billKey)?.amount) || 0))}
+                      value={billData ? String(parseNum(billData.amount)) : billsValues[f.billKey] || "0"}
                       onChange={v => {
                         if (!isAutoCartoes) {
                           setBillsValues(prev => ({ ...prev, [f.billKey]: v }));
