@@ -1,6 +1,10 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Clock,
   Wallet,
@@ -18,9 +22,12 @@ import {
   Brain,
   PenLine,
   ChevronRight,
+  Lock,
 } from "lucide-react";
 import { useLocation } from "wouter";
-import { trackInitiateCheckout } from "@/lib/pixel";
+import { useState, useEffect, useRef } from "react";
+import { trackInitiateCheckout, trackLead, trackViewContent } from "@/lib/pixel";
+import { trpc } from "@/lib/trpc";
 
 const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png";
 
@@ -154,40 +161,126 @@ const CYCLE_STEPS = [
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
+  const captureLead = trpc.leads.capture.useMutation();
+
+  // Modal de captura de email
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pendingUrl, setPendingUrl] = useState("");
+  const [pendingPlan, setPendingPlan] = useState({ name: "", price: "" });
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadName, setLeadName] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  // IntersectionObserver: dispara ViewContent ao ver seção de planos
+  const planosRef = useRef<HTMLElement>(null);
+  const testRef = useRef<HTMLElement>(null);
+  const viewContentFired = useRef(false);
+  const leadFired = useRef(false);
+
+  useEffect(() => {
+    const obsPlanos = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !viewContentFired.current) {
+        viewContentFired.current = true;
+        trackViewContent({ content_name: "Planos Gestor de Vida", content_category: "SaaS" });
+      }
+    }, { threshold: 0.3 });
+    const obsTest = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !leadFired.current) {
+        leadFired.current = true;
+        trackLead({ content_name: "Depoimentos vistos", content_category: "SaaS" });
+      }
+    }, { threshold: 0.3 });
+    if (planosRef.current) obsPlanos.observe(planosRef.current);
+    if (testRef.current) obsTest.observe(testRef.current);
+    return () => { obsPlanos.disconnect(); obsTest.disconnect(); };
+  }, []);
+
+  const openModal = (hotmartUrl: string, planName: string, price: string) => {
+    setPendingUrl(hotmartUrl);
+    setPendingPlan({ name: planName, price });
+    setModalOpen(true);
+  };
+
+  const handleModalSubmit = async () => {
+    if (!leadEmail.trim()) return;
+    setSubmitting(true);
+    const numericPrice = parseFloat(pendingPlan.price.replace(",", "."));
+    // Salva lead no banco
+    captureLead.mutate({ email: leadEmail.trim(), name: leadName.trim() || undefined, planName: pendingPlan.name, planPrice: pendingPlan.price });
+    // Pixels
+    trackLead({ content_name: pendingPlan.name, value: numericPrice, currency: "BRL" });
+    trackInitiateCheckout({ content_name: pendingPlan.name, content_category: "SaaS", value: numericPrice, currency: "BRL" });
+    localStorage.setItem("lastPurchaseValue", String(numericPrice));
+    localStorage.setItem("lastPurchaseName", pendingPlan.name);
+    // Pré-preenche o email no Hotmart
+    const url = pendingUrl + (pendingUrl.includes("?") ? "&" : "?") + "checkoutEmail=" + encodeURIComponent(leadEmail.trim());
+    setModalOpen(false);
+    setSubmitting(false);
+    setTimeout(() => { window.location.href = url; }, 200);
+  };
 
   const handleGetStarted = () => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    } else {
-      trackInitiateCheckout({
-        content_name: "Combo Promocional",
-        content_category: "SaaS",
-        value: 49.90,
-        currency: "BRL",
-      });
-      setTimeout(() => { window.location.href = HOTMART_COMBO; }, 300);
-    }
+    if (isAuthenticated) { navigate("/dashboard"); return; }
+    openModal(HOTMART_COMBO, "Combo Promocional", "49,90");
   };
 
   const handlePlanClick = (hotmartUrl: string, planName: string, price: string) => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    } else {
-      const numericPrice = parseFloat(price.replace(",", "."));
-      localStorage.setItem("lastPurchaseValue", String(numericPrice));
-      localStorage.setItem("lastPurchaseName", planName);
-      trackInitiateCheckout({
-        content_name: planName,
-        content_category: "SaaS",
-        value: numericPrice,
-        currency: "BRL",
-      });
-      setTimeout(() => { window.location.href = hotmartUrl; }, 300);
-    }
+    if (isAuthenticated) { navigate("/dashboard"); return; }
+    openModal(hotmartUrl, planName, price);
   };
 
   return (
     <div className="min-h-screen" style={{ background: "#0B1437" }}>
+
+      {/* Modal de captura de email */}
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="max-w-md" style={{ background: "#0D1B4B", border: "1px solid rgba(201,168,76,0.4)", color: "#F0E6C8" }}>
+          <DialogHeader>
+            <DialogTitle style={{ color: "#E2C97E" }}>Antes de continuar...</DialogTitle>
+            <DialogDescription style={{ color: "#8A9BB5" }}>
+              Deixe seu email para receber a confirmação de acesso e dicas exclusivas.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <div>
+              <label className="text-xs font-semibold mb-1 block" style={{ color: "#C9A84C" }}>Seu nome</label>
+              <Input
+                placeholder="Como posso te chamar?"
+                value={leadName}
+                onChange={e => setLeadName(e.target.value)}
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(201,168,76,0.3)", color: "#F0E6C8" }}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold mb-1 block" style={{ color: "#C9A84C" }}>Seu melhor email *</label>
+              <Input
+                type="email"
+                placeholder="email@exemplo.com"
+                value={leadEmail}
+                onChange={e => setLeadEmail(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleModalSubmit()}
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(201,168,76,0.3)", color: "#F0E6C8" }}
+              />
+            </div>
+            <Button
+              className="w-full py-5 font-semibold text-base rounded-xl mt-2"
+              style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}
+              disabled={!leadEmail.trim() || submitting}
+              onClick={handleModalSubmit}
+            >
+              {submitting ? "Aguarde..." : `Continuar para o pagamento — R$ ${pendingPlan.price}`}
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <Lock className="w-3 h-3" style={{ color: "#5A6A80" }} />
+              <p className="text-xs text-center" style={{ color: "#5A6A80" }}>
+                Pagamento seguro via Hotmart · Garantia de 7 dias · Sem mensalidade
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b" style={{ background: "rgba(11,20,55,0.92)", borderColor: "rgba(201,168,76,0.2)" }}>
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
@@ -479,7 +572,7 @@ export default function Home() {
       </section>
 
       {/* DEPOIMENTOS */}
-      <section className="py-20 px-4" style={{ background: "#070E26" }}>
+      <section ref={testRef} className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>Quem já usa</p>
@@ -565,7 +658,7 @@ export default function Home() {
       </section>
 
       {/* PLANOS */}
-      <section id="planos" className="py-20 px-4" style={{ background: "#070E26" }}>
+      <section ref={planosRef} id="planos" className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>Investimento</p>
@@ -588,6 +681,9 @@ export default function Home() {
                 <div className="mb-6">
                   <span className="text-4xl font-extrabold" style={{ color: "#C9A84C" }}>R$ {plan.price}</span>
                   <span className="text-sm ml-2" style={{ color: "#8A9BB5" }}>{(plan as any).priceLabel}</span>
+                  {(plan as any).badge && (
+                    <p className="text-xs mt-1 font-semibold" style={{ color: "#ef4444" }}>⚡ Preço promocional por tempo limitado</p>
+                  )}
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((f) => (
@@ -604,6 +700,10 @@ export default function Home() {
                 <Button onClick={() => handlePlanClick(plan.hotmartUrl, plan.name, plan.price)} className="w-full rounded-xl py-5 font-semibold" style={(plan as any).badge ? { background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" } : { background: "rgba(201,168,76,0.15)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.4)" }}>
                   Comprar agora <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
+                <div className="flex items-center justify-center gap-1.5 mt-2">
+                  <Shield className="w-3 h-3" style={{ color: "#10b981" }} />
+                  <span className="text-xs" style={{ color: "#5A6A80" }}>Garantia de 7 dias — dinheiro de volta sem perguntas</span>
+                </div>
               </div>
             ))}
           </div>

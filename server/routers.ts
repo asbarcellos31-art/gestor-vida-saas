@@ -1354,5 +1354,19 @@ export const appRouter = router({
   stripe: stripeRouter,
   storage: storageRouter,
   admin: adminRouter,
+  leads: router({
+    capture: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        name: z.string().optional(),
+        planName: z.string().optional(),
+        planPrice: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { saveLead } = await import("./db");
+        await saveLead(input.email, input.name, input.planName, input.planPrice);
+        return { success: true };
+      }),
+  }),
 });
 export type AppRouter = typeof appRouter;

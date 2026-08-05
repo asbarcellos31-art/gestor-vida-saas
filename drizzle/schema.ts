@@ -362,3 +362,13 @@ export const hotmartPurchases = mysqlTable("hotmart_purchases", {
 });
 export type HotmartPurchase = typeof hotmartPurchases.$inferSelect;
 export type InsertHotmartPurchase = typeof hotmartPurchases.$inferInsert;
+
+// ── Leads (captura de email antes do checkout) ───────────────────────────────
+export const leads = mysqlTable("leads", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 255 }).notNull(),
+  name: varchar("name", { length: 128 }),
+  planName: varchar("planName", { length: 128 }),
+  planPrice: varchar("planPrice", { length: 16 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});

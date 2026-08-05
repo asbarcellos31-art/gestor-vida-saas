@@ -25,6 +25,7 @@ import {
   paymentMethods,
   familyMembers,
   authTokens,
+  leads,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1194,4 +1195,10 @@ export async function recordStorageUpgrade(userId: number, additionalMB: number,
   await db.execute(
     sql`INSERT INTO storage_upgrades (userId, additionalMB, source) VALUES (${userId}, ${additionalMB}, ${source})`
   );
+}
+
+export async function saveLead(email: string, name?: string, planName?: string, planPrice?: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(leads).values({ email, name: name || null, planName: planName || null, planPrice: planPrice || null });
 }
