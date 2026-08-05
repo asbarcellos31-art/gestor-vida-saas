@@ -11,7 +11,7 @@ import { serveStatic, setupVite } from "./vite";
 import { handleStripeWebhook } from "../stripe_webhook";
 import { handleHotmartWebhook } from "../hotmart_webhook";
 import { startUserMonitor } from "./userMonitor";
-import { ensureStorageUpgradesTable, ensureBudgetTables } from "../db";
+import { ensureStorageUpgradesTable, ensureBudgetTables, ensureLeadsTable } from "../db";
 import { registerStorageProxy } from "./storageProxy";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -110,6 +110,7 @@ server.listen(port, "0.0.0.0", () => {
     startUserMonitor();
     ensureStorageUpgradesTable().catch(console.error);
     ensureBudgetTables().catch(console.error);
+    ensureLeadsTable().catch(console.error);
   });
 }
 

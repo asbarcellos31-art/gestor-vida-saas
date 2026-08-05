@@ -1198,6 +1198,26 @@ export async function recordStorageUpgrade(userId: number, additionalMB: number,
   );
 }
 
+export async function ensureLeadsTable(): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS leads (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        name VARCHAR(128),
+        planName VARCHAR(128),
+        planPrice VARCHAR(16),
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_email (email)
+      )
+    `);
+  } catch (err) {
+    console.error("[DB] Erro ao criar leads:", err);
+  }
+}
+
 export async function saveLead(email: string, name?: string, planName?: string, planPrice?: string) {
   const db = await getDb();
   if (!db) return;
