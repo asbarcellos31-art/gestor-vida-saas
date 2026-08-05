@@ -198,7 +198,7 @@ export async function sendRemarketingEmail(to: string, name: string | null, plan
   };
   const checkoutUrl = (planName && HOTMART_LINKS[planName]) || "https://www.gestordevida.com.br/#planos";
   const planDisplay = planName ?? "Gestor de Vida";
-  const priceDisplay = planPrice ? `R$ ${planPrice}/mês` : "";
+  const priceDisplay = planPrice ? `R$ ${planPrice}` : "";
   const html = baseTemplate(`
     <h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:0 0 8px;">${firstName}, você esqueceu algo aqui 👀</h1>
     <p style="color:#a5b4fc;font-size:15px;margin:0 0 20px;">Você estava quase finalizando sua assinatura do <strong style="color:#fbbf24;">${planDisplay}</strong>${priceDisplay ? ` por <strong style="color:#fbbf24;">${priceDisplay}</strong>` : ""} — mas não concluiu.</p>
