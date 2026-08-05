@@ -1284,11 +1284,29 @@ const adminRouter = router({
   deleteUser: adminProcedure
     .input(z.object({ userId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      // Impede que o admin exclua a si mesmo
       if (ctx.user.id === input.userId) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Você não pode excluir sua própria conta pelo painel admin." });
       }
       await adminDeleteUser(input.userId);
+      return { success: true };
+    }),
+
+  funnel: adminProcedure.query(async () => {
+    const { getLeadsWithPurchaseStatus } = await import("./db");
+    return await getLeadsWithPurchaseStatus();
+  }),
+
+  sendRemarketingEmail: adminProcedure
+    .input(z.object({
+      email: z.string().email(),
+      name: z.string().nullable().optional(),
+      planName: z.string().nullable().optional(),
+      planPrice: z.string().nullable().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const { sendRemarketingEmail } = await import("./email");
+      const sent = await sendRemarketingEmail(input.email, input.name ?? null, input.planName ?? null, input.planPrice ?? null);
+      if (!sent) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Falha ao enviar email. Verifique a configuração do SendGrid." });
       return { success: true };
     }),
 });

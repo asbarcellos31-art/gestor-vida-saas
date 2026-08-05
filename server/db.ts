@@ -26,6 +26,7 @@ import {
   familyMembers,
   authTokens,
   leads,
+  hotmartPurchases,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1201,4 +1202,21 @@ export async function saveLead(email: string, name?: string, planName?: string, 
   const db = await getDb();
   if (!db) return;
   await db.insert(leads).values({ email, name: name || null, planName: planName || null, planPrice: planPrice || null });
+}
+
+export async function getLeadsWithPurchaseStatus() {
+  const db = await getDb();
+  if (!db) return [];
+  const allLeads = await db.select().from(leads).orderBy(desc(leads.createdAt));
+  const allPurchases = await db.select().from(hotmartPurchases).orderBy(desc(hotmartPurchases.createdAt));
+  return allLeads.map(lead => {
+    const purchase = allPurchases.find(p => p.buyerEmail.toLowerCase() === lead.email.toLowerCase());
+    return { ...lead, purchase: purchase || null };
+  });
+}
+
+export async function getAllHotmartPurchases() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(hotmartPurchases).orderBy(desc(hotmartPurchases.createdAt));
 }

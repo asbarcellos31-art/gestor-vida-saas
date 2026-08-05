@@ -17,6 +17,10 @@ import {
   RefreshCw,
   ChevronDown,
   Trash2,
+  Mail,
+  ShoppingCart,
+  BarChart2,
+  Send,
 } from "lucide-react";
 
 const PLAN_LABELS: Record<string, string> = {
@@ -63,9 +67,33 @@ export default function Admin() {
   const utils = trpc.useUtils();
   const { data: metrics, isLoading: metricsLoading } = trpc.admin.metrics.useQuery();
   const { data: users, isLoading: usersLoading } = trpc.admin.users.useQuery();
+  const { data: funnelData, isLoading: funnelLoading } = trpc.admin.funnel.useQuery();
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [planFilter, setPlanFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<"usuarios" | "funil">("usuarios");
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null);
+
+  const sendRemarketing = trpc.admin.sendRemarketingEmail.useMutation({
+    onSuccess: (_, vars) => {
+      toast.success(`Email de recuperação enviado para ${vars.email}`);
+      setSendingEmail(null);
+    },
+    onError: (e) => {
+      toast.error(e.message);
+      setSendingEmail(null);
+    },
+  });
+
+  const handleSendRemarketing = (lead: { email: string; name?: string | null; planName?: string | null; planPrice?: string | null }) => {
+    setSendingEmail(lead.email);
+    sendRemarketing.mutate({ email: lead.email, name: lead.name, planName: lead.planName, planPrice: lead.planPrice });
+  };
+
+  const funnelLeads = funnelData ?? [];
+  const totalLeads = funnelLeads.length;
+  const totalPurchased = funnelLeads.filter((l: any) => l.purchase).length;
+  const conversionPct = totalLeads > 0 ? ((totalPurchased / totalLeads) * 100).toFixed(1) : "0.0";
 
   const setUserPlan = trpc.admin.setUserPlan.useMutation({
     onSuccess: () => {
@@ -119,6 +147,7 @@ export default function Admin() {
             onClick={() => {
               utils.admin.metrics.invalidate();
               utils.admin.users.invalidate();
+              utils.admin.funnel.invalidate();
             }}
             className="gap-2"
           >
@@ -127,6 +156,151 @@ export default function Admin() {
           </Button>
         </div>
 
+        {/* Tab navigation */}
+        <div className="flex gap-2 mb-6 border-b border-border">
+          <button
+            onClick={() => setActiveTab("usuarios")}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === "usuarios" ? "border-violet-500 text-violet-600" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+          >
+            <Users className="w-4 h-4 inline mr-1.5 mb-0.5" />
+            Usuários
+          </button>
+          <button
+            onClick={() => setActiveTab("funil")}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === "funil" ? "border-violet-500 text-violet-600" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+          >
+            <BarChart2 className="w-4 h-4 inline mr-1.5 mb-0.5" />
+            Funil de Vendas
+          </button>
+        </div>
+
+        {/* ── FUNIL DE VENDAS ── */}
+        {activeTab === "funil" && (
+          <div>
+            {/* Summary cards */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="bg-card rounded-2xl border border-border p-5 flex items-start gap-4">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-blue-100 text-blue-700">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Leads Capturados</p>
+                  <p className="text-2xl font-bold text-foreground">{totalLeads}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">emails coletados</p>
+                </div>
+              </div>
+              <div className="bg-card rounded-2xl border border-border p-5 flex items-start gap-4">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-emerald-100 text-emerald-700">
+                  <ShoppingCart className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Compraram</p>
+                  <p className="text-2xl font-bold text-foreground">{totalPurchased}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">de {totalLeads} leads</p>
+                </div>
+              </div>
+              <div className="bg-card rounded-2xl border border-border p-5 flex items-start gap-4">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-amber-100 text-amber-700">
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Taxa de Conversão</p>
+                  <p className="text-2xl font-bold text-foreground">{conversionPct}%</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">lead → compra</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Leads table */}
+            <div className="bg-card rounded-2xl border border-border overflow-hidden">
+              <div className="p-4 border-b border-border">
+                <h2 className="font-semibold text-foreground">Histórico de Leads</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Leads que entraram no modal de captura antes do checkout</p>
+              </div>
+              {funnelLoading ? (
+                <div className="p-8 text-center text-muted-foreground">Carregando funil...</div>
+              ) : funnelLeads.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">
+                  <Mail className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                  <p>Nenhum lead capturado ainda.</p>
+                  <p className="text-xs mt-1">Os leads aparecem aqui quando alguém preenche o modal na landing page.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/30">
+                        <th className="text-left p-3 font-medium text-muted-foreground">Email</th>
+                        <th className="text-left p-3 font-medium text-muted-foreground">Nome</th>
+                        <th className="text-left p-3 font-medium text-muted-foreground">Plano Interesse</th>
+                        <th className="text-left p-3 font-medium text-muted-foreground">Capturado em</th>
+                        <th className="text-left p-3 font-medium text-muted-foreground">Status</th>
+                        <th className="text-left p-3 font-medium text-muted-foreground">Ação</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {funnelLeads.map((lead: any) => {
+                        const purchased = !!lead.purchase;
+                        const isSending = sendingEmail === lead.email;
+                        return (
+                          <tr key={lead.id} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                            <td className="p-3 font-medium text-foreground">{lead.email}</td>
+                            <td className="p-3 text-muted-foreground">{lead.name ?? "—"}</td>
+                            <td className="p-3">
+                              {lead.planName ? (
+                                <span className="text-foreground">{lead.planName}{lead.planPrice ? ` · R$${lead.planPrice}` : ""}</span>
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </td>
+                            <td className="p-3 text-muted-foreground text-xs">
+                              {lead.createdAt ? new Date(lead.createdAt).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—"}
+                            </td>
+                            <td className="p-3">
+                              {purchased ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  Comprou
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                                  <Clock className="w-3 h-3" />
+                                  Pendente
+                                </span>
+                              )}
+                            </td>
+                            <td className="p-3">
+                              {!purchased && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  disabled={isSending || sendRemarketing.isPending}
+                                  onClick={() => handleSendRemarketing(lead)}
+                                  className="text-xs gap-1 h-7"
+                                >
+                                  <Send className="w-3 h-3" />
+                                  {isSending ? "Enviando..." : "Email de Recuperação"}
+                                </Button>
+                              )}
+                              {purchased && lead.purchase && (
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(lead.purchase.createdAt).toLocaleDateString("pt-BR")}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── USUÁRIOS ── */}
+        {activeTab === "usuarios" && <>
         {/* Metrics grid */}
         {metricsLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -348,6 +522,7 @@ export default function Admin() {
             </div>
           )}
         </div>
+        </>}
       </div>
     </AppLayout>
   );

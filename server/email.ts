@@ -188,6 +188,47 @@ export async function sendPasswordResetEmail(to: string, name: string, resetToke
   }
 }
 
+export async function sendRemarketingEmail(to: string, name: string | null, planName: string | null, planPrice: string | null): Promise<boolean> {
+  if (!isConfigured) return false;
+  const firstName = name ? name.split(" ")[0] : "Olá";
+  const HOTMART_LINKS: Record<string, string> = {
+    "eBook": "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=cu6bor2b",
+    "Sistema Gestor": "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=l8k18cwx",
+    "Combo Promocional": "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=401asx1p",
+  };
+  const checkoutUrl = (planName && HOTMART_LINKS[planName]) || "https://www.gestordevida.com.br/#planos";
+  const planDisplay = planName ?? "Gestor de Vida";
+  const priceDisplay = planPrice ? `R$ ${planPrice}/mês` : "";
+  const html = baseTemplate(`
+    <h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:0 0 8px;">${firstName}, você esqueceu algo aqui 👀</h1>
+    <p style="color:#a5b4fc;font-size:15px;margin:0 0 20px;">Você estava quase finalizando sua assinatura do <strong style="color:#fbbf24;">${planDisplay}</strong>${priceDisplay ? ` por <strong style="color:#fbbf24;">${priceDisplay}</strong>` : ""} — mas não concluiu.</p>
+    <p style="color:#c7d2fe;font-size:14px;line-height:1.7;margin:0 0 24px;">Sabemos que a vida é corrida, mas a sua organização financeira e de tempo não pode esperar.</p>
+    <div style="background:#1a1940;border:1px solid #3730a3;border-radius:12px;padding:20px;margin:0 0 28px;">
+      <p style="color:#fbbf24;font-size:13px;font-weight:700;margin:0 0 8px;">O que você vai ter acesso:</p>
+      <ul style="color:#c7d2fe;font-size:13px;line-height:1.8;margin:0;padding-left:20px;">
+        <li>Controle financeiro completo (50/30/20)</li>
+        <li>Gestão de tempo e produtividade</li>
+        <li>Planejamento de aposentadoria</li>
+        <li>Relatórios e dashboards mensais/anuais</li>
+      </ul>
+    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+      <tr><td align="center">
+        <a href="${checkoutUrl}&checkoutEmail=${encodeURIComponent(to)}" style="display:inline-block;background:linear-gradient(135deg,#C9A84C,#E2C97E);color:#0B1437;font-size:16px;font-weight:700;padding:16px 40px;border-radius:8px;text-decoration:none;">Completar minha assinatura →</a>
+      </td></tr>
+    </table>
+    <p style="color:#9ca3af;font-size:12px;margin:0;padding:14px;background:#0f0e2a;border-radius:8px;border-left:3px solid #fbbf24;">🛡️ <strong style="color:#fbbf24;">Garantia de 7 dias</strong> — Se não gostar, devolvemos 100% do seu dinheiro, sem perguntas.</p>
+  `);
+  try {
+    await sgMail.send({ to, from: { email: FROM_EMAIL, name: FROM_NAME }, subject: `${firstName}, seu acesso ao Gestor de Vida ainda está disponível ⏳`, html });
+    console.log(`[Email] Remarketing enviado para ${to}`);
+    return true;
+  } catch (err) {
+    console.error("[Email] Erro ao enviar remarketing:", err);
+    return false;
+  }
+}
+
 export async function sendEmailVerification(to: string, name: string, verifyToken: string, origin: string): Promise<boolean> {
   if (!isConfigured) return false;
   const firstName = name.split(" ")[0];
