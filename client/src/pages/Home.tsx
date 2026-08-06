@@ -306,14 +306,14 @@ export default function Home() {
       <section className="pt-36 pb-24 px-4" style={{ background: "linear-gradient(180deg,#0D1B4B 0%,#0B1437 100%)" }}>
         <div className="container text-center max-w-4xl mx-auto">
           <Badge className="mb-6 border" style={{ background: "rgba(201,168,76,0.15)", color: "#E2C97E", borderColor: "rgba(201,168,76,0.4)" }}>
-            Sistema operacional pessoal — pagamento único, sem mensalidade
+            Método dos 3 Pilares da Vida — pagamento único, sem mensalidade
           </Badge>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight" style={{ color: "#F0E6C8" }}>
             Sua rotina não está pesada.<br />
             <span style={{ color: "#C9A84C" }}>Ela está fragmentada.</span>
           </h1>
           <p className="text-lg sm:text-xl mb-6 max-w-2xl mx-auto leading-relaxed" style={{ color: "#8A9BB5" }}>
-            O Gestor de Vida foi criado para pessoas que sentem que estão sempre ocupadas, mas raramente em controle. Centralize tarefas, finanças e decisões em um único sistema pensado para reduzir fricção mental e devolver clareza para sua rotina.
+            O Método dos 3 Pilares é a forma mais direta de sair da sensação de correria sem controle. O Gestor de Vida é a ferramenta que você usa para executar o método — todos os dias, sem complicação.
           </p>
           <p className="text-base sm:text-lg mb-10 max-w-xl mx-auto leading-relaxed font-medium" style={{ color: "#C9A84C" }}>
             Você lança. Você enxerga. Você decide. Esse contato com a realidade é o método.
@@ -351,8 +351,8 @@ export default function Home() {
       <section className="py-20 px-4" style={{ background: "#0D1B4B" }}>
         <div className="container max-w-3xl mx-auto text-center">
           <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>O mecanismo</p>
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-8 leading-tight" style={{ color: "#F0E6C8" }}>O Gestor de Vida não foi criado para organizar tarefas.</h2>
-          <p className="text-lg leading-relaxed mb-6" style={{ color: "#8A9BB5" }}>Foi criado para reduzir a carga cognitiva da sua rotina. Ao invés de depender da memória, da força de vontade ou de dezenas de aplicativos separados, você concentra sua vida operacional em um único ambiente.</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-8 leading-tight" style={{ color: "#F0E6C8" }}>O Método dos 3 Pilares não foi criado para organizar tarefas.</h2>
+          <p className="text-lg leading-relaxed mb-6" style={{ color: "#8A9BB5" }}>Foi criado para eliminar a carga mental da sua rotina. O Gestor de Vida é a ferramenta onde o método vive — mas o método é o que muda tudo.</p>
           <p className="text-lg leading-relaxed" style={{ color: "#8A9BB5" }}>Você para de gastar energia tentando lembrar de tudo. E começa a executar com clareza.</p>
         </div>
       </section>
@@ -564,7 +564,7 @@ export default function Home() {
               <p>O Gestor de Vida foi criado para ser esse começo. Para quem tem vontade, mas ainda não tem estrutura. Para quem quer controle, mas não sabe como montar do zero.</p>
             </div>
             <div className="mt-8 pt-8" style={{ borderTop: "1px solid rgba(201,168,76,0.15)" }}>
-              <p className="text-sm font-semibold" style={{ color: "#C9A84C" }}>— Criador do Gestor de Vida</p>
+              <p className="text-sm font-semibold" style={{ color: "#C9A84C" }}>— Criador do Método dos 3 Pilares</p>
               <p className="text-xs mt-1" style={{ color: "#5A6A80" }}>Anos de busca, estudo e aplicação prática do método</p>
             </div>
           </div>
@@ -578,6 +578,10 @@ export default function Home() {
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>Quem já usa</p>
             <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#F0E6C8" }}>Pessoas reais. Rotinas reais.</h2>
             <p className="text-base mt-3" style={{ color: "#8A9BB5" }}>Depoimentos de quem decidiu começar.</p>
+          </div>
+          <div className="max-w-2xl mx-auto mb-12 p-6 rounded-2xl text-center" style={{ background: "rgba(201,168,76,0.07)", border: "1px solid rgba(201,168,76,0.35)" }}>
+            <p className="text-lg md:text-xl font-semibold leading-relaxed italic" style={{ color: "#E2C97E" }}>"Comprei achando que era mais um app de finanças. Não é. É um método que usa o app como ferramenta. Essa diferença muda tudo."</p>
+            <p className="text-sm mt-3 font-semibold" style={{ color: "#C9A84C" }}>— Juliana Castro, Psicóloga · Curitiba</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <div className="p-8 rounded-2xl flex flex-col" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
