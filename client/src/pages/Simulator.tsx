@@ -7,10 +7,30 @@ import { useLocation } from "wouter";
 
 const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png";
 const INSS_BENEFIT_TETO = 7786;
-const INSS_CONTRIBUTION_TETO = 8157; // salário máximo para calcular contribuição
+const INSS_CONTRIBUTION_TETO = 8157;
 const SALARIO_MINIMO = 1518;
 
-function calcInss(income: number): number {
+// Tabela progressiva INSS 2026 — quanto você PAGA por mês
+function calcInssContribution(income: number): number {
+  const brackets = [
+    { max: 1518,  rate: 0.075 },
+    { max: 2793,  rate: 0.09  },
+    { max: 4190,  rate: 0.12  },
+    { max: 8157,  rate: 0.14  },
+  ];
+  let contribution = 0;
+  let prevMax = 0;
+  const capped = Math.min(income, INSS_CONTRIBUTION_TETO);
+  for (const b of brackets) {
+    if (capped <= prevMax) break;
+    contribution += (Math.min(capped, b.max) - prevMax) * b.rate;
+    prevMax = b.max;
+  }
+  return contribution;
+}
+
+// Estimativa do benefício que você vai RECEBER do INSS
+function calcInssBenefit(income: number): number {
   return Math.min(Math.max(income * 0.60, SALARIO_MINIMO), INSS_BENEFIT_TETO);
 }
 
@@ -24,15 +44,32 @@ function fmt(value: number): string {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
+interface ScenarioResult {
+  label: string; rate: number; fv: number; monthlyFromFv: number; color: string;
+}
+
 interface SimResult {
   savingsUsed: number;
-  inss: number;
+  inssBenefit: number;
+  inssContribution: number;
   gap: number;
   totalNeeded: number;
   months: number;
   years: number;
   breakdown: { needs: number; wants: number; savings: number };
-  scenarios: { label: string; rate: number; fv: number; monthlyFromFv: number; color: string }[];
+  scenarios: ScenarioResult[];
+  inssScenarios: ScenarioResult[]; // mesma contribuição investida
+}
+
+function buildScenarios(pmt: number, months: number): ScenarioResult[] {
+  return [
+    { label: "Pessimista", rate: 0.06, color: "#ef4444" },
+    { label: "Regular",    rate: 0.08, color: "#C9A84C" },
+    { label: "Otimista",   rate: 0.12, color: "#10b981" },
+  ].map((s) => {
+    const fv = futureValue(pmt, s.rate, months);
+    return { ...s, fv, monthlyFromFv: (fv * 0.04) / 12 };
+  });
 }
 
 function calculate(
@@ -45,28 +82,22 @@ function calculate(
   const years = Math.max(retirementAge - currentAge, 1);
   const months = years * 12;
   const savingsUsed = overrideSavings ?? income * 0.20;
-  const inss = calcInss(income);
-  const gap = Math.max(0, desiredIncome - inss);
+  const inssBenefit = calcInssBenefit(income);
+  const inssContribution = calcInssContribution(income);
+  const gap = Math.max(0, desiredIncome - inssBenefit);
   const totalNeeded = gap * 300;
-
-  const scenarios = [
-    { label: "Pessimista", rate: 0.06, color: "#ef4444" },
-    { label: "Regular",    rate: 0.08, color: "#C9A84C" },
-    { label: "Otimista",   rate: 0.12, color: "#10b981" },
-  ].map((s) => {
-    const fv = futureValue(savingsUsed, s.rate, months);
-    const monthlyFromFv = (fv * 0.04) / 12;
-    return { ...s, fv, monthlyFromFv };
-  });
 
   return {
     savingsUsed,
-    inss,
+    inssBenefit,
+    inssContribution,
     gap,
     totalNeeded,
     months,
     years,
     breakdown: { needs: income * 0.50, wants: income * 0.30, savings: income * 0.20 },
+    scenarios: buildScenarios(savingsUsed, months),
+    inssScenarios: buildScenarios(inssContribution, months),
     scenarios,
   };
 }
@@ -146,7 +177,8 @@ export default function Simulator() {
   };
 
   // ── INSS helpers ──────────────────────────────────────────────────
-  const inssEstimated   = calcInss(income);
+  const inssEstimated   = result ? result.inssBenefit    : calcInssBenefit(income);
+  const inssContrib     = result ? result.inssContribution : calcInssContribution(income);
   const inssGapToTeto   = Math.max(0, INSS_BENEFIT_TETO - inssEstimated);
   const atContribTeto   = income >= INSS_CONTRIBUTION_TETO;
 
@@ -341,74 +373,65 @@ export default function Simulator() {
               </div>
 
               {/* Projeção base (20% da renda) */}
-              <ScenariosPanel r={result} label={`Projeção — guardando ${fmt(result.breakdown.savings)}/mês (seus 20%)`} />
+              <ScenariosPanel r={result} label={`Se você investir ${fmt(result.breakdown.savings)}/mês (seus 20%) por ${result.years} anos`} />
 
-              {/* INSS detalhado */}
-              <div className="rounded-2xl p-6 space-y-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#C9A84C" }}>INSS — o que o governo vai te pagar</p>
+              {/* INSS vs Investimento — o comparativo principal */}
+              <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(201,168,76,0.25)" }}>
+                <div className="px-6 py-4" style={{ background: "rgba(201,168,76,0.08)", borderBottom: "1px solid rgba(201,168,76,0.2)" }}>
+                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#C9A84C" }}>
+                    INSS vs Investimento — o mesmo dinheiro, destinos diferentes
+                  </p>
+                </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl p-4 text-center" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
-                    <p className="text-xs mb-1" style={{ color: "#8A9BB5" }}>Seu benefício estimado</p>
-                    <p className="text-2xl font-extrabold" style={{ color: "#ef4444" }}>{fmt(inssEstimated)}/mês</p>
+                {/* Quanto você paga */}
+                <div className="px-6 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  <p className="text-xs mb-3" style={{ color: "#8A9BB5" }}>Você contribui ao INSS todo mês:</p>
+                  <p className="text-3xl font-extrabold" style={{ color: "#F0E6C8" }}>{fmt(inssContrib)}<span className="text-base font-normal" style={{ color: "#8A9BB5" }}>/mês</span></p>
+                  {inssGapToTeto > 0 && !atContribTeto && (
+                    <p className="text-xs mt-2" style={{ color: "#5A6A80" }}>
+                      Para receber o teto ({fmt(INSS_BENEFIT_TETO)}/mês), precisaria contribuir sobre {fmt(INSS_CONTRIBUTION_TETO)}/mês de salário.
+                    </p>
+                  )}
+                </div>
+
+                {/* Duas colunas: INSS vs Investimento */}
+                <div className="grid grid-cols-2 divide-x" style={{ divideColor: "rgba(255,255,255,0.06)" }}>
+                  {/* Coluna INSS */}
+                  <div className="p-5 space-y-3" style={{ background: "rgba(239,68,68,0.04)" }}>
+                    <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#ef4444" }}>Com o INSS</p>
+                    <div>
+                      <p className="text-xs" style={{ color: "#8A9BB5" }}>Benefício estimado</p>
+                      <p className="text-2xl font-extrabold" style={{ color: "#ef4444" }}>{fmt(inssEstimated)}/mês</p>
+                    </div>
+                    <div>
+                      <p className="text-xs" style={{ color: "#8A9BB5" }}>Teto máximo INSS</p>
+                      <p className="text-base font-bold" style={{ color: "#8A9BB5" }}>{fmt(INSS_BENEFIT_TETO)}/mês</p>
+                    </div>
+                    {result.gap > 0 && (
+                      <div className="rounded-lg p-3" style={{ background: "rgba(239,68,68,0.1)" }}>
+                        <p className="text-xs" style={{ color: "#8A9BB5" }}>Falta para sua meta</p>
+                        <p className="text-base font-bold" style={{ color: "#ef4444" }}>−{fmt(result.gap)}/mês</p>
+                      </div>
+                    )}
                   </div>
-                  <div className="rounded-xl p-4 text-center" style={{ background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)" }}>
-                    <p className="text-xs mb-1" style={{ color: "#8A9BB5" }}>Teto do INSS</p>
-                    <p className="text-2xl font-extrabold" style={{ color: "#C9A84C" }}>{fmt(INSS_BENEFIT_TETO)}/mês</p>
+
+                  {/* Coluna Investimento */}
+                  <div className="p-5 space-y-3" style={{ background: "rgba(16,185,129,0.04)" }}>
+                    <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#10b981" }}>Se investir o mesmo valor</p>
+                    {result.inssScenarios.map((s) => (
+                      <div key={s.label}>
+                        <p className="text-xs" style={{ color: "#5A6A80" }}>{s.label} ({(s.rate * 100).toFixed(0)}% a.a.)</p>
+                        <p className="text-base font-bold" style={{ color: s.color }}>{fmt(s.monthlyFromFv)}/mês</p>
+                      </div>
+                    ))}
+                    <p className="text-xs" style={{ color: "#5A6A80" }}>Capital acumulado (cenário regular): {fmt(result.inssScenarios[1].fv)}</p>
                   </div>
                 </div>
 
-                {/* Gap para o teto */}
-                {inssGapToTeto > 0 ? (
-                  <div className="rounded-xl p-4" style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)" }}>
-                    <div className="flex items-start gap-3">
-                      <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#ef4444" }} />
-                      <div>
-                        <p className="text-sm font-semibold" style={{ color: "#F0E6C8" }}>
-                          Seu INSS fica {fmt(inssGapToTeto)}/mês abaixo do teto.
-                        </p>
-                        <p className="text-xs mt-1" style={{ color: "#8A9BB5" }}>
-                          {atContribTeto
-                            ? `Sua renda já está acima do teto de contribuição (${fmt(INSS_CONTRIBUTION_TETO)}), mas o benefício é limitado a ${fmt(INSS_BENEFIT_TETO)}.`
-                            : `Para receber o teto de ${fmt(INSS_BENEFIT_TETO)}, você precisaria contribuir sobre ${fmt(INSS_CONTRIBUTION_TETO)}/mês de salário bruto.`}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="rounded-xl p-4" style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)" }}>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#10b981" }} />
-                      <p className="text-sm font-semibold" style={{ color: "#F0E6C8" }}>
-                        Sua renda garante o benefício máximo do INSS ({fmt(INSS_BENEFIT_TETO)}/mês).
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Comparativo meta vs INSS */}
-                <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div>
-                      <p className="text-xs mb-1" style={{ color: "#8A9BB5" }}>Sua meta</p>
-                      <p className="text-lg font-bold" style={{ color: "#10b981" }}>{fmt(desired)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs mb-1" style={{ color: "#8A9BB5" }}>INSS paga</p>
-                      <p className="text-lg font-bold" style={{ color: "#ef4444" }}>{fmt(inssEstimated)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs mb-1" style={{ color: "#8A9BB5" }}>Falta cobrir</p>
-                      <p className="text-lg font-bold" style={{ color: result.gap > 0 ? "#ef4444" : "#10b981" }}>
-                        {result.gap > 0 ? fmt(result.gap) : "Coberto ✓"}
-                      </p>
-                    </div>
-                  </div>
-                  {result.gap > 0 && (
-                    <p className="text-xs mt-3 text-center" style={{ color: "#8A9BB5" }}>
-                      Para cobrir essa diferença você precisaria acumular aproximadamente <span style={{ color: "#C9A84C", fontWeight: "bold" }}>{fmt(result.totalNeeded)}</span> em investimentos.
-                    </p>
-                  )}
+                <div className="px-6 py-4 text-center" style={{ background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <p className="text-xs" style={{ color: "#5A6A80" }}>
+                    * Simulação educacional. O INSS é obrigatório e cobre riscos como invalidez e morte. Valores são estimativas simplificadas.
+                  </p>
                 </div>
               </div>
 
