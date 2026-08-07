@@ -529,7 +529,7 @@ export default function Simulator() {
                   className="w-full sm:w-auto px-8 py-5 text-lg font-bold rounded-xl"
                   style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}
                 >
-                  Conheça o Método <ArrowRight className="w-5 h-5 ml-2" />
+                  Conheça o Método dos 3 Pilares <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <p className="text-xs mt-3" style={{ color: "#5A6A80" }}>R$59,90 · Acesso vitalício · Garantia de 7 dias</p>
               </div>
