@@ -163,9 +163,34 @@ export default function Simulator() {
   const handleCustomSimulate = () => {
     const val = parseFloat(customSavingsInput.replace(/\./g, "").replace(",", "."));
     if (!val || val <= 0) { setCustomSavingsError("Informe um valor válido."); return; }
-    if (val > income * 0.9) { setCustomSavingsError("Valor maior que 90% da renda. Verifique."); return; }
     setCustomSavingsError("");
     setAdjustedResult(calculate(curAge, retAge, income, desired, val));
+  };
+
+  // Recalcula com novos inputs sem voltar ao formulário (mantém dados de contato)
+  const [editAge,        setEditAge]        = useState("");
+  const [editRetAge,     setEditRetAge]     = useState("");
+  const [editIncome,     setEditIncome]     = useState("");
+  const [editDesired,    setEditDesired]    = useState("");
+  const [editError,      setEditError]      = useState("");
+  const [showEditPanel,  setShowEditPanel]  = useState(false);
+
+  const handleRecalculate = () => {
+    const ca  = parseInt(editAge)     || curAge;
+    const ra  = parseInt(editRetAge)  || retAge;
+    const inc = parseFloat(editIncome.replace(/\./g, "").replace(",", "."))  || income;
+    const des = parseFloat(editDesired.replace(/\./g, "").replace(",", ".")) || desired;
+    if (ra <= ca) { setEditError("Idade de aposentadoria deve ser maior que a atual."); return; }
+    setEditError("");
+    setCurrentAge(String(ca));
+    setRetirementAge(String(ra));
+    setMonthlyIncome(String(inc));
+    setDesiredIncome(String(des));
+    setResult(calculate(ca, ra, inc, des));
+    setAdjustedResult(null);
+    setCustomSavingsInput("");
+    setShowEditPanel(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const inputStyle = {
@@ -435,45 +460,59 @@ export default function Simulator() {
                 </div>
               </div>
 
-              {/* ── Recalcular com outro valor ── */}
-              <div className="rounded-2xl p-6 space-y-4" style={{ background: "rgba(16,185,129,0.04)", border: "1px solid rgba(16,185,129,0.2)" }}>
-                <div className="flex items-center gap-2 mb-1">
-                  <RefreshCw className="w-4 h-4" style={{ color: "#10b981" }} />
-                  <p className="text-sm font-bold" style={{ color: "#F0E6C8" }}>Simule outros valores</p>
-                </div>
-                <p className="text-xs" style={{ color: "#8A9BB5" }}>
-                  E se você guardasse um valor diferente dos {fmt(result.breakdown.savings)}/mês? Teste outros cenários sem recomeçar.
-                </p>
-                <div className="flex gap-3">
-                  <div className="flex-1">
-                    <label className="text-xs font-semibold mb-2 block" style={{ color: "#10b981" }}>Guardar por mês (R$)</label>
-                    <Input
-                      type="number"
-                      placeholder={`Ex: ${Math.round(result.breakdown.savings * 0.5)}`}
-                      value={customSavingsInput}
-                      onChange={e => setCustomSavingsInput(e.target.value)}
-                      onKeyDown={e => e.key === "Enter" && handleCustomSimulate()}
-                      style={{ ...inputStyle, border: "1px solid rgba(16,185,129,0.4)" }}
-                    />
+              {/* ── Recalcular mudando premissas ── */}
+              <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(16,185,129,0.25)" }}>
+                <button
+                  onClick={() => { setShowEditPanel(p => !p); setEditAge(currentAge); setEditRetAge(retirementAge); setEditIncome(monthlyIncome); setEditDesired(desiredIncome); setEditError(""); }}
+                  className="w-full flex items-center justify-between px-6 py-4"
+                  style={{ background: "rgba(16,185,129,0.06)", border: "none", cursor: "pointer" }}
+                >
+                  <div className="flex items-center gap-2">
+                    <RefreshCw className="w-4 h-4" style={{ color: "#10b981" }} />
+                    <span className="text-sm font-bold" style={{ color: "#F0E6C8" }}>Recalcular com outras premissas</span>
                   </div>
-                  <div className="flex items-end">
-                    <Button
-                      onClick={handleCustomSimulate}
-                      className="h-[52px] px-5 font-semibold rounded-xl"
-                      style={{ background: "rgba(16,185,129,0.15)", color: "#10b981", border: "1px solid rgba(16,185,129,0.4)" }}
-                    >
-                      Calcular
+                  <span style={{ color: "#10b981", fontSize: "1.2rem" }}>{showEditPanel ? "−" : "+"}</span>
+                </button>
+
+                {showEditPanel && (
+                  <div className="p-6 space-y-4" style={{ background: "rgba(255,255,255,0.03)" }}>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs font-semibold mb-2 block" style={{ color: "#10b981" }}>Idade atual</label>
+                        <Input type="number" placeholder={currentAge} value={editAge} onChange={e => setEditAge(e.target.value)} style={{ ...inputStyle, border: "1px solid rgba(16,185,129,0.3)" }} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold mb-2 block" style={{ color: "#10b981" }}>Aposentar com</label>
+                        <Input type="number" placeholder={retirementAge} value={editRetAge} onChange={e => setEditRetAge(e.target.value)} style={{ ...inputStyle, border: "1px solid rgba(16,185,129,0.3)" }} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold mb-2 block" style={{ color: "#10b981" }}>Renda mensal (R$)</label>
+                        <Input type="number" placeholder={monthlyIncome} value={editIncome} onChange={e => setEditIncome(e.target.value)} style={{ ...inputStyle, border: "1px solid rgba(16,185,129,0.3)" }} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold mb-2 block" style={{ color: "#10b981" }}>Meta aposentadoria (R$)</label>
+                        <Input type="number" placeholder={desiredIncome} value={editDesired} onChange={e => setEditDesired(e.target.value)} style={{ ...inputStyle, border: "1px solid rgba(16,185,129,0.3)" }} />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <div className="flex-1">
+                        <label className="text-xs font-semibold mb-2 block" style={{ color: "#10b981" }}>Guardar por mês (R$) — deixe em branco para usar 20%</label>
+                        <Input type="number" placeholder={`${Math.round(result.breakdown.savings)}`} value={customSavingsInput} onChange={e => setCustomSavingsInput(e.target.value)} style={{ ...inputStyle, border: "1px solid rgba(16,185,129,0.3)" }} />
+                      </div>
+                    </div>
+
+                    {editError && <p className="text-sm text-red-400">{editError}</p>}
+
+                    <Button onClick={handleRecalculate} className="w-full py-4 font-bold rounded-xl" style={{ background: "rgba(16,185,129,0.15)", color: "#10b981", border: "1px solid rgba(16,185,129,0.4)" }}>
+                      Recalcular <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
-                </div>
-                {customSavingsError && <p className="text-sm text-red-400">{customSavingsError}</p>}
+                )}
 
-                {adjustedResult && (
-                  <div className="mt-2">
-                    <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#10b981" }}>
-                      Resultado com {fmt(adjustedResult.savingsUsed)}/mês
-                    </p>
-                    <ScenariosPanel r={adjustedResult} />
+                {adjustedResult && !showEditPanel && (
+                  <div className="p-6 pt-0">
+                    <ScenariosPanel r={adjustedResult} label={`Resultado com ${fmt(adjustedResult.savingsUsed)}/mês`} />
                   </div>
                 )}
               </div>
@@ -490,18 +529,10 @@ export default function Simulator() {
                   className="w-full sm:w-auto px-8 py-5 text-lg font-bold rounded-xl"
                   style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}
                 >
-                  Quero o Método dos 3 Pilares <ArrowRight className="w-5 h-5 ml-2" />
+                  Conheça o Método <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                <p className="text-xs mt-3" style={{ color: "#5A6A80" }}>A partir de R$29,90 · Pagamento único · Garantia de 7 dias</p>
+                <p className="text-xs mt-3" style={{ color: "#5A6A80" }}>R$59,90 · Acesso vitalício · Garantia de 7 dias</p>
               </div>
-
-              <button
-                onClick={() => { setStep("form"); setResult(null); setAdjustedResult(null); setCustomSavingsInput(""); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                className="w-full text-sm underline"
-                style={{ color: "#5A6A80", background: "none", border: "none", cursor: "pointer" }}
-              >
-                Refazer simulação com outros dados
-              </button>
             </div>
           )}
 
