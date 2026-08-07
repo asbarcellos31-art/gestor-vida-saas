@@ -1385,6 +1385,28 @@ export const appRouter = router({
         await saveLead(input.email, input.name, input.planName, input.planPrice);
         return { success: true };
       }),
+    captureSimulator: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        name: z.string(),
+        phone: z.string(),
+        simulation: z.object({
+          currentAge: z.number(),
+          retirementAge: z.number(),
+          monthlyIncome: z.number(),
+          desiredIncome: z.number(),
+        }),
+      }))
+      .mutation(async ({ input }) => {
+        const { saveSimulatorLead } = await import("./db");
+        await saveSimulatorLead(
+          input.email,
+          input.name,
+          input.phone,
+          JSON.stringify(input.simulation),
+        );
+        return { success: true };
+      }),
   }),
 });
 export type AppRouter = typeof appRouter;

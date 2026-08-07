@@ -27,6 +27,7 @@ import TutorialCompleto from "./pages/TutorialCompleto";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import LGPDPage from "./pages/LGPDPage";
+import Simulator from "./pages/Simulator";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { initPixel, trackPageView } from "@/lib/pixel";
@@ -98,6 +99,7 @@ function Router() {
       <Route path="/tutorial/:id">
         {(params: { id?: string }) => <ProtectedRoute component={() => <VideoPlayer id={params.id ?? ""} />} />}
       </Route>
+      <Route path="/simulador" component={Simulator} />
       <Route path="/admin" component={Admin} />
       <Route path="/assinatura/sucesso" component={AssinaturaSucesso} />
       <Route path="/orcamento/configuracoes">{() => <ProtectedRoute component={OrcamentoSettings} />}</Route>

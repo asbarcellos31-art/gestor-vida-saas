@@ -1213,6 +1213,9 @@ export async function ensureLeadsTable(): Promise<void> {
         INDEX idx_email (email)
       )
     `);
+    // Adiciona colunas extras se ainda não existirem
+    await db.execute(sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS phone VARCHAR(32)`);
+    await db.execute(sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS source VARCHAR(64)`);
   } catch (err) {
     console.error("[DB] Erro ao criar leads:", err);
   }
@@ -1222,6 +1225,20 @@ export async function saveLead(email: string, name?: string, planName?: string, 
   const db = await getDb();
   if (!db) return;
   await db.insert(leads).values({ email, name: name || null, planName: planName || null, planPrice: planPrice || null });
+}
+
+export async function saveSimulatorLead(
+  email: string,
+  name: string,
+  phone: string,
+  simulationJson: string,
+) {
+  const db = await getDb();
+  if (!db) return;
+  await db.execute(
+    sql`INSERT INTO leads (email, name, planName, planPrice, phone, source)
+        VALUES (${email}, ${name}, ${"simulador"}, ${simulationJson}, ${phone}, ${"simulador"})`
+  );
 }
 
 export async function getLeadsWithPurchaseStatus() {
