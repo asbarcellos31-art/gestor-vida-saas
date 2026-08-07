@@ -98,7 +98,6 @@ function calculate(
     breakdown: { needs: income * 0.50, wants: income * 0.30, savings: income * 0.20 },
     scenarios: buildScenarios(savingsUsed, months),
     inssScenarios: buildScenarios(inssContribution, months),
-    scenarios,
   };
 }
 
