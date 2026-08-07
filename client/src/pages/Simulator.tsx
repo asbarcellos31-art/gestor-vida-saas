@@ -155,41 +155,28 @@ export default function Simulator() {
     <div className="rounded-2xl p-6" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
       {label && <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>{label}</p>}
       <div className="space-y-3">
-        {r.scenarios.map((s) => {
-          const meetsGoal = s.monthlyFromFv + r.inss >= desired;
-          return (
-            <div key={s.label} className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${s.color}33` }}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-bold" style={{ color: s.color }}>
-                  {s.label} ({(s.rate * 100).toFixed(0)}% a.a.)
-                </span>
-                <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{
-                  background: meetsGoal ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.15)",
-                  color: meetsGoal ? "#10b981" : "#ef4444",
-                }}>
-                  {meetsGoal ? "✓ Meta atingida" : "✗ Meta não atingida"}
-                </span>
+        {r.scenarios.map((s) => (
+          <div key={s.label} className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${s.color}33` }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-bold" style={{ color: s.color }}>
+                {s.label} ({(s.rate * 100).toFixed(0)}% a.a.)
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <p className="text-xs" style={{ color: "#5A6A80" }}>Capital acumulado</p>
+                <p className="text-base font-extrabold" style={{ color: "#F0E6C8" }}>{fmt(s.fv)}</p>
               </div>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                <div>
-                  <p className="text-xs" style={{ color: "#5A6A80" }}>Capital acumulado</p>
-                  <p className="text-base font-extrabold" style={{ color: "#F0E6C8" }}>{fmt(s.fv)}</p>
-                </div>
-                <div>
-                  <p className="text-xs" style={{ color: "#5A6A80" }}>Renda dos investimentos</p>
-                  <p className="text-base font-extrabold" style={{ color: s.color }}>{fmt(s.monthlyFromFv)}/mês</p>
-                </div>
-              </div>
-              <div className="mt-2 pt-2 flex items-center justify-between" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                <p className="text-xs" style={{ color: "#5A6A80" }}>INSS + investimentos</p>
-                <p className="text-sm font-bold" style={{ color: "#F0E6C8" }}>{fmt(r.inss + s.monthlyFromFv)}/mês</p>
+              <div>
+                <p className="text-xs" style={{ color: "#5A6A80" }}>Renda mensal gerada</p>
+                <p className="text-base font-extrabold" style={{ color: s.color }}>{fmt(s.monthlyFromFv)}/mês</p>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
       <p className="text-xs mt-3 text-center" style={{ color: "#5A6A80" }}>
-        Guardando {fmt(r.savingsUsed)}/mês · Renda calculada com 4% de retirada anual · INSS somado ao resultado
+        Guardando {fmt(r.savingsUsed)}/mês · Renda calculada com 4% de retirada anual
       </p>
     </div>
   );
