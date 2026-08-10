@@ -34,7 +34,7 @@ import { initPixel, trackPageView } from "@/lib/pixel";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 
-const HOTMART_URL = "https://pay.hotmart.com/M105784997J?checkoutMode=2";
+const HOTMART_URL = "https://pay.hotmart.com/M105784997J?off=zys6qohw";
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { user, loading } = useAuth();

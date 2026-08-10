@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { trackInitiateCheckout } from "@/lib/pixel";
 
-const HOTMART_URL = "https://pay.hotmart.com/M105784997J?checkoutMode=2";
+const HOTMART_URL = "https://pay.hotmart.com/M105784997J?off=zys6qohw";
 
 const PLANS = [
   {

@@ -38,7 +38,7 @@ const SCREEN_APOSENTADORIA = "https://files.manuscdn.com/user_upload_by_module/s
 
 const HOTMART_EBOOK = "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=cu6bor2b";
 const HOTMART_SISTEMA = "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=l8k18cwx";
-const HOTMART_COMBO = "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=401asx1p";
+const HOTMART_COMBO = "https://pay.hotmart.com/M105784997J?off=zys6qohw";
 
 const PLANS = [
   {
