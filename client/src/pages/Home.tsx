@@ -81,7 +81,7 @@ const PLANS = [
   {
     id: "combo",
     name: "Combo Promocional",
-    price: "49,90",
+    price: "59,90",
     priceLabel: "acesso vitalício",
     description: "E-book + Sistema — tudo por um preço especial",
     icon: Star,
@@ -221,7 +221,7 @@ export default function Home() {
 
   const handleGetStarted = () => {
     if (isAuthenticated) { navigate("/dashboard"); return; }
-    openModal(HOTMART_COMBO, "Combo Promocional", "49,90");
+    openModal(HOTMART_COMBO, "Combo Promocional", "59,90");
   };
 
   const handlePlanClick = (hotmartUrl: string, planName: string, price: string) => {
@@ -326,7 +326,7 @@ export default function Home() {
               Ver como funciona
             </Button>
           </div>
-          <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>E-book R$ 29,90 · Sistema R$ 39,90 · Combo R$ 49,90 — pague uma vez, use para sempre.</p>
+          <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>E-book R$ 29,90 · Sistema R$ 39,90 · Combo R$ 59,90 — pague uma vez, use para sempre.</p>
         </div>
       </section>
 
@@ -448,10 +448,10 @@ export default function Home() {
               </thead>
               <tbody>
                 {[
-                  { name: "Curso de Gestão do Tempo", market: "R$ 1.200", ours: "R$ 49,90", save: "R$ 1.150,10" },
-                  { name: "Planilha de Orçamento Doméstico (premium)", market: "R$ 297", ours: "R$ 49,90", save: "R$ 247,10" },
-                  { name: "Mentoria de Organização Financeira Pessoal", market: "R$ 3.000", ours: "R$ 49,90", save: "R$ 2.950,10" },
-                  { name: "Curso de Planejamento de Aposentadoria", market: "R$ 897", ours: "R$ 49,90", save: "R$ 847,10" },
+                  { name: "Curso de Gestão do Tempo", market: "R$ 1.200", ours: "R$ 59,90", save: "R$ 1.150,10" },
+                  { name: "Planilha de Orçamento Doméstico (premium)", market: "R$ 297", ours: "R$ 59,90", save: "R$ 247,10" },
+                  { name: "Mentoria de Organização Financeira Pessoal", market: "R$ 3.000", ours: "R$ 59,90", save: "R$ 2.950,10" },
+                  { name: "Curso de Planejamento de Aposentadoria", market: "R$ 897", ours: "R$ 59,90", save: "R$ 847,10" },
                 ].map((row, idx) => (
                   <tr key={idx} style={{ borderBottom: "1px solid rgba(201,168,76,0.1)", background: idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent" }}>
                     <td className="py-4 px-6" style={{ color: "#C8D8E8" }}>{row.name}</td>
@@ -724,7 +724,7 @@ export default function Home() {
           </h2>
           <p className="text-lg mb-10 leading-relaxed" style={{ color: "#8A9BB5" }}>Você pode continuar esperando a motivação perfeita, o momento certo, a ferramenta ideal. Ou pode começar hoje — com o processo simples, consistente e honesto que o tempo vai recompensar.</p>
           <Button size="lg" onClick={() => handleGetStarted()} className="px-10 py-6 text-lg rounded-xl font-semibold" style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}>
-            Quero o Combo — R$ 49,90 <ArrowRight className="w-5 h-5 ml-2" />
+            Quero o Combo — R$ 59,90 <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
           <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>Pagamento único · Acesso vitalício · Garantia de 7 dias</p>
         </div>
