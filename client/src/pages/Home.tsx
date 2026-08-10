@@ -151,7 +151,7 @@ const CYCLE_STEPS = [
     title: "Veja, em números reais, para onde suas decisões de hoje estão te levando.",
     subtitle: "Direção concreta",
     description: "O simulador de aposentadoria mostra 3 cenários baseados no que você realmente está guardando — não no que você acha que está guardando. Pessimista, regular e otimista. Sem jargão financeiro, sem promessa vaga. Só números reais e o impacto do tempo.",
-    example: "Exemplo: Marcos, 34 anos, descobriu que investindo R$500/mês no cenário regular (8% a.a.), chegaria aos 65 anos com R$745.000 acumulados. Não é sorte. Não é herança. É o processo simples, repetido por 31 anos.",
+    example: "Exemplo: Marcos, 34 anos, descobriu que investindo R$500/mês no cenário regular (IPCA+6% a.a.), chegaria aos 65 anos com R$1.200.000 acumulados. Não é sorte. Não é herança. É o processo simples, repetido por 31 anos.",
     screen: SCREEN_APOSENTADORIA,
     screenLabel: "Tela de Aposentadoria — simulação em 3 cenários com dados reais do orçamento",
     color: "#C9A84C",
