@@ -94,6 +94,7 @@ const PLANS = [
       "Gestão do Tempo + Orçamento Doméstico",
       "Dashboard com gráficos interativos",
       "Projeção de aposentadoria (3 cenários)",
+      "Score de produtividade",
       "Pague uma vez, use para sempre",
     ],
     notIncluded: [],

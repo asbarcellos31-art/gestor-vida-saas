@@ -2,9 +2,9 @@ import type { Request, Response } from "express";
 import { sendPostPurchaseEmail, sendAccessActivatedEmail } from "./email";
 import { getDb } from "./db";
 
-const OFFER_EBOOK = "cu6bor2b";
-const OFFER_SISTEMA = "l8k18cwx";
-const OFFER_COMBO = "401asx1p";
+const OFFER_EBOOK = "gqtt03zn";
+const OFFER_SISTEMA = "6vlpofwo";
+const OFFER_COMBO = "zys6qohw";
 
 export async function checkAndGrantPendingHotmartAccess(userId: number, email: string): Promise<void> {
   try {
