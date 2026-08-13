@@ -1,6 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import AppLayout from "@/components/AppLayout";
+import InflacaoPessoal from "@/components/InflacaoPessoal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -601,6 +602,13 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Inflação Pessoal — visível apenas para quem tem acesso ao orçamento */}
+        {hasBudgetAccess && (
+          <div className="mt-6 max-w-md">
+            <InflacaoPessoal />
+          </div>
+        )}
       </div>
     </AppLayout>
   );

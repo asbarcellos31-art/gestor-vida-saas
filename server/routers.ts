@@ -1344,6 +1344,13 @@ const storageRouter = router({
 });
 
 // ─── App Router ───────────────────────────────────────────────────────────────
+const inflationRouter = router({
+  personal: protectedProcedure.query(async ({ ctx }) => {
+    const { calculatePersonalInflation } = await import("./inflation");
+    return calculatePersonalInflation(ctx.user.id);
+  }),
+});
+
 export const appRouter = router({
   system: systemRouter,
   auth: router({
@@ -1372,6 +1379,7 @@ export const appRouter = router({
   stripe: stripeRouter,
   storage: storageRouter,
   admin: adminRouter,
+  inflation: inflationRouter,
   leads: router({
     capture: publicProcedure
       .input(z.object({
