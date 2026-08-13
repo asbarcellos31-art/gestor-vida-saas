@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { sql } from "drizzle-orm";
 import { sendPostPurchaseEmail, sendAccessActivatedEmail } from "./email";
 import { getDb } from "./db";
 
@@ -12,31 +13,27 @@ export async function checkAndGrantPendingHotmartAccess(userId: number, email: s
     if (!db) return;
 
     const purchases = await db.execute(
-      `SELECT plan FROM hotmart_purchases WHERE email = ? AND plan != 'ebook' LIMIT 1`,
-      [email]
+      sql`SELECT plan FROM hotmart_purchases WHERE email = ${email} AND plan != 'ebook' LIMIT 1`
     ) as any[];
 
-    const rows = purchases[0] as any[];
+    const rows = (purchases as any[])[0] as any[];
     if (!rows || rows.length === 0) return;
 
     const plan = rows[0].plan;
 
     const existing = await db.execute(
-      `SELECT id FROM subscriptions WHERE userId = ? LIMIT 1`,
-      [userId]
+      sql`SELECT id FROM subscriptions WHERE userId = ${userId} LIMIT 1`
     ) as any[];
 
-    const existingRows = existing[0] as any[];
+    const existingRows = (existing as any[])[0] as any[];
 
     if (existingRows && existingRows.length > 0) {
       await db.execute(
-        `UPDATE subscriptions SET plan = ?, status = 'active', updatedAt = NOW() WHERE userId = ?`,
-        [plan, userId]
+        sql`UPDATE subscriptions SET plan = ${plan}, status = 'active', updatedAt = NOW() WHERE userId = ${userId}`
       );
     } else {
       await db.execute(
-        `INSERT INTO subscriptions (userId, plan, status, createdAt, updatedAt) VALUES (?, ?, 'active', NOW(), NOW())`,
-        [userId, plan]
+        sql`INSERT INTO subscriptions (userId, plan, status, createdAt, updatedAt) VALUES (${userId}, ${plan}, 'active', NOW(), NOW())`
       );
     }
 
@@ -99,24 +96,23 @@ export async function handleHotmartWebhook(req: Request, res: Response) {
     if (!db) return res.status(500).json({ error: "DB unavailable" });
 
     await db.execute(
-      `INSERT INTO hotmart_purchases (buyerEmail, buyerName, plan, status, createdAt)
-       VALUES (?, ?, ?, 'APPROVED', NOW())
-       ON DUPLICATE KEY UPDATE plan = ?, status = 'APPROVED', updatedAt = NOW()`,
-      [buyerEmail, buyerName, plan, plan]
+      sql`INSERT INTO hotmart_purchases (buyerEmail, buyerName, plan, status, createdAt)
+       VALUES (${buyerEmail}, ${buyerName}, ${plan}, 'APPROVED', NOW())
+       ON DUPLICATE KEY UPDATE plan = ${plan}, status = 'APPROVED', updatedAt = NOW()`
     );
 
-    const users = await db.execute(`SELECT id FROM users WHERE email = ? LIMIT 1`, [buyerEmail]) as any[];
-    const userRows = users[0] as any[];
+    const users = await db.execute(sql`SELECT id FROM users WHERE email = ${buyerEmail} LIMIT 1`) as any[];
+    const userRows = (users as any[])[0] as any[];
 
     if (userRows && userRows.length > 0) {
       const userId = userRows[0].id;
-      const existing = await db.execute(`SELECT id FROM subscriptions WHERE userId = ? LIMIT 1`, [userId]) as any[];
-      const existingRows = existing[0] as any[];
+      const existing = await db.execute(sql`SELECT id FROM subscriptions WHERE userId = ${userId} LIMIT 1`) as any[];
+      const existingRows = (existing as any[])[0] as any[];
 
       if (existingRows && existingRows.length > 0) {
-        await db.execute(`UPDATE subscriptions SET plan = ?, status = 'active', updatedAt = NOW() WHERE userId = ?`, [plan, userId]);
+        await db.execute(sql`UPDATE subscriptions SET plan = ${plan}, status = 'active', updatedAt = NOW() WHERE userId = ${userId}`);
       } else {
-        await db.execute(`INSERT INTO subscriptions (userId, plan, status, createdAt, updatedAt) VALUES (?, ?, 'active', NOW(), NOW())`, [userId, plan]);
+        await db.execute(sql`INSERT INTO subscriptions (userId, plan, status, createdAt, updatedAt) VALUES (${userId}, ${plan}, 'active', NOW(), NOW())`);
       }
       console.log(`[Hotmart Webhook] Assinatura ativada para: ${buyerEmail}`);
       sendAccessActivatedEmail(buyerEmail, buyerName).catch(() => {});
