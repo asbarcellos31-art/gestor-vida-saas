@@ -370,5 +370,7 @@ export const leads = mysqlTable("leads", {
   name: varchar("name", { length: 128 }),
   planName: varchar("planName", { length: 128 }),
   planPrice: varchar("planPrice", { length: 16 }),
+  phone: varchar("phone", { length: 32 }),
+  source: varchar("source", { length: 64 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });

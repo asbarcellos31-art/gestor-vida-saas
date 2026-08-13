@@ -1213,9 +1213,9 @@ export async function ensureLeadsTable(): Promise<void> {
         INDEX idx_email (email)
       )
     `);
-    // Adiciona colunas extras se ainda não existirem
-    await db.execute(sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS phone VARCHAR(32)`);
-    await db.execute(sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS source VARCHAR(64)`);
+    // Adiciona colunas extras — ignora erro se já existirem (MySQL < 8.0.3 não suporta IF NOT EXISTS)
+    await db.execute(sql`ALTER TABLE leads ADD COLUMN phone VARCHAR(32)`).catch(() => {});
+    await db.execute(sql`ALTER TABLE leads ADD COLUMN source VARCHAR(64)`).catch(() => {});
   } catch (err) {
     console.error("[DB] Erro ao criar leads:", err);
   }
