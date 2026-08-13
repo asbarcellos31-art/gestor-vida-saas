@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { getDb } from "./db";
 
 // BCB series IDs — variação mensal por grupo IPCA
@@ -208,17 +209,17 @@ export async function calculatePersonalInflation(userId: number): Promise<Inflat
   const fromYearMonth = sixMonthsAgo.getFullYear() * 100 + (sixMonthsAgo.getMonth() + 1);
 
   const result = await db.execute(
-    `SELECT category, SUM(amount) as total
+    sql`SELECT category, SUM(amount) as total
      FROM expense_entries
-     WHERE userId = ?
-       AND (year * 100 + month) >= ?
-       AND (year * 100 + month) <= ?
+     WHERE userId = ${userId}
+       AND (year * 100 + month) >= ${fromYearMonth}
+       AND (year * 100 + month) <= ${currentYearMonth}
      GROUP BY category
-     HAVING total > 0`,
-    [userId, fromYearMonth, currentYearMonth]
-  ) as any[];
+     HAVING total > 0`
+  ) as any;
 
-  const rows: Array<{ category: string; total: string }> = (result[0] as any[]) ?? [];
+  const rows: Array<{ category: string; total: string }> =
+    Array.isArray(result[0]) ? result[0] : (Array.isArray(result) ? result : []);
   if (rows.length === 0) return null;
 
   const totalSpend = rows.reduce((s, r) => s + parseFloat(r.total), 0);
