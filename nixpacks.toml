@@ -1,3 +1,6 @@
+[phases.setup]
+cmds = ['echo "build-$(date +%s)"']
+
 [phases.build]
 cmds = ['pnpm install --no-frozen-lockfile && pnpm run build']
 
