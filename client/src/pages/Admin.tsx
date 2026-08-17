@@ -65,9 +65,9 @@ function MetricCard({
 
 export default function Admin() {
   const utils = trpc.useUtils();
-  const { data: metrics, isLoading: metricsLoading } = trpc.admin.metrics.useQuery();
-  const { data: users, isLoading: usersLoading } = trpc.admin.users.useQuery();
-  const { data: funnelData, isLoading: funnelLoading } = trpc.admin.funnel.useQuery();
+  const { data: metrics, isLoading: metricsLoading, isFetching: metricsFetching } = trpc.admin.metrics.useQuery();
+  const { data: users, isLoading: usersLoading, isFetching: usersFetching } = trpc.admin.users.useQuery();
+  const { data: funnelData, isLoading: funnelLoading, isFetching: funnelFetching } = trpc.admin.funnel.useQuery();
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [planFilter, setPlanFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -144,6 +144,7 @@ export default function Admin() {
           <Button
             variant="outline"
             size="sm"
+            disabled={metricsFetching || usersFetching || funnelFetching}
             onClick={() => {
               utils.admin.metrics.invalidate();
               utils.admin.users.invalidate();
@@ -151,8 +152,8 @@ export default function Admin() {
             }}
             className="gap-2"
           >
-            <RefreshCw className="w-4 h-4" />
-            Atualizar
+            <RefreshCw className={`w-4 h-4 ${metricsFetching || usersFetching || funnelFetching ? "animate-spin" : ""}`} />
+            {metricsFetching || usersFetching || funnelFetching ? "Atualizando..." : "Atualizar"}
           </Button>
         </div>
 
