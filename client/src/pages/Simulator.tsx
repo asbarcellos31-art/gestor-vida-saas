@@ -61,14 +61,21 @@ interface SimResult {
   inssScenarios: ScenarioResult[]; // mesma contribuição investida
 }
 
+const IPCA = 0.045; // premissa IPCA 4,5% a.a.
+
+// Taxas REAIS (acima da inflação): IPCA+6%, IPCA+8%, IPCA+10%
+// Convertidas para nominal via Fisher: (1 + real) * (1 + IPCA) - 1
+const SCENARIOS_DEF = [
+  { label: "Pessimista", realRate: 0.06, color: "#ef4444" },
+  { label: "Regular",    realRate: 0.08, color: "#C9A84C" },
+  { label: "Otimista",   realRate: 0.10, color: "#10b981" },
+];
+
 function buildScenarios(pmt: number, months: number): ScenarioResult[] {
-  return [
-    { label: "Pessimista", rate: 0.06, color: "#ef4444" },
-    { label: "Regular",    rate: 0.08, color: "#C9A84C" },
-    { label: "Otimista",   rate: 0.12, color: "#10b981" },
-  ].map((s) => {
-    const fv = futureValue(pmt, s.rate, months);
-    return { ...s, fv, monthlyFromFv: (fv * 0.04) / 12 };
+  return SCENARIOS_DEF.map((s) => {
+    const nominalRate = (1 + s.realRate) * (1 + IPCA) - 1;
+    const fv = futureValue(pmt, nominalRate, months);
+    return { label: s.label, rate: s.realRate, fv, monthlyFromFv: (fv * 0.04) / 12, color: s.color };
   });
 }
 
@@ -215,7 +222,7 @@ export default function Simulator() {
           <div key={s.label} className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${s.color}33` }}>
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-bold" style={{ color: s.color }}>
-                {s.label} ({(s.rate * 100).toFixed(0)}% a.a.)
+                {s.label} (IPCA+{(s.rate * 100).toFixed(0)}%)
               </span>
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -444,7 +451,7 @@ export default function Simulator() {
                     <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#10b981" }}>Se investir o mesmo valor</p>
                     {result.inssScenarios.map((s) => (
                       <div key={s.label}>
-                        <p className="text-xs" style={{ color: "#5A6A80" }}>{s.label} ({(s.rate * 100).toFixed(0)}% a.a.)</p>
+                        <p className="text-xs" style={{ color: "#5A6A80" }}>{s.label} (IPCA+{(s.rate * 100).toFixed(0)}%)</p>
                         <p className="text-base font-bold" style={{ color: s.color }}>{fmt(s.monthlyFromFv)}/mês</p>
                       </div>
                     ))}
