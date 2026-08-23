@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
 import { ArrowRight, Lock, TrendingUp, AlertTriangle, CheckCircle2, Shield, RefreshCw } from "lucide-react";
 import { useLocation } from "wouter";
+import { trackLead } from "@/lib/pixel";
 
 const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png";
 const INSS_BENEFIT_TETO = 7786;
@@ -153,6 +154,7 @@ export default function Simulator() {
     if (!name.trim() || !email.trim() || !phone.trim()) { setError("Preencha todos os campos."); return; }
     setError("");
     setSubmitting(true);
+    trackLead({ content_name: "simulador", email: email.trim() });
     try {
       await captureSimulator.mutateAsync({
         email: email.trim(),
