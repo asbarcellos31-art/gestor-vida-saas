@@ -160,7 +160,7 @@ export default function Simulator() {
         phone: phone.trim(),
         simulation: { currentAge: curAge, retirementAge: retAge, monthlyIncome: income, desiredIncome: desired },
       });
-    } catch (_) { /* mostra resultado mesmo se DB falhar */ }
+    } catch (err) { console.error("[simulator] falha ao salvar lead:", err); }
     setSubmitting(false);
     setStep("result");
     window.scrollTo({ top: 0, behavior: "smooth" });

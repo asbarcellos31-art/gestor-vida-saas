@@ -1234,10 +1234,12 @@ export async function saveSimulatorLead(
   simulationJson: string,
 ) {
   const db = await getDb();
-  if (!db) return;
+  if (!db) { console.error("[leads] DB indisponível — lead não salvo"); return; }
+  // Garante coluna simulationData (TEXT) para o JSON completo
+  await db.execute(sql`ALTER TABLE leads ADD COLUMN simulationData TEXT`).catch(() => {});
   await db.execute(
-    sql`INSERT INTO leads (email, name, planName, planPrice, phone, source)
-        VALUES (${email}, ${name}, ${"simulador"}, ${simulationJson}, ${phone}, ${"simulador"})`
+    sql`INSERT INTO leads (email, name, planName, planPrice, phone, source, simulationData)
+        VALUES (${email}, ${name}, ${"simulador"}, ${null}, ${phone}, ${"simulador"}, ${simulationJson})`
   );
 }
 
