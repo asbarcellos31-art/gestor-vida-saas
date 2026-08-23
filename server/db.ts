@@ -1235,12 +1235,17 @@ export async function saveSimulatorLead(
 ) {
   const db = await getDb();
   if (!db) { console.error("[leads] DB indisponível — lead não salvo"); return; }
-  // Garante coluna simulationData (TEXT) para o JSON completo
   await db.execute(sql`ALTER TABLE leads ADD COLUMN simulationData TEXT`).catch(() => {});
-  await db.execute(
-    sql`INSERT INTO leads (email, name, planName, planPrice, phone, source, simulationData)
-        VALUES (${email}, ${name}, ${"simulador"}, ${null}, ${phone}, ${"simulador"}, ${simulationJson})`
-  );
+  try {
+    await db.execute(
+      sql`INSERT INTO leads (email, name, planName, phone, source, simulationData)
+          VALUES (${email}, ${name}, ${"simulador"}, ${phone}, ${"simulador"}, ${simulationJson})`
+    );
+    console.log("[leads] simulador lead salvo:", email);
+  } catch (err) {
+    console.error("[leads] ERRO ao salvar lead do simulador:", err);
+    throw err;
+  }
 }
 
 export async function getLeadsWithPurchaseStatus() {
