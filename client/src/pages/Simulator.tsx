@@ -105,7 +105,7 @@ function calculate(
     years,
     breakdown: { needs: income * 0.50, wants: income * 0.30, savings: income * 0.20 },
     scenarios: buildScenarios(savingsUsed, months),
-    inssScenarios: buildScenarios(inssContribution, months),
+    inssScenarios: buildScenarios(savingsUsed, months),
   };
 }
 
@@ -416,15 +416,13 @@ export default function Simulator() {
                   </p>
                 </div>
 
-                {/* Quanto você paga */}
+                {/* Valor de referência */}
                 <div className="px-6 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                  <p className="text-xs mb-3" style={{ color: "#8A9BB5" }}>Você contribui ao INSS todo mês:</p>
-                  <p className="text-3xl font-extrabold" style={{ color: "#F0E6C8" }}>{fmt(inssContrib)}<span className="text-base font-normal" style={{ color: "#8A9BB5" }}>/mês</span></p>
-                  {inssGapToTeto > 0 && !atContribTeto && (
-                    <p className="text-xs mt-2" style={{ color: "#5A6A80" }}>
-                      Para receber o teto ({fmt(INSS_BENEFIT_TETO)}/mês), precisaria contribuir sobre {fmt(INSS_CONTRIBUTION_TETO)}/mês de salário.
-                    </p>
-                  )}
+                  <p className="text-xs mb-3" style={{ color: "#8A9BB5" }}>Valor de referência — seus 20% mensais:</p>
+                  <p className="text-3xl font-extrabold" style={{ color: "#F0E6C8" }}>{fmt(result.savingsUsed)}<span className="text-base font-normal" style={{ color: "#8A9BB5" }}>/mês</span></p>
+                  <p className="text-xs mt-2" style={{ color: "#5A6A80" }}>
+                    O que você receberia se destinasse esse mesmo valor ao INSS vs. investimento privado.
+                  </p>
                 </div>
 
                 {/* Duas colunas: INSS vs Investimento */}
