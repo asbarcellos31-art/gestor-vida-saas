@@ -11,7 +11,14 @@ import { useState, useEffect, useRef } from "react";
 import { trackInitiateCheckout, trackLead, trackViewContent } from "@/lib/pixel";
 import { trpc } from "@/lib/trpc";
 
-const ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png";
+function LogoBadge({ size = 8 }: { size?: number }) {
+  const px = size * 4;
+  return (
+    <div style={{ width: px, height: px, borderRadius: 8, background: "linear-gradient(135deg,#C9A84C,#E2C97E)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+      <span style={{ color: "#0B1437", fontWeight: 800, fontSize: px * 0.38, letterSpacing: -0.5 }}>GV</span>
+    </div>
+  );
+}
 const HOTMART_EBOOK  = "https://pay.hotmart.com/M105784997J?off=gqtt03zn";
 const HOTMART_SISTEMA = "https://pay.hotmart.com/M105784997J?off=6vlpofwo";
 const HOTMART_COMBO  = "https://pay.hotmart.com/M105784997J?off=zys6qohw";
@@ -172,7 +179,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b" style={{ background: "rgba(11,20,55,0.92)", borderColor: "rgba(201,168,76,0.2)" }}>
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
-            <img src={ICON_URL} alt="Gestor de Vida" className="w-8 h-8 rounded-lg object-cover" />
+            <LogoBadge size={8} />
             <span className="font-bold text-lg" style={{ color: gold }}>Gestor de Vida</span>
           </div>
           <div className="flex items-center gap-3">
@@ -576,7 +583,7 @@ export default function Home() {
       <footer className="py-10 px-4 text-sm" style={{ background: "#070E26", borderTop: "1px solid rgba(201,168,76,0.15)" }}>
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <img src={ICON_URL} alt="Gestor de Vida" className="w-6 h-6 rounded" />
+            <LogoBadge size={6} />
             <span className="font-semibold" style={{ color: gold }}>Gestor de Vida</span>
           </div>
           <p style={{ color: "#3A4A60" }}>© {new Date().getFullYear()} Gestor de Vida. Todos os direitos reservados.</p>
