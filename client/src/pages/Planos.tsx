@@ -57,7 +57,7 @@ const PLANS = [
   {
     id: "combo" as const,
     name: "Combo Promocional",
-    price: "49,90",
+    price: "59,90",
     priceLabel: "acesso vitalício",
     description: "E-book + Sistema — tudo por um preço especial",
     icon: Star,
@@ -123,7 +123,7 @@ export default function Planos() {
         <div className="mb-6 p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 flex items-center gap-3">
           <Star className="w-5 h-5 text-amber-400 flex-shrink-0" />
           <p className="text-sm text-foreground">
-            <span className="font-bold text-amber-400">Melhor custo-benefício:</span> E-book + Sistema separados custam R$ 69,80 — no Combo você paga apenas <span className="font-bold text-amber-400">R$ 49,90</span> e economiza R$ 19,90.
+            <span className="font-bold text-amber-400">Melhor custo-benefício:</span> E-book + Sistema separados custam R$ 69,80 — no Combo você paga apenas <span className="font-bold text-amber-400">R$ 59,90</span> e economiza R$ 9,90.
           </p>
         </div>
 

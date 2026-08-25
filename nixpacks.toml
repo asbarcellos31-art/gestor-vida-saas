@@ -1,5 +1,5 @@
 [phases.setup]
-cmds = ['echo "cache-bust-2026-08-25b"']
+cmds = ['echo "cache-bust-2026-08-25c"']
 
 [phases.build]
 cmds = ['pnpm install --no-frozen-lockfile && pnpm run build']
