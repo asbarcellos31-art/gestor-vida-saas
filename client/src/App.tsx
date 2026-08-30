@@ -28,6 +28,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import LGPDPage from "./pages/LGPDPage";
 import Simulator from "./pages/Simulator";
+import PlanejamentoOrcamentario from "./pages/PlanejamentoOrcamentario";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { initPixel, trackPageView } from "@/lib/pixel";
@@ -91,6 +92,7 @@ function Router() {
       <Route path="/orcamento">{() => <ProtectedRoute component={MonthlyBudget} />}</Route>
       <Route path="/parcelados">{() => <ProtectedRoute component={Installments} />}</Route>
       <Route path="/aposentadoria">{() => <ProtectedRoute component={Retirement} />}</Route>
+      <Route path="/planejamento">{() => <ProtectedRoute component={PlanejamentoOrcamentario} />}</Route>
       <Route path="/planos" component={Planos} />
       <Route path="/trial-expirado" component={TrialExpired} />
       <Route path="/aprender">{() => <ProtectedRoute component={Aprender} />}</Route>

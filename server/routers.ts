@@ -54,6 +54,7 @@ import {
   getAnnualExpenses,
   getAnnualIncome,
   getAnnualFixedBills,
+  getAnnualBillEntries,
   getAllAnnualData,
   getUserPaymentMethods,
   upsertUserPaymentMethod,
@@ -1351,6 +1352,23 @@ const inflationRouter = router({
   }),
 });
 
+// ─── Planejamento Orçamentário Router ────────────────────────────────────────
+const planejamentoRouter = router({
+  getData: protectedProcedure
+    .input(z.object({ baseYear: z.number() }))
+    .query(async ({ ctx, input }) => {
+      await requireBudgetAccess(ctx.user.id);
+      const [expenses, incomes, bills, installments, annualBillEntries] = await Promise.all([
+        getAnnualExpenses(ctx.user.id, input.baseYear),
+        getAnnualIncome(ctx.user.id, input.baseYear),
+        getAnnualFixedBills(ctx.user.id, input.baseYear),
+        getInstallmentBills(ctx.user.id),
+        getAnnualBillEntries(ctx.user.id, input.baseYear),
+      ]);
+      return { expenses, incomes, bills, installments, annualBillEntries };
+    }),
+});
+
 export const appRouter = router({
   system: systemRouter,
   auth: router({
@@ -1380,6 +1398,7 @@ export const appRouter = router({
   storage: storageRouter,
   admin: adminRouter,
   inflation: inflationRouter,
+  planejamento: planejamentoRouter,
   leads: router({
     capture: publicProcedure
       .input(z.object({

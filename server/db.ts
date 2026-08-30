@@ -571,6 +571,12 @@ export async function getAnnualExpenses(userId: number, year: number) {
   return db.select().from(expenseEntries).where(and(eq(expenseEntries.userId, userId), eq(expenseEntries.year, year)));
 }
 
+export async function getAnnualBillEntries(userId: number, year: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(billEntries).where(and(eq(billEntries.userId, userId), eq(billEntries.year, year)));
+}
+
 // ── Installment Bills ─────────────────────────────────────────────────────────
 export async function getInstallmentBills(userId: number) {
   const db = await getDb();

@@ -25,6 +25,7 @@ import {
   Wrench,
   Sun,
   Moon,
+  BarChart3,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -246,6 +247,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   {/* Sub-itens */}
                   {[
                     { label: "Dashboard Anual", path: "/orcamento/dashboard", Icon: LayoutDashboard },
+                    { label: "Planejamento", path: "/planejamento", Icon: BarChart3 },
                     { label: "Parcelados", path: "/parcelados", Icon: CreditCard },
                     { label: "Aposentadoria", path: "/aposentadoria", Icon: TrendingUp },
                     { label: "Configurações", path: "/orcamento/configuracoes", Icon: SlidersHorizontal },
