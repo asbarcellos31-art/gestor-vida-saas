@@ -1,8 +1,8 @@
 FROM node:20-alpine
 WORKDIR /app
-RUN npm install -g pnpm
+RUN npm install -g pnpm@9
 COPY package.json ./
-RUN pnpm install --no-frozen-lockfile
+RUN pnpm install --no-frozen-lockfile --ignore-scripts
 COPY . .
 RUN rm -rf dist
 RUN pnpm exec vite build
