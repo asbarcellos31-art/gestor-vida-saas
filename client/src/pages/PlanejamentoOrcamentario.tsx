@@ -148,8 +148,10 @@ export default function PlanejamentoOrcamentario() {
 
   // ── Aggregates ─────────────────────────────────────────────────────────────
   const stats = useMemo(() => {
-    const withData = monthlyData.filter(m => m.income > 0 || m.totalExpenses > 0);
+    const withData = monthlyData.filter(m => m.income > 0);
     const n = withData.length || 1;
+    const firstMonth = withData.length ? withData[0].month : 1;
+    const lastMonth = withData.length ? withData[withData.length - 1].month : n;
 
     const avgIncome = withData.reduce((s, m) => s + m.income, 0) / n;
     const avgFixed = withData.reduce((s, m) => s + m.fixedTotal, 0) / n;
@@ -172,7 +174,7 @@ export default function PlanejamentoOrcamentario() {
       Object.entries(catTotals).map(([k, v]) => [k, (v as number) / n])
     );
 
-    return { n, avgIncome, avgFixed, avgExp, avgInst, avgTotal, avgDisp, catMonthly };
+    return { n, firstMonth, lastMonth, avgIncome, avgFixed, avgExp, avgInst, avgTotal, avgDisp, catMonthly };
   }, [monthlyData]);
 
   // ── Installment analysis ───────────────────────────────────────────────────
@@ -413,6 +415,11 @@ export default function PlanejamentoOrcamentario() {
             <p className="text-muted-foreground text-sm mt-1">
               Análise de {baseYear} • Projeção para {targetYear}
             </p>
+            {stats.n > 0 && (
+              <p className="text-xs text-amber-400 mt-0.5 font-medium">
+                Base: {MONTHS_SHORT[stats.firstMonth - 1]}–{MONTHS_SHORT[stats.lastMonth - 1]}/{baseYear} · {stats.n} {stats.n === 1 ? "mês" : "meses"} · média dividida por {stats.n}
+              </p>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
@@ -482,7 +489,7 @@ export default function PlanejamentoOrcamentario() {
             <Calendar className="w-5 h-5 text-blue-500" />
             Resumo {baseYear}
             <span className="text-xs font-normal text-muted-foreground ml-1">
-              ({stats.n} {stats.n === 1 ? "mês" : "meses"} com dados)
+              (base: {MONTHS_SHORT[stats.firstMonth - 1]}–{MONTHS_SHORT[stats.lastMonth - 1]} · {stats.n} {stats.n === 1 ? "mês" : "meses"})
             </span>
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
