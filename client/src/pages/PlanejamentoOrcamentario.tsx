@@ -339,6 +339,38 @@ export default function PlanejamentoOrcamentario() {
     return { total: disp, anual: disp * 12, reserva: disp * 0.4, rf: disp * 0.3, rv: disp * 0.2, pgbl: disp * 0.1 };
   }, [proj, stats]);
 
+  // ── Análise detalhada por categoria (parcelamentos + variáveis agrupados) ──
+  const catDetails = useMemo(() => {
+    if (!data || !stats.n) return {} as Record<string, any>;
+    const result: Record<string, any> = {};
+    for (const excess of excessos.slice(0, 4)) {
+      const cat = excess.cat;
+      const catInst = (data.installments as any[])
+        .filter(i => (i.category || "Parcelados") === cat && !i.paid && isInstActive(i, baseYear, 6))
+        .sort((a: any, b: any) => parseN(b.installmentAmount) - parseN(a.installmentAmount));
+      const groups: Record<string, { total: number; months: Set<number> }> = {};
+      for (const e of data.expenses as any[]) {
+        if (e.category !== cat) continue;
+        const key = (e.description || "Sem descrição").trim().substring(0, 50);
+        if (!groups[key]) groups[key] = { total: 0, months: new Set() };
+        groups[key].total += parseN(e.amount);
+        (groups[key].months as Set<number>).add(Number(e.month));
+      }
+      const expGroups = Object.entries(groups)
+        .map(([desc, { total, months }]) => ({ desc, total, months: (months as Set<number>).size, avgMonth: total / stats.n }))
+        .filter(g => g.total > 0)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 12);
+      result[cat] = {
+        installments: catInst,
+        expGroups,
+        totalInst: catInst.reduce((s: number, i: any) => s + parseN(i.installmentAmount), 0),
+        totalExpAvgMonth: expGroups.reduce((s, g) => s + g.avgMonth, 0),
+      };
+    }
+    return result;
+  }, [data, excessos, baseYear, stats]);
+
   // ── Chart data ─────────────────────────────────────────────────────────────
   const monthlyChartData = useMemo(() =>
     monthlyData.map(m => ({
@@ -662,6 +694,146 @@ export default function PlanejamentoOrcamentario() {
                 </Card>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ── Análise Detalhada por Categoria ── */}
+        {excessos.length > 0 && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Info className="w-5 h-5 text-blue-400" />
+              Análise Detalhada por Categoria
+            </h2>
+            {excessos.slice(0, 4).map(excess => {
+              const detail = catDetails[excess.cat];
+              if (!detail) return null;
+              const hasInst = detail.installments.length > 0;
+              const hasExp = detail.expGroups.length > 0;
+              if (!hasInst && !hasExp) return null;
+              const endingSoon = detail.installments.find((i: any) => {
+                if (i.isRecurring || i.totalInstallments >= 9999) return false;
+                const end = i.startYear * 12 + i.startMonth + i.totalInstallments - 1;
+                return end <= targetYear * 12 + 12;
+              });
+              const dominantExp = detail.expGroups[0];
+              const totalVarBase = detail.totalExpAvgMonth * stats.n;
+              return (
+                <Card key={excess.cat}>
+                  <CardHeader>
+                    <CardTitle className="text-base" style={{ color: catColor(excess.cat) }}>
+                      Análise Detalhada — {excess.cat} ({fmt(excess.proj)}/mês projetado {targetYear})
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      {detail.totalExpAvgMonth > 0 && `${fmt(detail.totalExpAvgMonth)}/mês variável`}
+                      {detail.totalExpAvgMonth > 0 && detail.totalInst > 0 && " + "}
+                      {detail.totalInst > 0 && `${fmt(detail.totalInst)}/mês parcelado`}
+                      {" = "}<strong>{fmt(excess.total)}/mês</strong>. Base: {stats.n} meses.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-5">
+                    {hasInst && (
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Parcelamentos ativos</p>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="border-b border-border text-left text-xs">
+                                <th className="pb-1.5 font-medium text-muted-foreground">Item</th>
+                                <th className="pb-1.5 font-medium text-muted-foreground text-right">Valor/mês</th>
+                                <th className="pb-1.5 font-medium text-muted-foreground text-right">Total {baseYear}</th>
+                                <th className="pb-1.5 font-medium text-muted-foreground text-center">Tipo</th>
+                                <th className="pb-1.5 font-medium text-muted-foreground text-center">Encerra</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {detail.installments.map((inst: any, i: number) => {
+                                const isRec = inst.isRecurring || inst.totalInstallments >= 9999;
+                                const end = isRec ? null : inst.startYear * 12 + inst.startMonth + inst.totalInstallments - 1;
+                                const endM = end ? (end % 12 || 12) : 0;
+                                const endY = end ? Math.floor((end - 1) / 12) : 0;
+                                const endsSoon = end && end <= targetYear * 12 + 12;
+                                return (
+                                  <tr key={i} className={`border-b border-border/50 hover:bg-muted/30 ${endsSoon ? "bg-emerald-500/5" : ""}`}>
+                                    <td className="py-2 font-medium">{inst.description}</td>
+                                    <td className="py-2 text-right font-semibold">{fmt(parseN(inst.installmentAmount))}</td>
+                                    <td className="py-2 text-right text-muted-foreground">{fmt(parseN(inst.installmentAmount) * stats.n)}</td>
+                                    <td className="py-2 text-center text-xs text-muted-foreground">
+                                      {isRec ? "Recorrente" : `Parcelado ${inst.totalInstallments}×`}
+                                    </td>
+                                    <td className={`py-2 text-center text-xs font-medium ${endsSoon ? "text-emerald-400" : "text-muted-foreground"}`}>
+                                      {isRec ? "Sem prazo" : `${MONTHS_SHORT[endM - 1]}/${endY}`}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                            <tfoot>
+                              <tr className="border-t border-border">
+                                <td colSpan={1} className="pt-2 font-bold text-xs">TOTAL PARCELADO/MÊS</td>
+                                <td className="pt-2 text-right font-bold text-red-400">{fmt(detail.totalInst)}</td>
+                                <td colSpan={3} />
+                              </tr>
+                            </tfoot>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {hasExp && (
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Gastos variáveis — por descrição</p>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="border-b border-border text-left text-xs">
+                                <th className="pb-1.5 font-medium text-muted-foreground">Descrição</th>
+                                <th className="pb-1.5 font-medium text-muted-foreground text-center">Meses</th>
+                                <th className="pb-1.5 font-medium text-muted-foreground text-right">Total {baseYear}</th>
+                                <th className="pb-1.5 font-medium text-muted-foreground text-right">Média/mês</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {detail.expGroups.map((g: any, i: number) => (
+                                <tr key={i} className={`border-b border-border/50 hover:bg-muted/30 ${i === 0 ? "bg-orange-500/5" : ""}`}>
+                                  <td className={`py-1.5 font-medium ${i === 0 ? "text-orange-300" : ""}`}>{g.desc}</td>
+                                  <td className="py-1.5 text-center text-muted-foreground text-xs">{g.months}/{stats.n}</td>
+                                  <td className="py-1.5 text-right">{fmt(g.total)}</td>
+                                  <td className={`py-1.5 text-right font-semibold ${i === 0 ? "text-orange-400" : ""}`}>{fmt(g.avgMonth)}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                            <tfoot>
+                              <tr className="border-t border-border">
+                                <td colSpan={2} className="pt-2 font-bold text-xs">TOTAL VARIÁVEL/MÊS</td>
+                                <td />
+                                <td className="pt-2 text-right font-bold text-orange-400">{fmt(detail.totalExpAvgMonth)}</td>
+                              </tr>
+                            </tfoot>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Insight dinâmico: parcelamento que encerra em breve */}
+                    {endingSoon && (
+                      <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400 leading-relaxed">
+                        <strong>BOA NOTÍCIA:</strong> {endingSoon.description} ({fmt(parseN(endingSoon.installmentAmount))}/mês) encerra em{" "}
+                        {(() => { const e = endingSoon.startYear * 12 + endingSoon.startMonth + endingSoon.totalInstallments - 1; return `${MONTHS_SHORT[(e % 12 || 12) - 1]}/${Math.floor((e - 1) / 12)}`; })()}.{" "}
+                        Isso libera <strong>{fmt(parseN(endingSoon.installmentAmount))}/mês</strong> = <strong>{fmt(parseN(endingSoon.installmentAmount) * 12)}/ano</strong> a partir daí.
+                      </div>
+                    )}
+
+                    {/* Insight dinâmico: item dominante nas variáveis */}
+                    {dominantExp && totalVarBase > 0 && (dominantExp.total / totalVarBase) > 0.25 && (
+                      <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 text-xs text-orange-400 leading-relaxed">
+                        <strong>MAIOR GASTO VARIÁVEL:</strong> {dominantExp.desc} — {fmt(dominantExp.avgMonth)}/mês ({pct(dominantExp.total / totalVarBase * 100)} dos gastos variáveis da categoria).
+                        {dominantExp.months === stats.n && " Aparece em todos os meses."}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
 
