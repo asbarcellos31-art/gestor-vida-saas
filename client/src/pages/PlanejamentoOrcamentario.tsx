@@ -281,6 +281,62 @@ export default function PlanejamentoOrcamentario() {
     };
   }, [stats, data, incomeAdj, expAdj, targetYear, instAnalysis]);
 
+  // ── Category breakdown — variáveis + parcelados por categoria ─────────────
+  const catBreakdown = useMemo(() => {
+    if (!data || stats.n === 0) return [];
+    const n = stats.n;
+    const expByCat: Record<string, number> = {};
+    const instByCat: Record<string, number> = {};
+    for (const m of monthlyData) {
+      for (const [cat, amt] of Object.entries(m.expByCategory))
+        expByCat[cat] = (expByCat[cat] || 0) + (amt as number);
+      for (const [cat, amt] of Object.entries(m.instByCategory))
+        instByCat[cat] = (instByCat[cat] || 0) + (amt as number);
+    }
+    const allCats = new Set([...Object.keys(expByCat), ...Object.keys(instByCat)]);
+    const rows = Array.from(allCats).map(cat => {
+      const variavel = (expByCat[cat] || 0) / n;
+      const parcelado = (instByCat[cat] || 0) / n;
+      const total = variavel + parcelado;
+      return {
+        cat, variavel, parcelado, total,
+        pctReceita: stats.avgIncome > 0 ? (total / stats.avgIncome) * 100 : 0,
+        proj: total * (1 + expAdj / 100),
+        projAnual: total * (1 + expAdj / 100) * 12,
+      };
+    }).filter(r => r.total > 1).sort((a, b) => b.total - a.total);
+    if (stats.avgFixed > 0) {
+      rows.unshift({
+        cat: "Contas Fixas", variavel: 0, parcelado: 0, total: stats.avgFixed,
+        pctReceita: stats.avgIncome > 0 ? (stats.avgFixed / stats.avgIncome) * 100 : 0,
+        proj: stats.avgFixed * (1 + expAdj / 100),
+        projAnual: stats.avgFixed * (1 + expAdj / 100) * 12,
+      });
+    }
+    return rows;
+  }, [data, stats, monthlyData, expAdj]);
+
+  // ── Top excess categories (>5% da receita, excluindo Contas Fixas) ─────────
+  const excessos = useMemo(() =>
+    catBreakdown.filter(r => r.cat !== "Contas Fixas" && r.pctReceita > 5).slice(0, 5),
+  [catBreakdown]);
+
+  // ── Metas de corte ────────────────────────────────────────────────────────
+  const metasCorte = useMemo(() =>
+    excessos.filter(e => e.pctReceita > 8).map(e => {
+      const corte = e.pctReceita > 12 ? 0.78 : 0.85;
+      const teto = e.proj * corte;
+      return { cat: e.cat, atual: e.proj, teto, economiaM: e.proj - teto, economiaA: (e.proj - teto) * 12 };
+    }),
+  [excessos]);
+
+  // ── Disponível p/ Investir ────────────────────────────────────────────────
+  const investDisp = useMemo(() => {
+    const disp = proj ? proj.projDispAprDez : stats.avgDisp;
+    if (disp <= 0) return null;
+    return { total: disp, anual: disp * 12, reserva: disp * 0.4, rf: disp * 0.3, rv: disp * 0.2, pgbl: disp * 0.1 };
+  }, [proj, stats]);
+
   // ── Chart data ─────────────────────────────────────────────────────────────
   const monthlyChartData = useMemo(() =>
     monthlyData.map(m => ({
@@ -505,6 +561,103 @@ export default function PlanejamentoOrcamentario() {
           </CardContent>
         </Card>
 
+        {/* ── Gastos Consolidados por Categoria ── */}
+        {catBreakdown.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Gastos Consolidados por Categoria — Média Mensal {baseYear}</CardTitle>
+              <p className="text-xs text-muted-foreground">Cada linha soma Variáveis + Parcelamentos da mesma categoria. Ordenado do maior para o menor gasto.</p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left text-xs">
+                      <th className="pb-2 font-medium text-muted-foreground">Categoria</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-right">Variáveis</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-right">Parcelado</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-right">TOTAL/mês</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-right">% Rec.</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-right">Proj.{targetYear}/mês</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-right">Proj. Anual</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {catBreakdown.map((row, i) => (
+                      <tr key={i} className={`border-b border-border/50 hover:bg-muted/30 ${row.pctReceita > 10 ? "bg-amber-500/5" : ""}`}>
+                        <td className="py-2 font-medium">
+                          <div className="flex items-center gap-1.5">
+                            {row.pctReceita > 10 && <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />}
+                            {row.cat}
+                          </div>
+                        </td>
+                        <td className="py-2 text-right text-muted-foreground">{row.variavel > 0 ? fmt(row.variavel) : "—"}</td>
+                        <td className="py-2 text-right text-muted-foreground">{row.parcelado > 0 ? fmt(row.parcelado) : "—"}</td>
+                        <td className="py-2 text-right font-semibold">{fmt(row.total)}</td>
+                        <td className="py-2 text-right">{pct(row.pctReceita)}</td>
+                        <td className="py-2 text-right text-amber-400">{fmt(row.proj)}</td>
+                        <td className="py-2 text-right text-muted-foreground">{fmt(row.projAnual)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-border font-bold text-sm">
+                      <td className="pt-3">TOTAL GERAL</td>
+                      <td className="pt-3 text-right">{fmt(catBreakdown.filter(r => r.cat !== "Contas Fixas").reduce((s, r) => s + r.variavel, 0))}</td>
+                      <td className="pt-3 text-right">{fmt(catBreakdown.reduce((s, r) => s + r.parcelado, 0))}</td>
+                      <td className="pt-3 text-right">{fmt(catBreakdown.reduce((s, r) => s + r.total, 0))}</td>
+                      <td className="pt-3 text-right">{pct(stats.avgIncome > 0 ? (catBreakdown.reduce((s, r) => s + r.total, 0) / stats.avgIncome) * 100 : 0)}</td>
+                      <td className="pt-3 text-right text-amber-400">{fmt(catBreakdown.reduce((s, r) => s + r.proj, 0))}</td>
+                      <td className="pt-3 text-right">{fmt(catBreakdown.reduce((s, r) => s + r.projAnual, 0))}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              {catBreakdown.some(r => r.pctReceita > 10) && (
+                <p className="text-xs text-amber-400 mt-3 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                  Categorias com gasto elevado que merecem atenção em {targetYear}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* ── Análise de Excessos ── */}
+        {excessos.length > 0 && (
+          <div>
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-orange-500" />
+              Análise de Excessos — Onde está o dinheiro indo?
+            </h2>
+            <div className="space-y-3">
+              {excessos.map((e, i) => (
+                <Card key={e.cat} className={`border ${i === 0 ? "border-orange-500/50 bg-orange-500/5" : "border-amber-500/30 bg-amber-500/5"}`}>
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start justify-between mb-2 gap-2">
+                      <span className="font-semibold text-sm">{e.cat} — {fmt(e.total)}/mês ({pct(e.pctReceita)} da receita)</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${i === 0 ? "bg-orange-500/20 text-orange-400" : "bg-amber-500/20 text-amber-400"}`}>
+                        {i === 0 ? "Alta prioridade" : "Atenção"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {e.variavel > 0 && `${fmt(e.variavel)} variável`}
+                      {e.variavel > 0 && e.parcelado > 0 && " + "}
+                      {e.parcelado > 0 && `${fmt(e.parcelado)} parcelado`}
+                      {". Projetado para "}
+                      <strong className="text-foreground">{fmt(e.proj)}/mês</strong>
+                      {` em ${targetYear} (IPCA+${expAdj}%). `}
+                      {e.pctReceita > 10
+                        ? `Teto sugerido: ${fmt(e.proj * 0.78)}/mês → economia de ${fmt((e.proj - e.proj * 0.78) * 12)}/ano.`
+                        : `Teto sugerido: ${fmt(e.proj * 0.85)}/mês → economia de ${fmt((e.proj - e.proj * 0.85) * 12)}/ano.`}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ── Parcelamentos que Encerram ── */}
         {instAnalysis.expiringInTarget.length > 0 && (
           <Card>
@@ -672,6 +825,100 @@ export default function PlanejamentoOrcamentario() {
               </CardContent>
             </Card>
 
+            {/* ── Metas de Corte ── */}
+            {metasCorte.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Target className="w-4 h-4 text-red-400" />
+                    Metas de Corte — Potencial de Economia em {targetYear}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border text-left">
+                          <th className="pb-2 font-medium text-muted-foreground">Categoria</th>
+                          <th className="pb-2 font-medium text-muted-foreground text-right">Gasto Proj. {targetYear}</th>
+                          <th className="pb-2 font-medium text-muted-foreground text-right">Teto Sugerido</th>
+                          <th className="pb-2 font-medium text-muted-foreground text-right">Economia Mensal</th>
+                          <th className="pb-2 font-medium text-muted-foreground text-right">Economia Anual</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {metasCorte.map((m, i) => (
+                          <tr key={i} className="border-b border-border/50 hover:bg-muted/30">
+                            <td className="py-2.5 font-medium">{m.cat}</td>
+                            <td className="py-2.5 text-right text-red-400">{fmt(m.atual)}</td>
+                            <td className="py-2.5 text-right text-amber-400">{fmt(m.teto)}</td>
+                            <td className="py-2.5 text-right text-emerald-500">{fmt(m.economiaM)}</td>
+                            <td className="py-2.5 text-right font-semibold text-emerald-500">{fmt(m.economiaA)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="border-t border-border">
+                          <td colSpan={3} className="pt-3 font-bold text-emerald-500">TOTAL POTENCIAL DE CORTE</td>
+                          <td className="pt-3 text-right font-bold text-emerald-500">{fmt(metasCorte.reduce((s, m) => s + m.economiaM, 0))}</td>
+                          <td className="pt-3 text-right font-bold text-emerald-500">{fmt(metasCorte.reduce((s, m) => s + m.economiaA, 0))}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* ── Disponível p/ Investir ── */}
+            {investDisp && (
+              <Card className="border-emerald-500/30 bg-emerald-500/5">
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2 text-emerald-500">
+                    <TrendingUp className="w-4 h-4" />
+                    Disponível p/ Investir — {fmt(investDisp.total)}/mês | {fmt(investDisp.anual)}/ano
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border text-left">
+                          <th className="pb-2 font-medium text-muted-foreground">Destino</th>
+                          <th className="pb-2 font-medium text-muted-foreground text-right">% sugerido</th>
+                          <th className="pb-2 font-medium text-muted-foreground text-right">Mensal</th>
+                          <th className="pb-2 font-medium text-muted-foreground text-right">Anual</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { destino: "Reserva de emergência (meta: 6× salário)", pct2: "40%", val: investDisp.reserva },
+                          { destino: "Renda fixa (CDB, Tesouro, LCI/LCA)", pct2: "30%", val: investDisp.rf },
+                          { destino: "Renda variável (ações, FIIs)", pct2: "20%", val: investDisp.rv },
+                          { destino: "Previdência privada / PGBL", pct2: "10%", val: investDisp.pgbl },
+                        ].map((row, i) => (
+                          <tr key={i} className="border-b border-border/50 hover:bg-muted/30">
+                            <td className="py-2.5">{row.destino}</td>
+                            <td className="py-2.5 text-right text-muted-foreground">{row.pct2}</td>
+                            <td className="py-2.5 text-right font-semibold text-emerald-500">{fmt(row.val)}</td>
+                            <td className="py-2.5 text-right text-muted-foreground">{fmt(row.val * 12)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="border-t border-border">
+                          <td colSpan={2} className="pt-3 font-bold">TOTAL</td>
+                          <td className="pt-3 text-right font-bold text-emerald-500">{fmt(investDisp.total)}</td>
+                          <td className="pt-3 text-right font-bold text-emerald-500">{fmt(investDisp.anual)}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">* Distribuição sugerida. Ajuste conforme perfil de risco e prioridades.</p>
+                </CardContent>
+              </Card>
+            )}
+
             {/* ── Regra 50/30/20 ── */}
             <Card>
               <CardHeader>
@@ -791,6 +1038,117 @@ export default function PlanejamentoOrcamentario() {
             </CardContent>
           </Card>
         )}
+
+        {/* ── Metas Concretas ── */}
+        {(metasCorte.length > 0 || instAnalysis.expiringInTarget.length > 0) && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-blue-400" />
+                Metas Concretas para {targetYear}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left">
+                      <th className="pb-2 w-8 font-medium text-muted-foreground">#</th>
+                      <th className="pb-2 font-medium text-muted-foreground">Meta</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-right">Impacto Mensal</th>
+                      <th className="pb-2 font-medium text-muted-foreground text-right">Impacto Anual</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ...metasCorte.map((m, i) => ({
+                        n: i + 1,
+                        meta: `Teto de ${fmt(m.teto)}/mês para ${m.cat} (incluindo parcelados no cartão)`,
+                        impactoM: m.economiaM, impactoA: m.economiaA, visibilidade: false,
+                      })),
+                      ...(instAnalysis.expiringInTarget.length > 0 ? [{
+                        n: metasCorte.length + 1,
+                        meta: `Realocar parcelas que expiram → investimento (${fmt(instAnalysis.expiringInTarget.reduce((s, i) => s + parseN(i.installmentAmount), 0))}/mês liberados)`,
+                        impactoM: instAnalysis.expiringInTarget.reduce((s, i) => s + parseN(i.installmentAmount), 0),
+                        impactoA: instAnalysis.expiringInTarget.reduce((s, i) => s + parseN(i.installmentAmount), 0) * 12,
+                        visibilidade: false,
+                      }] : []),
+                      {
+                        n: metasCorte.length + (instAnalysis.expiringInTarget.length > 0 ? 2 : 1),
+                        meta: `Detalhar categoria "Outros" em subcategorias no sistema`,
+                        impactoM: 0, impactoA: 0, visibilidade: true,
+                      },
+                    ].map((row: any, i) => (
+                      <tr key={i} className={`border-b border-border/50 ${row.visibilidade ? "bg-blue-500/5" : ""}`}>
+                        <td className="py-2.5 text-muted-foreground font-medium">{row.n}</td>
+                        <td className="py-2.5">{row.meta}</td>
+                        <td className="py-2.5 text-right font-semibold text-emerald-500">
+                          {row.visibilidade ? <span className="text-blue-400 text-xs">Visibilidade</span> : fmt(row.impactoM)}
+                        </td>
+                        <td className="py-2.5 text-right font-semibold text-emerald-500">
+                          {row.visibilidade ? <span className="text-blue-400 text-xs">Visibilidade</span> : fmt(row.impactoA)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t border-border">
+                      <td colSpan={2} className="pt-3 font-bold text-muted-foreground">ECONOMIA TOTAL POTENCIAL</td>
+                      <td className="pt-3 text-right font-bold text-emerald-500">
+                        {fmt(metasCorte.reduce((s, m) => s + m.economiaM, 0) + instAnalysis.expiringInTarget.reduce((s, i) => s + parseN(i.installmentAmount), 0))}
+                      </td>
+                      <td className="pt-3 text-right font-bold text-emerald-500">
+                        {fmt((metasCorte.reduce((s, m) => s + m.economiaM, 0) + instAnalysis.expiringInTarget.reduce((s, i) => s + parseN(i.installmentAmount), 0)) * 12)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* ── Resumo Executivo ── */}
+        <Card className="border-primary/30 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="text-base">Resumo Executivo</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Você tem uma receita média de{" "}
+              <strong className="text-foreground">{fmt(stats.avgIncome)}/mês</strong> e gasta{" "}
+              <strong className="text-foreground">{fmt(stats.avgTotal)}/mês</strong> — uma taxa de comprometimento de{" "}
+              <strong className={stats.avgIncome > 0 && (stats.avgTotal / stats.avgIncome) > 0.88 ? "text-orange-400" : "text-emerald-500"}>
+                {pct(stats.avgIncome > 0 ? (stats.avgTotal / stats.avgIncome) * 100 : 0)}
+              </strong>.
+              {excessos.length > 0 && (
+                <> O problema não é a renda: é que os gastos cresceram junto com ela, especialmente em{" "}
+                  {excessos.slice(0, 3).map((e, i) => (
+                    <span key={e.cat}><strong className="text-foreground">{e.cat} ({fmt(e.total)})</strong>{i < Math.min(excessos.length, 3) - 1 ? ", " : ""}</span>
+                  ))}.
+                </>
+              )}
+            </p>
+            {instAnalysis.expiringInTarget.length > 0 && (
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                A boa notícia: parcelas que encerram em {targetYear} vão liberar automaticamente{" "}
+                <strong className="text-emerald-500">{fmt(instAnalysis.expiringInTarget.reduce((s, i) => s + parseN(i.installmentAmount), 0))}/mês</strong>{" "}
+                — sem precisar cortar nada. Aplicando os cortes sugeridos, o potencial de investimento sobe de{" "}
+                <strong className="text-foreground">{fmt(proj?.projDispJanMar || stats.avgDisp)}/mês</strong> para{" "}
+                <strong className="text-emerald-500">{fmt(proj?.projDispAprDez || stats.avgDisp)}/mês</strong>{" "}
+                a partir de Abr/{targetYear}.
+              </p>
+            )}
+            {investDisp && (
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Com <strong className="text-emerald-500">{fmt(investDisp.total)}/mês investidos</strong> consistentemente,
+                em 20 anos (IPCA+8% a.a.) sua carteira pode ultrapassar{" "}
+                <strong className="text-emerald-500">{fmt(investDisp.total * 989)}</strong>.{" "}
+                Use o simulador de aposentadoria como bússola todo mês.
+              </p>
+            )}
+          </CardContent>
+        </Card>
 
       </div>
     </AppLayout>
