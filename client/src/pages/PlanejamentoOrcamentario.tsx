@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import {
   ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Wallet,
-  AlertTriangle, CheckCircle2, Target, Calendar, Zap, Info,
+  AlertTriangle, CheckCircle2, Target, Calendar, Zap, Info, FileDown,
 } from "lucide-react";
 
 const fmt = (v: number) =>
@@ -87,6 +87,31 @@ function CustomTooltip({ active, payload, label }: any) {
 export default function PlanejamentoOrcamentario() {
   const now = new Date();
   const [baseYear, setBaseYear] = useState(now.getFullYear());
+
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.id = "planejamento-print-css";
+    style.textContent = `
+      @media print {
+        @page { size: A4; margin: 12mm 14mm; }
+        body { background: white !important; color: black !important; font-size: 11px !important; }
+        aside, nav, header, .print\\:hidden { display: none !important; }
+        .sidebar, [data-sidebar] { display: none !important; }
+        main { margin: 0 !important; padding: 0 !important; }
+        .max-w-6xl { max-width: 100% !important; padding: 0 !important; }
+        table { page-break-inside: avoid; width: 100% !important; }
+        .card, [class*="Card"] { page-break-inside: avoid; border: 1px solid #ddd !important; background: white !important; margin-bottom: 8px !important; }
+        h1 { font-size: 18px !important; }
+        h2 { font-size: 14px !important; }
+        .text-muted-foreground { color: #555 !important; }
+        svg { display: none !important; }
+        input, button:not(.print-show) { display: none !important; }
+        [class*="recharts"] { display: none !important; }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => { document.getElementById("planejamento-print-css")?.remove(); };
+  }, []);
   const targetYear = baseYear + 1;
 
   const [incomeAdj, setIncomeAdj] = useState(7.5);
@@ -470,6 +495,15 @@ export default function PlanejamentoOrcamentario() {
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 print:hidden"
+              onClick={() => window.print()}
+            >
+              <FileDown className="w-4 h-4" />
+              Exportar PDF
+            </Button>
           </div>
         </div>
 
