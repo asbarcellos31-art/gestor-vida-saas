@@ -125,7 +125,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   // Grupos colapsáveis
   const [budgetOpen, setBudgetOpen] = useState(
-    location.startsWith("/orcamento") || location === "/parcelados" || location === "/aposentadoria"
+    location.startsWith("/orcamento") || location === "/parcelados" || location === "/aposentadoria" || location === "/analise-historica"
   );
 
   function isMonthActive(m: number) {
@@ -248,6 +248,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   {[
                     { label: "Dashboard Anual", path: "/orcamento/dashboard", Icon: LayoutDashboard },
                     { label: "Planejamento", path: "/planejamento", Icon: BarChart3 },
+                    { label: "Análise Histórica", path: "/analise-historica", Icon: BarChart3 },
                     { label: "Parcelados", path: "/parcelados", Icon: CreditCard },
                     { label: "Aposentadoria", path: "/aposentadoria", Icon: TrendingUp },
                     { label: "Configurações", path: "/orcamento/configuracoes", Icon: SlidersHorizontal },
