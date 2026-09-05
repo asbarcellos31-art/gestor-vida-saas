@@ -1392,7 +1392,7 @@ function categoryToKey(cat: string): string | null {
   if (c === "pet" || c.includes("animal")) return "pet";
   if (c.includes("consorcio")) return "consorcio";
   if (c.includes("aliment") || c.includes("superm") || c.includes("mercado") || c.includes("cantina")) return "super";
-  if (c.includes("combustivel") || c.includes("gasolina")) return "combust";
+  if (c.includes("combustivel") || c.includes("gasolina") || c.includes("transporte")) return "combust";
   if (c.includes("lazer") || c.includes("restaurante") || c.includes("hobby") || c.includes("streaming")) return "lazer";
   if (c.includes("manicure") || c.includes("beleza")) return "manicure";
   if (c.includes("luz") || c.includes("energia") || c.includes("agua")) return "luz";
@@ -1448,22 +1448,27 @@ const analiseHistoricaRouter = router({
 
       const totalIncome = incomes.reduce((s, i) => s + (parseFloat(String(i.amount)) || 0), 0);
 
+      // Despesas variáveis: total por categoria (divide pelo total de meses ativos)
       const expByCat: Record<string, number> = {};
       for (const e of expenses) {
         const amt = parseFloat(String(e.amount)) || 0;
         if (amt > 0) expByCat[e.category] = (expByCat[e.category] || 0) + amt;
       }
-      const billByLabel: Record<string, number> = {};
+
+      // Contas fixas: total e contagem de meses por rótulo (divide pelos meses em que a conta foi lançada)
+      const billByLabel: Record<string, { total: number; count: number }> = {};
       for (const b of bills) {
         const amt = parseFloat(String(b.amount)) || 0;
         if (amt > 0) {
           const label = labelMap[b.billKey] || b.billKey;
-          billByLabel[label] = (billByLabel[label] || 0) + amt;
+          if (!billByLabel[label]) billByLabel[label] = { total: 0, count: 0 };
+          billByLabel[label].total += amt;
+          billByLabel[label].count += 1;
         }
       }
 
       const totalExp = Object.values(expByCat).reduce((s, v) => s + v, 0);
-      const totalBill = Object.values(billByLabel).reduce((s, v) => s + v, 0);
+      const totalBill = Object.values(billByLabel).reduce((s, { total }) => s + total, 0);
 
       const result: Record<string, number> = {
         receita: Math.round(totalIncome / monthCount),
@@ -1473,9 +1478,10 @@ const analiseHistoricaRouter = router({
         const key = categoryToKey(cat);
         if (key) result[key] = (result[key] || 0) + Math.round(total / monthCount);
       }
-      for (const [label, total] of Object.entries(billByLabel)) {
+      // Cada conta fixa usa sua própria contagem de meses para a média
+      for (const [label, { total, count }] of Object.entries(billByLabel)) {
         const key = labelToKey(label);
-        if (key) result[key] = (result[key] || 0) + Math.round(total / monthCount);
+        if (key) result[key] = (result[key] || 0) + Math.round(total / count);
       }
       return result;
     }),
