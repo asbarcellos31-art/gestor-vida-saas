@@ -1478,11 +1478,27 @@ const analiseHistoricaRouter = router({
   seedHistorical: protectedProcedure
     .mutation(async ({ ctx }) => {
       await requireBudgetAccess(ctx.user.id);
+      // Seed apenas para admin — dados históricos são pessoais do dono da conta
+      const admin = await isAdminUser(ctx.user.id);
+      if (!admin) return { success: false, skipped: true };
       for (const [yr, data] of Object.entries(HISTORICAL_SEED)) {
         const year = parseInt(yr);
         const already = await hasBudgetSnapshotsForYear(ctx.user.id, year);
         if (!already) await upsertBudgetSnapshotYear(ctx.user.id, year, data, 12);
       }
+      return { success: true };
+    }),
+
+  saveYear: protectedProcedure
+    .input(z.object({
+      year: z.number(),
+      data: z.record(z.string(), z.number()),
+      monthCount: z.number().min(1).max(12).default(12),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await requireBudgetAccess(ctx.user.id);
+      if (input.year >= 2026) throw new Error("Ano 2026+ é calculado automaticamente");
+      await upsertBudgetSnapshotYear(ctx.user.id, input.year, input.data, input.monthCount);
       return { success: true };
     }),
 });
