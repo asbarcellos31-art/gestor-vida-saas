@@ -128,7 +128,7 @@ function YoYTable({ a1, a2, yearly }: { a1: string; a2: string; yearly: YearlyDa
     name: c.label.length > 16 ? c.label.slice(0, 15) + "…" : c.label,
     [a1]: d1[c.key] || 0,
     [a2]: d2[c.key] || 0,
-  })).filter(d => d[a1] > 0 || d[a2] > 0);
+  })).filter(d => Number(d[a1]) > 0 || Number(d[a2]) > 0);
 
   return (
     <div className="space-y-6">

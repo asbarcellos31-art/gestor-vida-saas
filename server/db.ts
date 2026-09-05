@@ -1301,7 +1301,7 @@ export async function getBudgetSnapshotYear(userId: number, year: number): Promi
   try {
     const rows = await db.execute(sql`SELECT categoryKey, avgMonthly FROM budget_snapshots WHERE userId = ${userId} AND year = ${year}`);
     const result: Record<string, number> = {};
-    for (const row of (rows[0] as any[])) {
+    for (const row of (rows[0] as unknown as any[])) {
       result[row.categoryKey] = Number(row.avgMonthly);
     }
     return result;
@@ -1314,7 +1314,7 @@ export async function hasBudgetSnapshotsForYear(userId: number, year: number): P
   await ensureBudgetSnapshotsTable();
   try {
     const rows = await db.execute(sql`SELECT COUNT(*) as cnt FROM budget_snapshots WHERE userId = ${userId} AND year = ${year}`);
-    return Number((rows[0] as any[])[0]?.cnt) > 0;
+    return Number((rows[0] as unknown as any[])[0]?.cnt) > 0;
   } catch { return false; }
 }
 
