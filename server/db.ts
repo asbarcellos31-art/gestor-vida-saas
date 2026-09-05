@@ -1270,3 +1270,63 @@ export async function getAllHotmartPurchases() {
   if (!db) return [];
   return db.select().from(hotmartPurchases).orderBy(desc(hotmartPurchases.createdAt));
 }
+
+// ── Budget Snapshots (médias mensais históricas, extraídas das planilhas) ─────
+async function ensureBudgetSnapshotsTable(): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS budget_snapshots (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT NOT NULL,
+        year INT NOT NULL,
+        categoryKey VARCHAR(64) NOT NULL,
+        avgMonthly DECIMAL(10,2) NOT NULL,
+        monthCount INT NOT NULL DEFAULT 12,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_user_year_cat (userId, year, categoryKey),
+        INDEX idx_userId (userId)
+      )
+    `);
+  } catch (err) {
+    console.error("[DB] Erro ao criar budget_snapshots:", err);
+  }
+}
+
+export async function getBudgetSnapshotYear(userId: number, year: number): Promise<Record<string, number>> {
+  const db = await getDb();
+  if (!db) return {};
+  await ensureBudgetSnapshotsTable();
+  try {
+    const rows = await db.execute(sql`SELECT categoryKey, avgMonthly FROM budget_snapshots WHERE userId = ${userId} AND year = ${year}`);
+    const result: Record<string, number> = {};
+    for (const row of (rows[0] as any[])) {
+      result[row.categoryKey] = Number(row.avgMonthly);
+    }
+    return result;
+  } catch { return {}; }
+}
+
+export async function hasBudgetSnapshotsForYear(userId: number, year: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  await ensureBudgetSnapshotsTable();
+  try {
+    const rows = await db.execute(sql`SELECT COUNT(*) as cnt FROM budget_snapshots WHERE userId = ${userId} AND year = ${year}`);
+    return Number((rows[0] as any[])[0]?.cnt) > 0;
+  } catch { return false; }
+}
+
+export async function upsertBudgetSnapshotYear(userId: number, year: number, data: Record<string, number>, monthCount = 12): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await ensureBudgetSnapshotsTable();
+  for (const [categoryKey, avgMonthly] of Object.entries(data)) {
+    await db.execute(sql`
+      INSERT INTO budget_snapshots (userId, year, categoryKey, avgMonthly, monthCount)
+      VALUES (${userId}, ${year}, ${categoryKey}, ${avgMonthly}, ${monthCount})
+      ON DUPLICATE KEY UPDATE avgMonthly = ${avgMonthly}, monthCount = ${monthCount}
+    `);
+  }
+}

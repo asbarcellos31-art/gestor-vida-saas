@@ -1,38 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   LineChart, Line, ResponsiveContainer,
 } from "recharts";
-import { TrendingUp, TrendingDown, Minus, FileDown } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, FileDown, RefreshCw } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
-// ─── Dados consolidados (extraídos das planilhas 2023-2025 + sistema 2026) ───
-const YEARLY: Record<string, Record<string, number>> = {
-  "2023": {
-    receita: 21370, subtotal: 17407,
-    cond: 0,    veiculo: 1639, colegio: 1313, celular: 174,
-    gas: 0,     seg_vida: 160, pet: 340,      consorcio: 0,
-    luz: 229,   super: 1846,   combust: 1230, lazer: 3248, manicure: 79,
-  },
-  "2024": {
-    receita: 30643, subtotal: 22736,
-    cond: 750,  veiculo: 2460, colegio: 1302, celular: 202,
-    gas: 0,     seg_vida: 248, pet: 388,      consorcio: 49,
-    luz: 166,   super: 2445,   combust: 600,  lazer: 3514, manicure: 165,
-  },
-  "2025": {
-    receita: 32352, subtotal: 25784,
-    cond: 1223, veiculo: 2577, colegio: 1436, celular: 224,
-    gas: 117,   seg_vida: 366, pet: 407,      consorcio: 156,
-    luz: 382,   super: 2329,   combust: 556,  lazer: 3331, manicure: 217,
-  },
-  "2026": {
-    receita: 33894, subtotal: 29772,
-    cond: 1184, veiculo: 2654, colegio: 1393, celular: 250,
-    gas: 139,   seg_vida: 386, pet: 415,      consorcio: 626,
-    luz: 525,   super: 4003,   combust: 679,  lazer: 3879, manicure: 220,
-  },
-};
-
+// ─── Categorias exibidas ───────────────────────────────────────────────────────
 const CATS = [
   { key: "receita",   label: "Receita",                 highlight: true },
   { key: "subtotal",  label: "Total Gasto",             highlight: true },
@@ -51,6 +25,7 @@ const CATS = [
   { key: "manicure",  label: "Manicure / Beleza" },
 ];
 
+// ─── Observações e análises (conteúdo autoral, não vem do banco) ───────────────
 const OBS: Record<string, Record<string, string>> = {
   "2023-2024": {
     receita:   "corretora + distribuição de lucro",
@@ -140,14 +115,15 @@ function DeltaValue({ delta, pct }: { delta: number; pct: number }) {
   return <span className={`text-xs font-medium ${color}`}>{delta >= 0 ? "+" : ""}{fmt(delta)}</span>;
 }
 
-function YoYTable({ a1, a2 }: { a1: string; a2: string }) {
+type YearlyData = Record<string, Record<string, number>>;
+
+function YoYTable({ a1, a2, yearly }: { a1: string; a2: string; yearly: YearlyData }) {
   const key = `${a1}-${a2}`;
   const obs = OBS[key] || {};
   const analise = ANALISE[key];
-  const d1 = YEARLY[a1];
-  const d2 = YEARLY[a2];
+  const d1 = yearly[a1] || {};
+  const d2 = yearly[a2] || {};
 
-  // chart data — top categorias (excl receita e subtotal)
   const chartData = CATS.filter(c => c.key !== "subtotal").map(c => ({
     name: c.label.length > 16 ? c.label.slice(0, 15) + "…" : c.label,
     [a1]: d1[c.key] || 0,
@@ -156,7 +132,6 @@ function YoYTable({ a1, a2 }: { a1: string; a2: string }) {
 
   return (
     <div className="space-y-6">
-      {/* Tabela */}
       <div className="overflow-x-auto rounded-xl border border-slate-700/50">
         <table className="w-full text-sm">
           <thead>
@@ -186,9 +161,7 @@ function YoYTable({ a1, a2 }: { a1: string; a2: string }) {
                       : i % 2 === 0 ? "bg-slate-900/40" : "bg-slate-800/20"
                   } hover:bg-slate-700/30`}
                 >
-                  <td className={`px-4 py-2.5 ${isHeader ? "text-white" : "text-slate-200"}`}>
-                    {cat.label}
-                  </td>
+                  <td className={`px-4 py-2.5 ${isHeader ? "text-white" : "text-slate-200"}`}>{cat.label}</td>
                   <td className="px-4 py-2.5 text-right text-slate-300 font-mono text-xs">{fmt(v1)}</td>
                   <td className="px-4 py-2.5 text-right font-mono text-xs font-semibold text-white">{fmt(v2)}</td>
                   <td className="px-4 py-2.5 text-right">
@@ -205,7 +178,6 @@ function YoYTable({ a1, a2 }: { a1: string; a2: string }) {
         </table>
       </div>
 
-      {/* Gráfico */}
       <div className="bg-slate-800/40 rounded-xl border border-slate-700/50 p-5">
         <h3 className="text-sm font-semibold text-slate-300 mb-4">Comparativo visual — {a1} × {a2}</h3>
         <ResponsiveContainer width="100%" height={280}>
@@ -225,7 +197,6 @@ function YoYTable({ a1, a2 }: { a1: string; a2: string }) {
         </ResponsiveContainer>
       </div>
 
-      {/* Análise */}
       {analise && (
         <div className="bg-slate-800/40 rounded-xl border border-slate-700/50 p-5">
           <div className="flex items-center gap-2 mb-3">
@@ -239,22 +210,34 @@ function YoYTable({ a1, a2 }: { a1: string; a2: string }) {
   );
 }
 
-function Consolidado() {
+function Consolidado({ yearly }: { yearly: YearlyData }) {
   const anos = ["2023", "2024", "2025", "2026"];
 
   const lineData = CATS.filter(c => !["receita", "subtotal"].includes(c.key)).map(c => ({
     name: c.label.length > 18 ? c.label.slice(0, 17) + "…" : c.label,
-    ...Object.fromEntries(anos.map(a => [a, YEARLY[a][c.key] || 0])),
+    ...Object.fromEntries(anos.map(a => [a, (yearly[a] || {})[c.key] || 0])),
   })).filter(d => anos.some(a => (d[a] as number) > 0));
 
-  const receitaLine = anos.map(a => ({ ano: a, receita: YEARLY[a].receita, gasto: YEARLY[a].subtotal }));
+  const receitaLine = anos.map(a => ({
+    ano: a,
+    receita: (yearly[a] || {}).receita || 0,
+    gasto: (yearly[a] || {}).subtotal || 0,
+  }));
 
-  const v23 = YEARLY["2023"];
-  const v26 = YEARLY["2026"];
+  const v23 = yearly["2023"] || {};
+  const v26 = yearly["2026"] || {};
+
+  const pctTotal = v23.receita > 0 ? Math.round(((v26.receita - v23.receita) / v23.receita) * 100) : 0;
+  const pctGasto = v23.subtotal > 0 ? Math.round(((v26.subtotal - v23.subtotal) / v23.subtotal) * 100) : 0;
+  const pctSuper = v23.super > 0 ? Math.round(((v26.super - v23.super) / v23.super) * 100) : 0;
+  const pctLuz = v23.luz > 0 ? Math.round(((v26.luz - v23.luz) / v23.luz) * 100) : 0;
+  const pctSeg = v23.seg_vida > 0 ? Math.round(((v26.seg_vida - v23.seg_vida) / v23.seg_vida) * 100) : 0;
+  const pctMan = v23.manicure > 0 ? Math.round(((v26.manicure - v23.manicure) / v23.manicure) * 100) : 0;
+  const pctLaz = v23.lazer > 0 ? Math.round(((v26.lazer - v23.lazer) / v23.lazer) * 100) : 0;
+  const pctComb = v23.combust > 0 ? Math.round(((v26.combust - v23.combust) / v23.combust) * 100) : 0;
 
   return (
     <div className="space-y-6">
-      {/* Tabela consolidada */}
       <div className="overflow-x-auto rounded-xl border border-slate-700/50">
         <table className="w-full text-sm">
           <thead>
@@ -266,7 +249,7 @@ function Consolidado() {
           </thead>
           <tbody>
             {CATS.map((cat, i) => {
-              const vals = anos.map(a => YEARLY[a][cat.key] || 0);
+              const vals = anos.map(a => (yearly[a] || {})[cat.key] || 0);
               if (vals.every(v => v === 0)) return null;
               const pct = v23[cat.key] > 0 ? ((v26[cat.key] - v23[cat.key]) / v23[cat.key]) * 100 : 0;
               const isHeader = cat.key === "receita" || cat.key === "subtotal";
@@ -286,7 +269,6 @@ function Consolidado() {
         </table>
       </div>
 
-      {/* Gráfico receita vs gasto */}
       <div className="bg-slate-800/40 rounded-xl border border-slate-700/50 p-5">
         <h3 className="text-sm font-semibold text-slate-300 mb-4">Receita × Total Gasto — evolução 4 anos</h3>
         <ResponsiveContainer width="100%" height={220}>
@@ -305,7 +287,6 @@ function Consolidado() {
         </ResponsiveContainer>
       </div>
 
-      {/* Gráfico categorias */}
       <div className="bg-slate-800/40 rounded-xl border border-slate-700/50 p-5">
         <h3 className="text-sm font-semibold text-slate-300 mb-4">Evolução por categoria — 2023 a 2026</h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -326,7 +307,6 @@ function Consolidado() {
         </ResponsiveContainer>
       </div>
 
-      {/* Análise final */}
       <div className="bg-slate-800/40 rounded-xl border border-slate-700/50 p-6 space-y-4">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-1 h-5 rounded-full bg-amber-400" />
@@ -346,14 +326,14 @@ function Consolidado() {
 
         <div className="mt-4 pt-4 border-t border-slate-700/50 grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: "Receita cresceu", val: "+58%", color: "text-emerald-400" },
-            { label: "Gasto cresceu", val: "+71%", color: "text-red-400" },
-            { label: "Supermercado", val: "+117%", color: "text-red-400" },
-            { label: "Luz", val: "+129%", color: "text-red-400" },
-            { label: "Seguro de Vida", val: "+141%", color: "text-amber-400" },
-            { label: "Manicure/Beleza", val: "+179%", color: "text-amber-400" },
-            { label: "Restaurantes/Lazer", val: "+19%", color: "text-emerald-400" },
-            { label: "Combustível", val: "-44%", color: "text-emerald-400" },
+            { label: "Receita cresceu", val: pctTotal > 0 ? `+${pctTotal}%` : `${pctTotal}%`, color: pctTotal >= 0 ? "text-emerald-400" : "text-red-400" },
+            { label: "Gasto cresceu", val: pctGasto > 0 ? `+${pctGasto}%` : `${pctGasto}%`, color: "text-red-400" },
+            { label: "Supermercado", val: pctSuper > 0 ? `+${pctSuper}%` : `${pctSuper}%`, color: "text-red-400" },
+            { label: "Luz", val: pctLuz > 0 ? `+${pctLuz}%` : `${pctLuz}%`, color: "text-red-400" },
+            { label: "Seguro de Vida", val: pctSeg > 0 ? `+${pctSeg}%` : `${pctSeg}%`, color: "text-amber-400" },
+            { label: "Manicure/Beleza", val: pctMan > 0 ? `+${pctMan}%` : `${pctMan}%`, color: "text-amber-400" },
+            { label: "Restaurantes/Lazer", val: pctLaz > 0 ? `+${pctLaz}%` : `${pctLaz}%`, color: pctLaz < 20 ? "text-emerald-400" : "text-amber-400" },
+            { label: "Combustível", val: pctComb > 0 ? `+${pctComb}%` : `${pctComb}%`, color: pctComb < 0 ? "text-emerald-400" : "text-amber-400" },
           ].map(({ label, val, color }) => (
             <div key={label} className="bg-slate-900/50 rounded-lg p-3">
               <p className="text-slate-400 text-xs mb-0.5">{label}</p>
@@ -374,11 +354,27 @@ const TABS = [
 ];
 
 export default function AnaliseHistorica() {
-  const [tab, setTab] = useState("2023-2024");
+  const [tab, setTab] = useState("2025-2026");
 
-  const handlePrint = () => {
-    window.print();
+  const seedMutation = trpc.analise.seedHistorical.useMutation();
+  useEffect(() => { seedMutation.mutate(); }, []);
+
+  const { data: raw2023, isLoading: l23 } = trpc.analise.getYear.useQuery({ year: 2023 });
+  const { data: raw2024, isLoading: l24 } = trpc.analise.getYear.useQuery({ year: 2024 });
+  const { data: raw2025, isLoading: l25 } = trpc.analise.getYear.useQuery({ year: 2025 });
+  const { data: raw2026, isLoading: l26 } = trpc.analise.getYear.useQuery({ year: 2026 });
+
+  const isLoading = l23 || l24 || l25 || l26;
+
+  const yearly: YearlyData = {
+    "2023": (raw2023 as Record<string, number>) || {},
+    "2024": (raw2024 as Record<string, number>) || {},
+    "2025": (raw2025 as Record<string, number>) || {},
+    "2026": (raw2026 as Record<string, number>) || {},
   };
+
+  const d26 = yearly["2026"];
+  const d23 = yearly["2023"];
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -388,10 +384,13 @@ export default function AnaliseHistorica() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white">Análise Histórica de Orçamento</h1>
-            <p className="text-slate-400 text-sm mt-1">Comparativo ano a ano · 2023 → 2026 · médias mensais</p>
+            <p className="text-slate-400 text-sm mt-1">
+              Comparativo ano a ano · 2023 → 2026 · médias mensais
+              {isLoading && <span className="ml-2 inline-flex items-center gap-1 text-amber-400"><RefreshCw className="w-3 h-3 animate-spin" />carregando...</span>}
+            </p>
           </div>
           <button
-            onClick={handlePrint}
+            onClick={() => window.print()}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium border border-slate-700 transition-colors"
           >
             <FileDown className="w-4 h-4" />
@@ -399,13 +398,33 @@ export default function AnaliseHistorica() {
           </button>
         </div>
 
-        {/* Cards resumo */}
+        {/* Cards resumo — dinâmicos */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: "Receita Média 2026", val: "R$ 33.894", sub: "+58% vs 2023", color: "border-emerald-500/30 bg-emerald-500/5" },
-            { label: "Total Gasto 2026", val: "R$ 29.772", sub: "+71% vs 2023", color: "border-red-500/30 bg-red-500/5" },
-            { label: "Supermercado 2026", val: "R$ 4.003", sub: "+117% vs 2023 ← maior salto", color: "border-amber-500/30 bg-amber-500/5" },
-            { label: "Restaurantes 2026", val: "R$ 3.879", sub: "+19% vs 2023 ← controlado", color: "border-blue-500/30 bg-blue-500/5" },
+            {
+              label: "Receita Média 2026",
+              val: fmt(d26.receita || 0),
+              sub: d23.receita > 0 ? `${pctFmt(((d26.receita - d23.receita) / d23.receita) * 100)} vs 2023` : "—",
+              color: "border-emerald-500/30 bg-emerald-500/5",
+            },
+            {
+              label: "Total Gasto 2026",
+              val: fmt(d26.subtotal || 0),
+              sub: d23.subtotal > 0 ? `${pctFmt(((d26.subtotal - d23.subtotal) / d23.subtotal) * 100)} vs 2023` : "—",
+              color: "border-red-500/30 bg-red-500/5",
+            },
+            {
+              label: "Supermercado 2026",
+              val: fmt(d26.super || 0),
+              sub: d23.super > 0 ? `${pctFmt(((d26.super - d23.super) / d23.super) * 100)} vs 2023 ← maior salto` : "—",
+              color: "border-amber-500/30 bg-amber-500/5",
+            },
+            {
+              label: "Restaurantes 2026",
+              val: fmt(d26.lazer || 0),
+              sub: d23.lazer > 0 ? `${pctFmt(((d26.lazer - d23.lazer) / d23.lazer) * 100)} vs 2023 ← controlado` : "—",
+              color: "border-blue-500/30 bg-blue-500/5",
+            },
           ].map(({ label, val, sub, color }) => (
             <div key={label} className={`rounded-xl border p-4 ${color}`}>
               <p className="text-slate-400 text-xs mb-1">{label}</p>
@@ -433,10 +452,10 @@ export default function AnaliseHistorica() {
         </div>
 
         {/* Conteúdo */}
-        {tab === "2023-2024" && <YoYTable a1="2023" a2="2024" />}
-        {tab === "2024-2025" && <YoYTable a1="2024" a2="2025" />}
-        {tab === "2025-2026" && <YoYTable a1="2025" a2="2026" />}
-        {tab === "consolidado" && <Consolidado />}
+        {tab === "2023-2024" && <YoYTable a1="2023" a2="2024" yearly={yearly} />}
+        {tab === "2024-2025" && <YoYTable a1="2024" a2="2025" yearly={yearly} />}
+        {tab === "2025-2026" && <YoYTable a1="2025" a2="2026" yearly={yearly} />}
+        {tab === "consolidado" && <Consolidado yearly={yearly} />}
       </div>
     </div>
   );

@@ -82,6 +82,9 @@ import {
   getUserStorageBytes,
   getUserExtraStorageMB,
   deleteTaskCategory,
+  getBudgetSnapshotYear,
+  hasBudgetSnapshotsForYear,
+  upsertBudgetSnapshotYear,
 } from "./db";
 
 // ─── Access control helpers ───────────────────────────────────────────────────
@@ -1369,6 +1372,121 @@ const planejamentoRouter = router({
     }),
 });
 
+// ─── Análise Histórica ────────────────────────────────────────────────────────
+function normalizeStr(s: string) {
+  return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+function labelToKey(label: string): string | null {
+  const l = normalizeStr(label);
+  if (l.includes("condom")) return "cond";
+  if (l.includes("veiculo") || l.includes("automovel") || l.includes("carro")) return "veiculo";
+  if (l.includes("colegio") || l.includes("escola") || l.includes("educacao")) return "colegio";
+  if (l.includes("celular") || l.includes("telefone") || l.includes("internet") || l.includes("net")) return "celular";
+  if (l.includes("gas") || l.includes("gas encanado")) return "gas";
+  if (l.includes("seguro")) return "seg_vida";
+  if (l.includes("luz") || l.includes("energia") || l.includes("agua") || l.includes("concession")) return "luz";
+  return null;
+}
+function categoryToKey(cat: string): string | null {
+  const c = normalizeStr(cat);
+  if (c === "pet" || c.includes("animal")) return "pet";
+  if (c.includes("consorcio")) return "consorcio";
+  if (c.includes("aliment") || c.includes("superm") || c.includes("mercado") || c.includes("cantina")) return "super";
+  if (c.includes("combustivel") || c.includes("gasolina")) return "combust";
+  if (c.includes("lazer") || c.includes("restaurante") || c.includes("hobby") || c.includes("streaming")) return "lazer";
+  if (c.includes("manicure") || c.includes("beleza")) return "manicure";
+  if (c.includes("luz") || c.includes("energia") || c.includes("agua")) return "luz";
+  if (c.includes("condom")) return "cond";
+  if (c.includes("celular") || c.includes("telefone")) return "celular";
+  if (c.includes("colegio") || c.includes("escola") || c.includes("educacao")) return "colegio";
+  if (c.includes("seguro")) return "seg_vida";
+  if (c.includes("gas")) return "gas";
+  if (c.includes("veiculo") || c.includes("carro") || c.includes("automovel")) return "veiculo";
+  return null;
+}
+
+const HISTORICAL_SEED: Record<number, Record<string, number>> = {
+  2023: { receita: 21370, subtotal: 17407, cond: 0, veiculo: 1639, colegio: 1313, celular: 174, gas: 0, seg_vida: 160, pet: 340, consorcio: 0, luz: 229, super: 1846, combust: 1230, lazer: 3248, manicure: 79 },
+  2024: { receita: 30643, subtotal: 22736, cond: 750, veiculo: 2460, colegio: 1302, celular: 202, gas: 0, seg_vida: 248, pet: 388, consorcio: 49, luz: 166, super: 2445, combust: 600, lazer: 3514, manicure: 165 },
+  2025: { receita: 32352, subtotal: 25784, cond: 1223, veiculo: 2577, colegio: 1436, celular: 224, gas: 117, seg_vida: 366, pet: 407, consorcio: 156, luz: 382, super: 2329, combust: 556, lazer: 3331, manicure: 217 },
+};
+
+const analiseHistoricaRouter = router({
+  getYear: protectedProcedure
+    .input(z.object({ year: z.number() }))
+    .query(async ({ ctx, input }) => {
+      await requireBudgetAccess(ctx.user.id);
+
+      if (input.year < 2026) {
+        return getBudgetSnapshotYear(ctx.user.id, input.year);
+      }
+
+      // 2026+: computa dinamicamente das tabelas do sistema
+      const { fixedBillLabels } = await import("../drizzle/schema");
+      const db = await getDb();
+      const [expenses, incomes, bills] = await Promise.all([
+        getAnnualExpenses(ctx.user.id, input.year),
+        getAnnualIncome(ctx.user.id, input.year),
+        getAnnualFixedBills(ctx.user.id, input.year),
+      ]);
+
+      const labelRows = db ? await db.select().from(fixedBillLabels).where(eq(fixedBillLabels.userId, ctx.user.id)) : [];
+      const labelMap: Record<string, string> = {};
+      for (const l of labelRows) labelMap[l.billKey] = l.label;
+
+      const monthsSet = new Set([
+        ...incomes.map(i => i.month),
+        ...expenses.map(e => e.month),
+        ...bills.map(b => b.month),
+      ]);
+      const monthCount = monthsSet.size || 1;
+
+      const totalIncome = incomes.reduce((s, i) => s + (parseFloat(String(i.amount)) || 0), 0);
+
+      const expByCat: Record<string, number> = {};
+      for (const e of expenses) {
+        const amt = parseFloat(String(e.amount)) || 0;
+        if (amt > 0) expByCat[e.category] = (expByCat[e.category] || 0) + amt;
+      }
+      const billByLabel: Record<string, number> = {};
+      for (const b of bills) {
+        const amt = parseFloat(String(b.amount)) || 0;
+        if (amt > 0) {
+          const label = labelMap[b.billKey] || b.billKey;
+          billByLabel[label] = (billByLabel[label] || 0) + amt;
+        }
+      }
+
+      const totalExp = Object.values(expByCat).reduce((s, v) => s + v, 0);
+      const totalBill = Object.values(billByLabel).reduce((s, v) => s + v, 0);
+
+      const result: Record<string, number> = {
+        receita: Math.round(totalIncome / monthCount),
+        subtotal: Math.round((totalExp + totalBill) / monthCount),
+      };
+      for (const [cat, total] of Object.entries(expByCat)) {
+        const key = categoryToKey(cat);
+        if (key) result[key] = (result[key] || 0) + Math.round(total / monthCount);
+      }
+      for (const [label, total] of Object.entries(billByLabel)) {
+        const key = labelToKey(label);
+        if (key) result[key] = (result[key] || 0) + Math.round(total / monthCount);
+      }
+      return result;
+    }),
+
+  seedHistorical: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      await requireBudgetAccess(ctx.user.id);
+      for (const [yr, data] of Object.entries(HISTORICAL_SEED)) {
+        const year = parseInt(yr);
+        const already = await hasBudgetSnapshotsForYear(ctx.user.id, year);
+        if (!already) await upsertBudgetSnapshotYear(ctx.user.id, year, data, 12);
+      }
+      return { success: true };
+    }),
+});
+
 export const appRouter = router({
   system: systemRouter,
   auth: router({
@@ -1399,6 +1517,7 @@ export const appRouter = router({
   admin: adminRouter,
   inflation: inflationRouter,
   planejamento: planejamentoRouter,
+  analise: analiseHistoricaRouter,
   leads: router({
     capture: publicProcedure
       .input(z.object({
