@@ -105,13 +105,13 @@ function DeltaBadge({ pct }: { pct: number }) {
   if (abs < 5) return <span className="text-slate-400 text-xs font-medium flex items-center gap-0.5"><Minus className="w-3 h-3" />{pctFmt(pct)}</span>;
   if (pct > 0)
     return <span className={`text-xs font-bold flex items-center gap-0.5 ${abs > 50 ? "text-red-400" : abs > 20 ? "text-amber-400" : "text-emerald-400"}`}><TrendingUp className="w-3 h-3" />{pctFmt(pct)}</span>;
-  return <span className="text-xs font-bold flex items-center gap-0.5 text-emerald-400"><TrendingDown className="w-3 h-3" />{pctFmt(pct)}</span>;
+  return <span className="text-xs font-bold flex items-center gap-0.5 text-sky-400"><TrendingDown className="w-3 h-3" />{pctFmt(pct)}</span>;
 }
 
 function DeltaValue({ delta, pct }: { delta: number; pct: number }) {
   const color = delta > 0
     ? (Math.abs(pct) > 50 ? "text-red-400" : Math.abs(pct) > 20 ? "text-amber-400" : "text-emerald-400")
-    : "text-emerald-400";
+    : "text-sky-400";
   return <span className={`text-xs font-medium ${color}`}>{delta >= 0 ? "+" : ""}{fmt(delta)}</span>;
 }
 
