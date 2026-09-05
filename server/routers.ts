@@ -1426,59 +1426,88 @@ const analiseHistoricaRouter = router({
         // sem snapshot → computa dinamicamente (dados reais do sistema se houver)
       }
 
-      // Ano atual e futuros: computa dinamicamente das tabelas do sistema
+      // Ano atual e futuros: mesma fórmula do dashboard.annual
       const { fixedBillLabels } = await import("../drizzle/schema");
       const db = await getDb();
-      const [expenses, incomes, bills] = await Promise.all([
+      const [expenses, incomes, bills, billEntriesAll, allInstallments, userPayMethods] = await Promise.all([
         getAnnualExpenses(ctx.user.id, input.year),
         getAnnualIncome(ctx.user.id, input.year),
         getAnnualFixedBills(ctx.user.id, input.year),
+        getAnnualBillEntries(ctx.user.id, input.year),
+        getInstallmentBills(ctx.user.id),
+        getUserPaymentMethods(ctx.user.id),
       ]);
 
       const labelRows = db ? await db.select().from(fixedBillLabels).where(eq(fixedBillLabels.userId, ctx.user.id)) : [];
       const labelMap: Record<string, string> = {};
       for (const l of labelRows) labelMap[l.billKey] = l.label;
 
-      // Usa meses com receita como referência — indica meses realmente encerrados
-      const incomeMonths = new Set(incomes.map(i => i.month));
-      const monthCount = incomeMonths.size || new Set([
-        ...expenses.map(e => e.month),
-        ...bills.map(b => b.month),
-      ]).size || 1;
+      const DEFAULT_CARD_KEYS = ["cartao_1","cartao_2","cartao_3","cartao_4","cartao_5"];
+      const cardKeys = userPayMethods.length > 0
+        ? userPayMethods.filter(p => p.isCard).map(p => p.key)
+        : DEFAULT_CARD_KEYS;
 
+      // Meses com receita = meses realmente encerrados no sistema
+      const incomeMonths = new Set(incomes.map(i => i.month));
+      const monthCount = incomeMonths.size || 1;
       const totalIncome = incomes.reduce((s, i) => s + (parseFloat(String(i.amount)) || 0), 0);
 
-      // Despesas variáveis: total por categoria (divide pelo total de meses ativos)
+      // Calcula total gasto por mês usando EXATAMENTE a mesma lógica do dashboard
+      let totalGastoSum = 0;
       const expByCat: Record<string, number> = {};
-      for (const e of expenses) {
-        const amt = parseFloat(String(e.amount)) || 0;
-        if (amt > 0) expByCat[e.category] = (expByCat[e.category] || 0) + amt;
-      }
-
-      // Contas fixas: total e contagem de meses por rótulo (divide pelos meses em que a conta foi lançada)
       const billByLabel: Record<string, { total: number; count: number }> = {};
-      for (const b of bills) {
-        const amt = parseFloat(String(b.amount)) || 0;
-        if (amt > 0) {
-          const label = labelMap[b.billKey] || b.billKey;
-          if (!billByLabel[label]) billByLabel[label] = { total: 0, count: 0 };
-          billByLabel[label].total += amt;
-          billByLabel[label].count += 1;
+
+      for (const month of Array.from(incomeMonths)) {
+        const monthBills    = bills.filter(b => b.month === month);
+        const monthExp      = expenses.filter(e => e.month === month);
+        const monthBillEnts = billEntriesAll.filter(e => e.month === month);
+
+        const fixedTotal = monthBills.reduce((s, b) => s + (parseFloat(String(b.amount)) || 0), 0);
+        const billEntTotal = monthBillEnts.reduce((s, e) => s + (parseFloat(String(e.amount)) || 0), 0);
+        const cardExpTotal = monthExp
+          .filter(e => e.paymentMethod && cardKeys.includes(e.paymentMethod as string))
+          .reduce((s, e) => s + (parseFloat(String(e.amount)) || 0), 0);
+        const instTotal = allInstallments
+          .filter(inst => {
+            if (inst.paid) return false;
+            const start = inst.startYear * 12 + inst.startMonth;
+            const cur   = input.year * 12 + month;
+            if (inst.isRecurring) return cur >= start;
+            return cur >= start && cur <= start + inst.totalInstallments - 1;
+          })
+          .reduce((s, i) => s + (parseFloat(String(i.installmentAmount)) || 0), 0);
+
+        totalGastoSum += fixedTotal + billEntTotal + cardExpTotal + instTotal;
+
+        // Acumula por categoria (despesas variáveis)
+        for (const e of monthExp) {
+          const amt = parseFloat(String(e.amount)) || 0;
+          if (amt > 0) expByCat[e.category] = (expByCat[e.category] || 0) + amt;
+        }
+        // Acumula por rótulo (contas fixas) com contagem própria
+        for (const b of monthBills) {
+          const amt = parseFloat(String(b.amount)) || 0;
+          if (amt > 0) {
+            const label = labelMap[b.billKey] || b.billKey;
+            if (!billByLabel[label]) billByLabel[label] = { total: 0, count: 0 };
+            billByLabel[label].total += amt;
+            billByLabel[label].count += 1;
+          }
+        }
+        // Installments → consorcio/parcelados
+        if (instTotal > 0) {
+          expByCat["Consórcio"] = (expByCat["Consórcio"] || 0) + instTotal;
         }
       }
 
-      const totalExp = Object.values(expByCat).reduce((s, v) => s + v, 0);
-      const totalBill = Object.values(billByLabel).reduce((s, { total }) => s + total, 0);
-
       const result: Record<string, number> = {
         receita: Math.round(totalIncome / monthCount),
-        subtotal: Math.round((totalExp + totalBill) / monthCount),
+        subtotal: Math.round(totalGastoSum / monthCount),
       };
       for (const [cat, total] of Object.entries(expByCat)) {
         const key = categoryToKey(cat);
         if (key) result[key] = (result[key] || 0) + Math.round(total / monthCount);
       }
-      // Cada conta fixa usa sua própria contagem de meses para a média
       for (const [label, { total, count }] of Object.entries(billByLabel)) {
         const key = labelToKey(label);
         if (key) result[key] = (result[key] || 0) + Math.round(total / count);
