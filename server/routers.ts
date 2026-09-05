@@ -1439,12 +1439,12 @@ const analiseHistoricaRouter = router({
       const labelMap: Record<string, string> = {};
       for (const l of labelRows) labelMap[l.billKey] = l.label;
 
-      const monthsSet = new Set([
-        ...incomes.map(i => i.month),
+      // Usa meses com receita como referência — indica meses realmente encerrados
+      const incomeMonths = new Set(incomes.map(i => i.month));
+      const monthCount = incomeMonths.size || new Set([
         ...expenses.map(e => e.month),
         ...bills.map(b => b.month),
-      ]);
-      const monthCount = monthsSet.size || 1;
+      ]).size || 1;
 
       const totalIncome = incomes.reduce((s, i) => s + (parseFloat(String(i.amount)) || 0), 0);
 
