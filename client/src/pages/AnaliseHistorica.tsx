@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   LineChart, Line, ResponsiveContainer,
@@ -369,36 +369,130 @@ export default function AnaliseHistorica() {
   ];
 
   const [isPrinting, setIsPrinting] = useState(false);
-  const reportRef = useRef<HTMLDivElement>(null);
 
   const seedMutation = trpc.analise.seedHistorical.useMutation();
   useEffect(() => { seedMutation.mutate(); }, []);
 
   const exportPDF = async () => {
     setIsPrinting(true);
-    await new Promise(r => setTimeout(r, 600));
-    const el = reportRef.current;
-    if (!el) { setIsPrinting(false); return; }
     try {
-      const { default: html2canvas } = await import("html2canvas");
       const { jsPDF } = await import("jspdf");
-      const canvas = await html2canvas(el, {
-        backgroundColor: "#020617",
-        scale: 1.5,
-        useCORS: true,
-        logging: false,
-        allowTaint: true,
-      });
-      const imgData = canvas.toDataURL("image/jpeg", 0.88);
       const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-      const pdfW = pdf.internal.pageSize.getWidth();
-      const pdfH = pdf.internal.pageSize.getHeight();
-      const scaledH = (canvas.height / canvas.width) * pdfW;
-      const pageCount = Math.ceil(scaledH / pdfH);
-      for (let p = 0; p < pageCount; p++) {
-        if (p > 0) pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, -p * pdfH, pdfW, scaledH);
+      const W = 210;
+      const ML = 14;
+      const MR = 196;
+      let y = 18;
+
+      const newPage = () => { pdf.addPage(); y = 18; };
+      const checkY = (needed = 10) => { if (y + needed > 280) newPage(); };
+
+      // Título
+      pdf.setFontSize(16); pdf.setTextColor(255, 255, 255);
+      pdf.setFillColor(2, 6, 23);
+      pdf.rect(0, 0, W, 297, "F");
+      pdf.setTextColor(230, 230, 230);
+      pdf.text("Análise Histórica de Orçamento", ML, y); y += 7;
+      pdf.setFontSize(9); pdf.setTextColor(148, 163, 184);
+      pdf.text(`Comparativo ano a ano · ${START_YEAR} → ${currentYear} · médias mensais`, ML, y); y += 10;
+
+      // Para cada par de anos
+      for (let i = 0; i < ANOS.length - 1; i++) {
+        const a1 = ANOS[i];
+        const a2 = ANOS[i + 1];
+        const d1 = yearly[a1] || {};
+        const d2 = yearly[a2] || {};
+        const obs = OBS[`${a1}-${a2}`] || {};
+        const analise = ANALISE[`${a1}-${a2}`];
+
+        checkY(14);
+        pdf.setFontSize(12); pdf.setTextColor(245, 158, 11);
+        pdf.text(`${a1} × ${a2}`, ML, y); y += 7;
+
+        // Cabeçalho tabela
+        pdf.setFontSize(7.5); pdf.setTextColor(180, 180, 180);
+        const cols = [ML, 80, 110, 137, 158, 170];
+        pdf.text("Categoria", cols[0], y);
+        pdf.text(`Média ${a1}`, cols[1], y, { align: "right" });
+        pdf.text(`Média ${a2}`, cols[2], y, { align: "right" });
+        pdf.text("Δ Valor", cols[3], y, { align: "right" });
+        pdf.text("Δ %", cols[4], y, { align: "right" });
+        pdf.text("Observação", cols[5], y);
+        y += 1;
+        pdf.setDrawColor(71, 85, 105); pdf.line(ML, y, MR, y); y += 4;
+
+        CATS.forEach(cat => {
+          const v1 = d1[cat.key] || 0;
+          const v2 = d2[cat.key] || 0;
+          if (v1 === 0 && v2 === 0) return;
+          checkY(6);
+          const delta = v2 - v1;
+          const pct = v1 > 0 ? (delta / v1) * 100 : 0;
+          const isH = cat.key === "receita" || cat.key === "subtotal";
+          if (isH) pdf.setTextColor(255, 255, 255); else pdf.setTextColor(210, 210, 210);
+          pdf.setFontSize(isH ? 8 : 7.5);
+          pdf.text(cat.label, cols[0], y);
+          pdf.text(v1 > 0 ? fmt(v1) : "—", cols[1], y, { align: "right" });
+          pdf.text(v2 > 0 ? fmt(v2) : "—", cols[2], y, { align: "right" });
+          if (v1 > 0) {
+            if (delta < 0) pdf.setTextColor(56, 189, 248); // sky
+            else if (Math.abs(pct) > 50) pdf.setTextColor(248, 113, 113); // red
+            else if (Math.abs(pct) > 20) pdf.setTextColor(251, 191, 36); // amber
+            else pdf.setTextColor(52, 211, 153); // emerald
+            pdf.text(`${delta >= 0 ? "+" : ""}${fmt(delta)}`, cols[3], y, { align: "right" });
+            pdf.text(`${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`, cols[4], y, { align: "right" });
+          }
+          pdf.setTextColor(148, 163, 184);
+          pdf.setFontSize(6.5);
+          pdf.text(obs[cat.key] || "", cols[5], y);
+          y += 5;
+        });
+
+        if (analise) {
+          checkY(20);
+          y += 3;
+          pdf.setFontSize(9); pdf.setTextColor(245, 158, 11);
+          pdf.text(analise.titulo, ML, y); y += 5;
+          pdf.setFontSize(8); pdf.setTextColor(200, 200, 200);
+          const lines = pdf.splitTextToSize(analise.texto, MR - ML);
+          pdf.text(lines, ML, y); y += lines.length * 4.5 + 8;
+        }
       }
+
+      // Consolidado
+      newPage();
+      pdf.setFontSize(13); pdf.setTextColor(245, 158, 11);
+      pdf.text("Consolidado", ML, y); y += 8;
+
+      pdf.setFontSize(7.5); pdf.setTextColor(180, 180, 180);
+      const cCols = [ML, ...ANOS.map((_, i) => 75 + i * 26), 175];
+      pdf.text("Categoria", cCols[0], y);
+      ANOS.forEach((a, i) => pdf.text(a, cCols[i + 1], y, { align: "right" }));
+      pdf.text(`${ANOS[0].slice(2)}→${ANOS[ANOS.length-1].slice(2)}`, cCols[cCols.length - 1], y, { align: "right" });
+      y += 1; pdf.setDrawColor(71, 85, 105); pdf.line(ML, y, MR, y); y += 4;
+
+      const v23 = yearly[ANOS[0]] || {};
+      const vLast = yearly[ANOS[ANOS.length - 1]] || {};
+
+      CATS.forEach(cat => {
+        const vals = ANOS.map(a => (yearly[a] || {})[cat.key] || 0);
+        if (vals.every(v => v === 0)) return;
+        checkY(6);
+        const isH = cat.key === "receita" || cat.key === "subtotal";
+        pdf.setFontSize(isH ? 8 : 7.5);
+        if (isH) pdf.setTextColor(255, 255, 255); else pdf.setTextColor(210, 210, 210);
+        pdf.text(cat.label, cCols[0], y);
+        vals.forEach((v, i) => pdf.text(v > 0 ? fmt(v) : "—", cCols[i + 1], y, { align: "right" }));
+        const catPct = v23[cat.key] > 0 ? ((vLast[cat.key] - v23[cat.key]) / v23[cat.key]) * 100 : 0;
+        if (v23[cat.key] > 0) {
+          if (catPct < 0) pdf.setTextColor(56, 189, 248);
+          else if (catPct > 50) pdf.setTextColor(248, 113, 113);
+          else if (catPct > 20) pdf.setTextColor(251, 191, 36);
+          else pdf.setTextColor(52, 211, 153);
+          pdf.text(`${catPct >= 0 ? "+" : ""}${catPct.toFixed(1)}%`, cCols[cCols.length - 1], y, { align: "right" });
+        }
+        y += 5;
+      });
+
       pdf.save(`analise-orcamento-${START_YEAR}-${currentYear}.pdf`);
     } finally {
       setIsPrinting(false);
@@ -511,39 +605,6 @@ export default function AnaliseHistorica() {
         {tab === "consolidado" && <Consolidado yearly={yearly} anos={ANOS} />}
       </div>
 
-      {/* Área de captura PDF — off-screen, renderizada só durante exportação */}
-      {isPrinting && (
-        <div
-          ref={reportRef}
-          style={{
-            position: "fixed",
-            left: "-9999px",
-            top: 0,
-            width: "1200px",
-            backgroundColor: "#020617",
-            padding: "40px",
-            fontFamily: "sans-serif",
-            color: "#f8fafc",
-          }}
-        >
-          <div style={{ marginBottom: 24 }}>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#fff", marginBottom: 4 }}>Análise Histórica de Orçamento</h1>
-            <p style={{ fontSize: 13, color: "#94a3b8" }}>Comparativo ano a ano · {START_YEAR} → {currentYear} · médias mensais</p>
-          </div>
-
-          {ANOS.slice(0, -1).map((a, i) => (
-            <div key={`${a}-${ANOS[i + 1]}`} style={{ marginBottom: 48 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 600, color: "#f59e0b", marginBottom: 16 }}>{a} × {ANOS[i + 1]}</h2>
-              <YoYTable a1={a} a2={ANOS[i + 1]} yearly={yearly} />
-            </div>
-          ))}
-
-          <div style={{ marginBottom: 48 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600, color: "#f59e0b", marginBottom: 16 }}>Consolidado</h2>
-            <Consolidado yearly={yearly} anos={ANOS} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
