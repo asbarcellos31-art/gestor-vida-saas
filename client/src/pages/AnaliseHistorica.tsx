@@ -210,13 +210,15 @@ function YoYTable({ a1, a2, yearly }: { a1: string; a2: string; yearly: YearlyDa
   );
 }
 
-function Consolidado({ yearly }: { yearly: YearlyData }) {
-  const anos = ["2023", "2024", "2025", "2026"];
+function Consolidado({ yearly, anos }: { yearly: YearlyData; anos: string[] }) {
 
-  const lineData = CATS.filter(c => !["receita", "subtotal"].includes(c.key)).map(c => ({
-    name: c.label.length > 18 ? c.label.slice(0, 17) + "…" : c.label,
-    ...Object.fromEntries(anos.map(a => [a, (yearly[a] || {})[c.key] || 0])),
-  })).filter(d => anos.some(a => (d[a] as number) > 0));
+  const lineData = CATS.filter(c => !["receita", "subtotal"].includes(c.key)).map(c => {
+    const entry: Record<string, string | number> = {
+      name: c.label.length > 18 ? c.label.slice(0, 17) + "…" : c.label,
+    };
+    for (const a of anos) entry[a] = (yearly[a] || {})[c.key] || 0;
+    return entry;
+  }).filter(d => anos.some(a => (d[a] as number) > 0));
 
   const receitaLine = anos.map(a => ({
     ano: a,
@@ -224,17 +226,20 @@ function Consolidado({ yearly }: { yearly: YearlyData }) {
     gasto: (yearly[a] || {}).subtotal || 0,
   }));
 
-  const v23 = yearly["2023"] || {};
-  const v26 = yearly["2026"] || {};
+  const firstYear = anos[0];
+  const lastYear = anos[anos.length - 1];
+  const v23 = yearly[firstYear] || {};
+  const v26 = yearly[lastYear] || {};
 
-  const pctTotal = v23.receita > 0 ? Math.round(((v26.receita - v23.receita) / v23.receita) * 100) : 0;
-  const pctGasto = v23.subtotal > 0 ? Math.round(((v26.subtotal - v23.subtotal) / v23.subtotal) * 100) : 0;
-  const pctSuper = v23.super > 0 ? Math.round(((v26.super - v23.super) / v23.super) * 100) : 0;
-  const pctLuz = v23.luz > 0 ? Math.round(((v26.luz - v23.luz) / v23.luz) * 100) : 0;
-  const pctSeg = v23.seg_vida > 0 ? Math.round(((v26.seg_vida - v23.seg_vida) / v23.seg_vida) * 100) : 0;
-  const pctMan = v23.manicure > 0 ? Math.round(((v26.manicure - v23.manicure) / v23.manicure) * 100) : 0;
-  const pctLaz = v23.lazer > 0 ? Math.round(((v26.lazer - v23.lazer) / v23.lazer) * 100) : 0;
-  const pctComb = v23.combust > 0 ? Math.round(((v26.combust - v23.combust) / v23.combust) * 100) : 0;
+  const pct = (key: string) => v23[key] > 0 ? Math.round(((v26[key] - v23[key]) / v23[key]) * 100) : 0;
+  const pctTotal = pct("receita");
+  const pctGasto = pct("subtotal");
+  const pctSuper = pct("super");
+  const pctLuz = pct("luz");
+  const pctSeg = pct("seg_vida");
+  const pctMan = pct("manicure");
+  const pctLaz = pct("lazer");
+  const pctComb = pct("combust");
 
   return (
     <div className="space-y-6">
@@ -244,14 +249,14 @@ function Consolidado({ yearly }: { yearly: YearlyData }) {
             <tr className="bg-slate-800/80 text-slate-300">
               <th className="text-left px-4 py-3 font-semibold">Categoria</th>
               {anos.map(a => <th key={a} className="text-right px-3 py-3 font-semibold">{a}</th>)}
-              <th className="text-center px-4 py-3 font-semibold">23→26</th>
+              <th className="text-center px-4 py-3 font-semibold">{firstYear.slice(2)}→{lastYear.slice(2)}</th>
             </tr>
           </thead>
           <tbody>
             {CATS.map((cat, i) => {
               const vals = anos.map(a => (yearly[a] || {})[cat.key] || 0);
               if (vals.every(v => v === 0)) return null;
-              const pct = v23[cat.key] > 0 ? ((v26[cat.key] - v23[cat.key]) / v23[cat.key]) * 100 : 0;
+              const catPct = v23[cat.key] > 0 ? ((v26[cat.key] - v23[cat.key]) / v23[cat.key]) * 100 : 0;
               const isHeader = cat.key === "receita" || cat.key === "subtotal";
               return (
                 <tr key={cat.key} className={`border-t border-slate-700/40 ${isHeader ? "bg-slate-800/60 font-semibold" : i % 2 === 0 ? "bg-slate-900/40" : "bg-slate-800/20"} hover:bg-slate-700/30`}>
@@ -260,7 +265,7 @@ function Consolidado({ yearly }: { yearly: YearlyData }) {
                     <td key={j} className={`px-3 py-2.5 text-right font-mono text-xs ${j === 3 ? "font-bold text-white" : "text-slate-300"}`}>{fmt(v)}</td>
                   ))}
                   <td className="px-4 py-2.5 text-center">
-                    {v23[cat.key] > 0 ? <DeltaBadge pct={pct} /> : <span className="text-slate-500 text-xs">—</span>}
+                    {v23[cat.key] > 0 ? <DeltaBadge pct={catPct} /> : <span className="text-slate-500 text-xs">—</span>}
                   </td>
                 </tr>
               );
@@ -299,10 +304,9 @@ function Consolidado({ yearly }: { yearly: YearlyData }) {
               formatter={(v: number) => [`R$ ${v.toLocaleString("pt-BR")}`, ""]}
             />
             <Legend wrapperStyle={{ paddingTop: 16, color: "#94a3b8", fontSize: 12 }} />
-            <Bar dataKey="2023" fill="#475569" radius={[3, 3, 0, 0]} />
-            <Bar dataKey="2024" fill="#5B8DEF" radius={[3, 3, 0, 0]} />
-            <Bar dataKey="2025" fill="#C9A84C" radius={[3, 3, 0, 0]} />
-            <Bar dataKey="2026" fill="#10B981" radius={[3, 3, 0, 0]} />
+            {anos.map((a, i) => (
+              <Bar key={a} dataKey={a} fill={BAR_COLORS[i % BAR_COLORS.length]} radius={[3, 3, 0, 0]} />
+            ))}
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -310,7 +314,7 @@ function Consolidado({ yearly }: { yearly: YearlyData }) {
       <div className="bg-slate-800/40 rounded-xl border border-slate-700/50 p-6 space-y-4">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-1 h-5 rounded-full bg-amber-400" />
-          <h3 className="font-semibold text-white text-base">Análise do Período 2023 → 2026</h3>
+          <h3 className="font-semibold text-white text-base">Análise do Período {firstYear} → {lastYear}</h3>
         </div>
 
         {[
@@ -346,35 +350,47 @@ function Consolidado({ yearly }: { yearly: YearlyData }) {
   );
 }
 
-const TABS = [
-  { id: "2023-2024", label: "23 × 24" },
-  { id: "2024-2025", label: "24 × 25" },
-  { id: "2025-2026", label: "25 × 26" },
-  { id: "consolidado", label: "Consolidado" },
-];
+// Anos a exibir: 2023 até o ano atual (máx 6 anos)
+const START_YEAR = 2023;
+const BAR_COLORS = ["#475569", "#5B8DEF", "#C9A84C", "#10B981", "#a855f7", "#f97316"];
 
 export default function AnaliseHistorica() {
-  const [tab, setTab] = useState("2025-2026");
+  const currentYear = new Date().getFullYear();
+  const ANOS = Array.from({ length: Math.min(currentYear - START_YEAR + 1, 6) }, (_, i) => String(START_YEAR + i));
+  const defaultTab = ANOS.length >= 2 ? `${ANOS[ANOS.length - 2]}-${ANOS[ANOS.length - 1]}` : "consolidado";
+  const [tab, setTab] = useState(defaultTab);
+
+  const TABS = [
+    ...ANOS.slice(0, -1).map((a, i) => ({
+      id: `${a}-${ANOS[i + 1]}`,
+      label: `${a.slice(2)} × ${ANOS[i + 1].slice(2)}`,
+    })),
+    { id: "consolidado", label: "Consolidado" },
+  ];
 
   const seedMutation = trpc.analise.seedHistorical.useMutation();
   useEffect(() => { seedMutation.mutate(); }, []);
 
-  const { data: raw2023, isLoading: l23 } = trpc.analise.getYear.useQuery({ year: 2023 });
-  const { data: raw2024, isLoading: l24 } = trpc.analise.getYear.useQuery({ year: 2024 });
-  const { data: raw2025, isLoading: l25 } = trpc.analise.getYear.useQuery({ year: 2025 });
-  const { data: raw2026, isLoading: l26 } = trpc.analise.getYear.useQuery({ year: 2026 });
+  // Hooks fixos para até 6 anos (2023-2028) — React não permite hooks em loop
+  const yr = (i: number) => START_YEAR + i;
+  const { data: raw0, isLoading: l0 } = trpc.analise.getYear.useQuery({ year: yr(0) }, { enabled: yr(0) <= currentYear });
+  const { data: raw1, isLoading: l1 } = trpc.analise.getYear.useQuery({ year: yr(1) }, { enabled: yr(1) <= currentYear });
+  const { data: raw2, isLoading: l2 } = trpc.analise.getYear.useQuery({ year: yr(2) }, { enabled: yr(2) <= currentYear });
+  const { data: raw3, isLoading: l3 } = trpc.analise.getYear.useQuery({ year: yr(3) }, { enabled: yr(3) <= currentYear });
+  const { data: raw4, isLoading: l4 } = trpc.analise.getYear.useQuery({ year: yr(4) }, { enabled: yr(4) <= currentYear });
+  const { data: raw5, isLoading: l5 } = trpc.analise.getYear.useQuery({ year: yr(5) }, { enabled: yr(5) <= currentYear });
 
-  const isLoading = l23 || l24 || l25 || l26;
+  const isLoading = [l0, l1, l2, l3, l4, l5].some(Boolean);
 
-  const yearly: YearlyData = {
-    "2023": (raw2023 as Record<string, number>) || {},
-    "2024": (raw2024 as Record<string, number>) || {},
-    "2025": (raw2025 as Record<string, number>) || {},
-    "2026": (raw2026 as Record<string, number>) || {},
-  };
+  const rawByYear = [raw0, raw1, raw2, raw3, raw4, raw5];
+  const yearly: YearlyData = {};
+  for (let i = 0; i < 6; i++) {
+    const y = yr(i);
+    if (y <= currentYear) yearly[String(y)] = (rawByYear[i] as Record<string, number>) || {};
+  }
 
-  const d26 = yearly["2026"];
-  const d23 = yearly["2023"];
+  const d26 = yearly[String(currentYear)] || {};
+  const d23 = yearly[String(START_YEAR)] || {};
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -385,7 +401,7 @@ export default function AnaliseHistorica() {
           <div>
             <h1 className="text-2xl font-bold text-white">Análise Histórica de Orçamento</h1>
             <p className="text-slate-400 text-sm mt-1">
-              Comparativo ano a ano · 2023 → 2026 · médias mensais
+              Comparativo ano a ano · {START_YEAR} → {currentYear} · médias mensais
               {isLoading && <span className="ml-2 inline-flex items-center gap-1 text-amber-400"><RefreshCw className="w-3 h-3 animate-spin" />carregando...</span>}
             </p>
           </div>
@@ -402,25 +418,25 @@ export default function AnaliseHistorica() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             {
-              label: "Receita Média 2026",
+              label: `Receita Média ${currentYear}`,
               val: fmt(d26.receita || 0),
               sub: d23.receita > 0 ? `${pctFmt(((d26.receita - d23.receita) / d23.receita) * 100)} vs 2023` : "—",
               color: "border-emerald-500/30 bg-emerald-500/5",
             },
             {
-              label: "Total Gasto 2026",
+              label: `Total Gasto ${currentYear}`,
               val: fmt(d26.subtotal || 0),
               sub: d23.subtotal > 0 ? `${pctFmt(((d26.subtotal - d23.subtotal) / d23.subtotal) * 100)} vs 2023` : "—",
               color: "border-red-500/30 bg-red-500/5",
             },
             {
-              label: "Supermercado 2026",
+              label: `Supermercado ${currentYear}`,
               val: fmt(d26.super || 0),
               sub: d23.super > 0 ? `${pctFmt(((d26.super - d23.super) / d23.super) * 100)} vs 2023 ← maior salto` : "—",
               color: "border-amber-500/30 bg-amber-500/5",
             },
             {
-              label: "Restaurantes 2026",
+              label: `Restaurantes ${currentYear}`,
               val: fmt(d26.lazer || 0),
               sub: d23.lazer > 0 ? `${pctFmt(((d26.lazer - d23.lazer) / d23.lazer) * 100)} vs 2023 ← controlado` : "—",
               color: "border-blue-500/30 bg-blue-500/5",
@@ -455,7 +471,7 @@ export default function AnaliseHistorica() {
         {tab === "2023-2024" && <YoYTable a1="2023" a2="2024" yearly={yearly} />}
         {tab === "2024-2025" && <YoYTable a1="2024" a2="2025" yearly={yearly} />}
         {tab === "2025-2026" && <YoYTable a1="2025" a2="2026" yearly={yearly} />}
-        {tab === "consolidado" && <Consolidado yearly={yearly} />}
+        {tab === "consolidado" && <Consolidado yearly={yearly} anos={ANOS} />}
       </div>
     </div>
   );

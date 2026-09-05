@@ -1417,11 +1417,16 @@ const analiseHistoricaRouter = router({
     .query(async ({ ctx, input }) => {
       await requireBudgetAccess(ctx.user.id);
 
-      if (input.year < 2026) {
-        return getBudgetSnapshotYear(ctx.user.id, input.year);
+      const currentYear = new Date().getFullYear();
+
+      // Para anos passados: tenta snapshot primeiro, cai no dinâmico se não tiver
+      if (input.year < currentYear) {
+        const snapshot = await getBudgetSnapshotYear(ctx.user.id, input.year);
+        if (Object.keys(snapshot).length > 0) return snapshot;
+        // sem snapshot → computa dinamicamente (dados reais do sistema se houver)
       }
 
-      // 2026+: computa dinamicamente das tabelas do sistema
+      // Ano atual e futuros: computa dinamicamente das tabelas do sistema
       const { fixedBillLabels } = await import("../drizzle/schema");
       const db = await getDb();
       const [expenses, incomes, bills] = await Promise.all([
@@ -1497,7 +1502,8 @@ const analiseHistoricaRouter = router({
     }))
     .mutation(async ({ ctx, input }) => {
       await requireBudgetAccess(ctx.user.id);
-      if (input.year >= 2026) throw new Error("Ano 2026+ é calculado automaticamente");
+      const currentYear = new Date().getFullYear();
+      if (input.year >= currentYear) throw new Error("Ano atual é calculado automaticamente — salve apenas anos passados");
       await upsertBudgetSnapshotYear(ctx.user.id, input.year, input.data, input.monthCount);
       return { success: true };
     }),
