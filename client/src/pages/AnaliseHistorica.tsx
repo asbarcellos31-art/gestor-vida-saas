@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   LineChart, Line, ResponsiveContainer,
@@ -368,8 +368,42 @@ export default function AnaliseHistorica() {
     { id: "consolidado", label: "Consolidado" },
   ];
 
+  const [isPrinting, setIsPrinting] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
+
   const seedMutation = trpc.analise.seedHistorical.useMutation();
   useEffect(() => { seedMutation.mutate(); }, []);
+
+  const exportPDF = async () => {
+    setIsPrinting(true);
+    await new Promise(r => setTimeout(r, 600));
+    const el = reportRef.current;
+    if (!el) { setIsPrinting(false); return; }
+    try {
+      const { default: html2canvas } = await import("html2canvas");
+      const { jsPDF } = await import("jspdf");
+      const canvas = await html2canvas(el, {
+        backgroundColor: "#020617",
+        scale: 1.5,
+        useCORS: true,
+        logging: false,
+        allowTaint: true,
+      });
+      const imgData = canvas.toDataURL("image/jpeg", 0.88);
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
+      const scaledH = (canvas.height / canvas.width) * pdfW;
+      const pageCount = Math.ceil(scaledH / pdfH);
+      for (let p = 0; p < pageCount; p++) {
+        if (p > 0) pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, -p * pdfH, pdfW, scaledH);
+      }
+      pdf.save(`analise-orcamento-${START_YEAR}-${currentYear}.pdf`);
+    } finally {
+      setIsPrinting(false);
+    }
+  };
 
   // Hooks fixos para até 6 anos (2023-2028) — React não permite hooks em loop
   const yr = (i: number) => START_YEAR + i;
@@ -406,11 +440,14 @@ export default function AnaliseHistorica() {
             </p>
           </div>
           <button
-            onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium border border-slate-700 transition-colors"
+            onClick={exportPDF}
+            disabled={isPrinting || isLoading}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium border border-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <FileDown className="w-4 h-4" />
-            Exportar PDF
+            {isPrinting
+              ? <><RefreshCw className="w-4 h-4 animate-spin" />Gerando PDF…</>
+              : <><FileDown className="w-4 h-4" />Exportar PDF</>
+            }
           </button>
         </div>
 
@@ -473,6 +510,40 @@ export default function AnaliseHistorica() {
         {tab === "2025-2026" && <YoYTable a1="2025" a2="2026" yearly={yearly} />}
         {tab === "consolidado" && <Consolidado yearly={yearly} anos={ANOS} />}
       </div>
+
+      {/* Área de captura PDF — off-screen, renderizada só durante exportação */}
+      {isPrinting && (
+        <div
+          ref={reportRef}
+          style={{
+            position: "fixed",
+            left: "-9999px",
+            top: 0,
+            width: "1200px",
+            backgroundColor: "#020617",
+            padding: "40px",
+            fontFamily: "sans-serif",
+            color: "#f8fafc",
+          }}
+        >
+          <div style={{ marginBottom: 24 }}>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#fff", marginBottom: 4 }}>Análise Histórica de Orçamento</h1>
+            <p style={{ fontSize: 13, color: "#94a3b8" }}>Comparativo ano a ano · {START_YEAR} → {currentYear} · médias mensais</p>
+          </div>
+
+          {ANOS.slice(0, -1).map((a, i) => (
+            <div key={`${a}-${ANOS[i + 1]}`} style={{ marginBottom: 48 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 600, color: "#f59e0b", marginBottom: 16 }}>{a} × {ANOS[i + 1]}</h2>
+              <YoYTable a1={a} a2={ANOS[i + 1]} yearly={yearly} />
+            </div>
+          ))}
+
+          <div style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 600, color: "#f59e0b", marginBottom: 16 }}>Consolidado</h2>
+            <Consolidado yearly={yearly} anos={ANOS} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
