@@ -1,1 +1,0 @@
-ALTER TABLE `leads` ADD `remarketingSentAt` timestamp;

@@ -64,13 +64,6 @@
       "when": 1754484803000,
       "tag": "0008_chubby_lord_hawal",
       "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "5",
-      "when": 1789581749360,
-      "tag": "0009_ordinary_ares",
-      "breakpoints": true
     }
   ]
 }
