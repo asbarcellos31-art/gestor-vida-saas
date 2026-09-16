@@ -230,6 +230,22 @@ export default function HomeSimples() {
         </div>
       </section>
 
+      {/* VÍDEO DEMONSTRATIVO */}
+      <section className="py-16 px-4" style={{ background: "#0D1B4B" }}>
+        <div className="container max-w-3xl mx-auto text-center">
+          <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: gold }}>Veja funcionando</p>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6" style={{ color: "#F0E6C8" }}>
+            Simulação real do sistema, do início ao fim
+          </h2>
+          <div className="rounded-2xl overflow-hidden mb-3" style={{ border: "1px solid rgba(201,168,76,0.3)" }}>
+            <img src="/demo/simulador-demo.gif" alt="Demonstração do simulador do Gestor de Vida" className="w-full block" />
+          </div>
+          <p className="text-xs" style={{ color: "#5A6A80" }}>
+            Exemplo com dados fictícios ("Carlos Mendes") só para ilustrar o funcionamento do simulador.
+          </p>
+        </div>
+      </section>
+
       {/* COMO FUNCIONA — 2 passos, foco em dinheiro */}
       <section id="como-funciona" className="py-20 px-4" style={{ background: "#070E26" }}>
         <div className="container max-w-6xl mx-auto">
