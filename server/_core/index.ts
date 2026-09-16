@@ -11,6 +11,7 @@ import { serveStatic, setupVite } from "./vite";
 import { handleStripeWebhook } from "../stripe_webhook";
 import { handleHotmartWebhook } from "../hotmart_webhook";
 import { startUserMonitor } from "./userMonitor";
+import { startLeadRemarketing } from "./leadRemarketing";
 import { ensureStorageUpgradesTable, ensureBudgetTables, ensureLeadsTable } from "../db";
 import { registerStorageProxy } from "./storageProxy";
 
@@ -108,6 +109,7 @@ async function startServer() {
 server.listen(port, "0.0.0.0", () => {
     console.log(`Server running on port ${port}`);
     startUserMonitor();
+    startLeadRemarketing();
     ensureStorageUpgradesTable().catch(console.error);
     ensureBudgetTables().catch(console.error);
     ensureLeadsTable().catch(console.error);

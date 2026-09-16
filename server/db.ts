@@ -1222,6 +1222,7 @@ export async function ensureLeadsTable(): Promise<void> {
     // Adiciona colunas extras — ignora erro se já existirem (MySQL < 8.0.3 não suporta IF NOT EXISTS)
     await db.execute(sql`ALTER TABLE leads ADD COLUMN phone VARCHAR(32)`).catch(() => {});
     await db.execute(sql`ALTER TABLE leads ADD COLUMN source VARCHAR(64)`).catch(() => {});
+    await db.execute(sql`ALTER TABLE leads ADD COLUMN remarketingSentAt TIMESTAMP NULL`).catch(() => {});
   } catch (err) {
     console.error("[DB] Erro ao criar leads:", err);
   }
@@ -1252,6 +1253,29 @@ export async function saveSimulatorLead(
     console.error("[leads] ERRO ao salvar lead do simulador:", err);
     throw err;
   }
+}
+
+export async function getLeadsPendingRemarketing(minHoursOld = 20) {
+  const db = await getDb();
+  if (!db) return [];
+  const rows = await db.execute(sql`
+    SELECT MIN(l.id) AS id, MAX(l.email) AS email, MAX(l.name) AS name, MAX(l.planName) AS planName, MAX(l.planPrice) AS planPrice
+    FROM leads l
+    LEFT JOIN hotmart_purchases p ON LOWER(p.buyerEmail) = LOWER(l.email)
+    WHERE l.remarketingSentAt IS NULL
+      AND p.id IS NULL
+      AND l.createdAt <= DATE_SUB(NOW(), INTERVAL ${minHoursOld} HOUR)
+      AND l.email NOT LIKE '%@barcellosseguros.com'
+      AND LOWER(l.email) != 'teste@gmail.com'
+    GROUP BY LOWER(l.email)
+  `);
+  return rows[0] as unknown as { id: number; email: string; name: string | null; planName: string | null; planPrice: string | null }[];
+}
+
+export async function markLeadRemarketingSent(email: string): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.execute(sql`UPDATE leads SET remarketingSentAt = NOW() WHERE LOWER(email) = LOWER(${email})`);
 }
 
 export async function getLeadsWithPurchaseStatus() {

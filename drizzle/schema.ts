@@ -371,4 +371,5 @@ export const leads = mysqlTable("leads", {
   planName: varchar("planName", { length: 128 }),
   planPrice: varchar("planPrice", { length: 16 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  remarketingSentAt: timestamp("remarketingSentAt"),
 });
