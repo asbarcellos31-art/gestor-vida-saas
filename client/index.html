@@ -4,7 +4,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Gestor de Vida</title>
+    <title>Gestor de Vida | Organize seu tempo e suas finanças</title>
+    <meta name="description" content="O Gestor de Vida organiza seu tempo e suas finanças em um só lugar, com simulador gratuito, metas e controle financeiro simples." />
+    <link rel="canonical" href="https://www.gestordevida.com.br/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Gestor de Vida" />
+    <meta property="og:title" content="Gestor de Vida | Organize seu tempo e suas finanças" />
+    <meta property="og:description" content="Organize seu tempo e suas finanças em um só lugar, com simulador gratuito, metas e controle financeiro simples." />
+    <meta property="og:url" content="https://www.gestordevida.com.br/" />
+    <meta property="og:image" content="https://www.gestordevida.com.br/screens/dashboard.png" />
+    <meta property="og:locale" content="pt_BR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Gestor de Vida | Organize seu tempo e suas finanças" />
+    <meta name="twitter:description" content="Organize seu tempo e suas finanças em um só lugar, com simulador gratuito, metas e controle financeiro simples." />
+    <meta name="twitter:image" content="https://www.gestordevida.com.br/screens/dashboard.png" />
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -29,6 +46,15 @@
   </head>
 
   <body>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Gestor de Vida",
+        "url": "https://www.gestordevida.com.br/",
+        "logo": "https://d2xsxph8kpxj0f.cloudfront.net/310519663348080686/ZqfDFXLHUoy8CunGRmv7wd/icon-gv-navy-gold_6e5b968f.png"
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script
