@@ -238,7 +238,15 @@ export default function HomeSimples() {
             Simulação real do sistema, do início ao fim
           </h2>
           <div className="rounded-2xl overflow-hidden mb-3" style={{ border: "1px solid rgba(201,168,76,0.3)" }}>
-            <img src="/demo/simulador-demo.gif" alt="Demonstração do simulador do Gestor de Vida" className="w-full block" />
+            <video
+              src="/demo/simulador-demo.mp4"
+              controls
+              playsInline
+              preload="metadata"
+              className="w-full block"
+            >
+              Seu navegador não suporta vídeo.
+            </video>
           </div>
           <p className="text-xs" style={{ color: "#5A6A80" }}>
             Exemplo com dados fictícios ("Carlos Mendes") só para ilustrar o funcionamento do simulador.
