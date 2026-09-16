@@ -235,11 +235,11 @@ export default function HomeSimples() {
         <div className="container max-w-3xl mx-auto text-center">
           <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: gold }}>Veja funcionando</p>
           <h2 className="text-2xl md:text-3xl font-bold mb-6" style={{ color: "#F0E6C8" }}>
-            Simulação real do sistema, do início ao fim
+            O sistema por dentro, do orçamento à aposentadoria
           </h2>
           <div className="rounded-2xl overflow-hidden mb-3" style={{ border: "1px solid rgba(201,168,76,0.3)" }}>
             <video
-              src="/demo/simulador-demo.mp4"
+              src="/demo/sistema-demo.mp4"
               controls
               playsInline
               preload="metadata"
@@ -249,7 +249,7 @@ export default function HomeSimples() {
             </video>
           </div>
           <p className="text-xs" style={{ color: "#5A6A80" }}>
-            Exemplo com dados fictícios ("Carlos Mendes") só para ilustrar o funcionamento do simulador.
+            Exemplo com dados fictícios ("Carlos Mendes") só para ilustrar o funcionamento do sistema.
           </p>
         </div>
       </section>
