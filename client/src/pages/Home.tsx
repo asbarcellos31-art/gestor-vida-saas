@@ -486,6 +486,7 @@ export default function Home() {
           </div>
           <div className="space-y-3">
             {[
+              { q: "Quem está por trás do Gestor de Vida?", a: "O Gestor de Vida é um produto de Anderson Barcellos, Consultor de Valores Mobiliários registrado na CVM (Comissão de Valores Mobiliários), consultoria de investimentos independente e fee-only. Saiba mais em barcellosinvestimentos.com.br." },
               { q: "O que exatamente é o Gestor de Vida?", a: "É um sistema com 3 módulos conectados: Gestão do Tempo (tarefas, prioridades, timer e score), Orçamento (lançamento de despesas, Regra 50/30/20) e Projeção de Aposentadoria (simulação em 3 cenários). Acompanha o E-book com o Método dos 3 Pilares, que explica a lógica por trás de tudo." },
               { q: "Por que não tem integração com banco?", a: "Porque integração automática não muda comportamento. Quando o app importa tudo sozinho, você olha os números como dados de outra pessoa. O ato de lançar manualmente cria consciência — e consciência muda hábito." },
               { q: "Quanto tempo leva para ver resultado?", a: "Em 30 dias de uso consistente, você já sabe exatamente para onde vai cada real e cada hora. Em 90 dias, o hábito está instalado. Em 1 ano, você tem números reais para decisões de vida." },
@@ -593,6 +594,12 @@ export default function Home() {
             <a href="/politica-de-privacidade" className="transition-colors" style={{ color: "#5A6A80" }}>Privacidade</a>
             <a href="/termos-de-uso" className="transition-colors" style={{ color: "#5A6A80" }}>Termos de Uso</a>
           </div>
+        </div>
+        <div className="container text-center mt-6 pt-6" style={{ borderTop: "1px solid rgba(201,168,76,0.08)" }}>
+          <p className="text-xs" style={{ color: "#3A4A60" }}>
+            Um produto de Anderson Barcellos, Consultor de Valores Mobiliários registrado na CVM · {" "}
+            <a href="https://barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="transition-colors" style={{ color: "#5A6A80" }}>barcellosinvestimentos.com.br</a>
+          </p>
         </div>
       </footer>
     </div>
