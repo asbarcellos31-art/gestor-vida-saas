@@ -1267,6 +1267,7 @@ export async function getLeadsPendingRemarketing(minHoursOld = 20) {
       AND l.createdAt <= DATE_SUB(NOW(), INTERVAL ${minHoursOld} HOUR)
       AND l.email NOT LIKE '%@barcellosseguros.com'
       AND LOWER(l.email) != 'teste@gmail.com'
+      AND (l.source IS NULL OR l.source NOT IN ('barcellos-landing'))
     GROUP BY LOWER(l.email)
   `);
   return rows[0] as unknown as { id: number; email: string; name: string | null; planName: string | null; planPrice: string | null }[];
