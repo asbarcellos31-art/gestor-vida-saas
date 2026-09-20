@@ -180,7 +180,12 @@ export default function HomeSimples() {
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
             <LogoBadge size={8} />
-            <span className="font-bold text-lg" style={{ color: gold }}>Gestor de Vida</span>
+            <div className="flex flex-col leading-none">
+              <span className="font-bold text-lg" style={{ color: gold }}>Gestor de Vida</span>
+              <a href="https://barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="text-[10px] hidden sm:block hover:underline" style={{ color: "#8A9BB5" }}>
+                por Barcellos Investimentos
+              </a>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
