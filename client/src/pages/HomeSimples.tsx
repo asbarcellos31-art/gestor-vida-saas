@@ -470,6 +470,23 @@ export default function HomeSimples() {
         </div>
       </section>
 
+      {/* IDEALIZADOR */}
+      <section className="py-16 px-4" style={{ background: "#070E26" }}>
+        <div className="container max-w-3xl mx-auto">
+          <div className="rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left" style={{ background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.25)" }}>
+            <img src="/idealizador/anderson.png" alt="Anderson Barcellos" className="w-24 h-24 rounded-full object-cover flex-shrink-0" style={{ border: "2px solid rgba(201,168,76,0.4)" }} />
+            <div className="flex-1">
+              <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: gold }}>Idealizador</p>
+              <h3 className="text-lg font-bold mb-1" style={{ color: "#F0E6C8" }}>Anderson Barcellos</h3>
+              <p className="text-sm mb-3" style={{ color: "#8A9BB5" }}>Consultor de Valores Mobiliários registrado na CVM · Barcellos Investimentos</p>
+              <a href="https://barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-semibold hover:underline" style={{ color: gold }}>
+                Conhecer a Barcellos Investimentos <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section id="faq" className="py-20 px-4" style={{ background: "#0D1B4B" }}>
         <div className="container max-w-3xl mx-auto">
@@ -479,7 +496,7 @@ export default function HomeSimples() {
           </div>
           <div className="space-y-3">
             {[
-              { q: "Quem está por trás do Gestor de Vida?", a: "O Gestor de Vida é um produto de Anderson Barcellos, Consultor de Valores Mobiliários registrado na CVM (Comissão de Valores Mobiliários), consultoria de investimentos independente e fee-only. Saiba mais em barcellosinvestimentos.com.br." },
+              { q: "Quem é o idealizador do Gestor de Vida?", a: "O Gestor de Vida foi idealizado por Anderson Barcellos, Consultor de Valores Mobiliários registrado na CVM (Comissão de Valores Mobiliários), à frente da Barcellos Investimentos — consultoria de investimentos independente e fee-only.", link: "https://barcellosinvestimentos.com.br", linkLabel: "Conhecer a Barcellos Investimentos →" },
               { q: "O que exatamente é o Gestor de Vida?", a: "É um sistema de organização financeira: você lança seus gastos, ele aplica a Regra 50/30/20 sozinho e mostra sua projeção de aposentadoria em 3 cenários. A gestão de tempo vem incluída como bônus." },
               { q: "Por que não tem integração com banco?", a: "Porque integração automática não muda comportamento. Quando o app importa tudo sozinho, você olha os números como dados de outra pessoa. O ato de lançar manualmente cria consciência — e consciência muda hábito." },
               { q: "É mais difícil que uma planilha?", a: "Não — é o contrário. Não tem fórmula pra quebrar nem célula errada. Você só lança o gasto e escolhe a categoria; o resto (50/30/20, gráficos, projeção) o sistema calcula sozinho." },
@@ -492,7 +509,14 @@ export default function HomeSimples() {
                   <span className="font-semibold pr-4">{item.q}</span>
                   <span className="text-xl flex-shrink-0 transition-transform group-open:rotate-45" style={{ color: gold }}>+</span>
                 </summary>
-                <div className="px-5 pb-5 text-sm leading-relaxed" style={{ color: "rgba(232,224,204,0.75)" }}>{item.a}</div>
+                <div className="px-5 pb-5 text-sm leading-relaxed" style={{ color: "rgba(232,224,204,0.75)" }}>
+                  {item.a}
+                  {(item as any).link && (
+                    <a href={(item as any).link} target="_blank" rel="noopener noreferrer" className="block mt-2 font-semibold hover:underline" style={{ color: gold }}>
+                      {(item as any).linkLabel}
+                    </a>
+                  )}
+                </div>
               </details>
             ))}
           </div>
