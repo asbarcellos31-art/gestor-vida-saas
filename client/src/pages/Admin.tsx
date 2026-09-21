@@ -26,7 +26,7 @@ import {
 const PLAN_LABELS: Record<string, string> = {
   time_management: "Gestão de Tempo",
   budget: "Orçamento Doméstico",
-  combo: "Combo Promocional",
+  combo: "Gestor de Vida",
 };
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -367,7 +367,7 @@ export default function Admin() {
                   <Star className="w-4 h-4 text-amber-600" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Combo</p>
+                  <p className="text-xs text-muted-foreground">Gestor de Vida</p>
                   <p className="text-xl font-bold text-foreground">{metrics.byPlan.combo}</p>
                 </div>
               </div>
@@ -388,7 +388,7 @@ export default function Admin() {
                 <option value="all">Todos os planos</option>
                 <option value="time_management">Gestão de Tempo</option>
                 <option value="budget">Orçamento</option>
-                <option value="combo">Combo</option>
+                <option value="combo">Gestor de Vida</option>
               </select>
               <select
                 value={statusFilter}

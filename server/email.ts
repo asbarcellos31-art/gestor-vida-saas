@@ -192,9 +192,7 @@ export async function sendRemarketingEmail(to: string, name: string | null, plan
   if (!isConfigured) return false;
   const firstName = name ? name.split(" ")[0] : "Olá";
   const HOTMART_LINKS: Record<string, string> = {
-    "eBook": "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=cu6bor2b",
-    "Sistema Gestor": "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=l8k18cwx",
-    "Combo Promocional": "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=401asx1p",
+    "Gestor de Vida": "https://pay.hotmart.com/M105784997J?checkoutMode=2&off=401asx1p",
   };
   const checkoutUrl = (planName && HOTMART_LINKS[planName]) || "https://www.gestordevida.com.br/#planos";
   const planDisplay = planName ?? "Gestor de Vida";

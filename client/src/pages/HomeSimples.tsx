@@ -19,12 +19,12 @@ function LogoBadge({ size = 8 }: { size?: number }) {
     </div>
   );
 }
-const HOTMART_SISTEMA = "https://pay.hotmart.com/M105784997J?off=6vlpofwo";
+const HOTMART_SISTEMA = "https://pay.hotmart.com/M105784997J?off=zys6qohw";
 const EBOOK_GRATIS_URL = "https://www.barcellosinvestimentos.com.br/#produtos";
 
 const PLANS = [
   {
-    id: "sistema", name: "Sistema Vitalício", price: "39,90", priceLabel: "acesso vitalício",
+    id: "sistema", name: "Gestor de Vida", price: "59,90", priceLabel: "acesso vitalício",
     description: "O sistema completo de organização financeira do Gestor de Vida",
     icon: Wallet, color: "from-amber-700 to-amber-900", hotmartUrl: HOTMART_SISTEMA,
     features: ["Orçamento com Regra 50/30/20 automática", "Lançamento de gastos mais simples que planilha", "Projeção de aposentadoria (3 cenários)", "Gestão de tempo inclusa como bônus", "Dashboard com gráficos", "Pague uma vez, use para sempre"],
@@ -110,7 +110,7 @@ export default function HomeSimples() {
 
   const handleGetStarted = () => {
     if (isAuthenticated) { navigate("/dashboard"); return; }
-    openModal(HOTMART_SISTEMA, "Sistema Vitalício", "39,90");
+    openModal(HOTMART_SISTEMA, "Gestor de Vida", "59,90");
   };
 
   const handlePlanClick = (hotmartUrl: string, planName: string, price: string) => {
@@ -214,7 +214,7 @@ export default function HomeSimples() {
             </Button>
           </div>
           <p className="mt-5 text-sm" style={{ color: "#5A6A80" }}>
-            Simulador gratuito · Sistema a partir de R$39,90 · Garantia de 7 dias
+            Simulador gratuito · Sistema a partir de R$59,90 · Garantia de 7 dias
           </p>
         </div>
       </section>
@@ -585,11 +585,11 @@ export default function HomeSimples() {
             <span style={{ color: gold }}>Precisa saber onde você vai chegar.</span>
           </h2>
           <p className="text-lg mb-10" style={{ color: "#8A9BB5" }}>
-            Dinheiro organizado. Aposentadoria projetada. Tudo em um sistema. R$39,90 — uma vez só.
+            Dinheiro organizado. Aposentadoria projetada. Tudo em um sistema. R$59,90 — uma vez só.
           </p>
           <Button size="lg" onClick={handleGetStarted} className="px-10 py-6 text-lg rounded-xl font-semibold"
             style={{ background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }}>
-            Quero o Sistema — R$ 39,90 <ArrowRight className="w-5 h-5 ml-2" />
+            Quero o Gestor de Vida — R$ 59,90 <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
           <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>Pagamento único · Acesso vitalício · Garantia de 7 dias</p>
         </div>

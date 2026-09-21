@@ -79,9 +79,7 @@ export default function TermsOfUse() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  <tr><td className="p-3 text-muted-foreground font-medium">E-book</td><td className="p-3 text-muted-foreground">Método dos 3 Pilares da Vida (PDF)</td><td className="p-3 text-muted-foreground">R$ 19,90</td></tr>
-                  <tr><td className="p-3 text-muted-foreground font-medium">Sistema</td><td className="p-3 text-muted-foreground">Acesso completo à plataforma</td><td className="p-3 text-muted-foreground">R$ 250,00</td></tr>
-                  <tr><td className="p-3 text-muted-foreground font-medium">Combo</td><td className="p-3 text-muted-foreground">E-book + Sistema</td><td className="p-3 text-muted-foreground">R$ 147,90</td></tr>
+                  <tr><td className="p-3 text-muted-foreground font-medium">Gestor de Vida</td><td className="p-3 text-muted-foreground">Acesso completo e permanente à plataforma</td><td className="p-3 text-muted-foreground">R$ 59,90</td></tr>
                 </tbody>
               </table>
             </div>

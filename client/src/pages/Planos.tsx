@@ -12,13 +12,13 @@ import {
 } from "lucide-react";
 import { trackInitiateCheckout } from "@/lib/pixel";
 
-const HOTMART_URL = "https://pay.hotmart.com/M105784997J?off=6vlpofwo";
+const HOTMART_URL = "https://pay.hotmart.com/M105784997J?off=zys6qohw";
 
 const PLANS = [
   {
     id: "budget" as const,
-    name: "Sistema Vitalício",
-    price: "39,90",
+    name: "Gestor de Vida",
+    price: "59,90",
     priceLabel: "acesso vitalício",
     description: "Acesso completo e permanente ao sistema Gestor de Vida",
     icon: Infinity,

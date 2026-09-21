@@ -266,7 +266,7 @@ export default function Simulator() {
 
           {/* Header */}
           <div className="text-center mb-10">
-            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>Método dos 3 Pilares</p>
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>Simulador Gestor de Vida</p>
             <h1 className="text-3xl sm:text-4xl font-extrabold mb-4 leading-tight" style={{ color: "#F0E6C8" }}>
               {step === "form"    && <>Quanto você vai ter<br /><span style={{ color: "#C9A84C" }}>na aposentadoria?</span></>}
               {step === "contact" && <>Sua simulação está<br /><span style={{ color: "#C9A84C" }}>pronta.</span></>}
@@ -275,7 +275,7 @@ export default function Simulator() {
             <p className="text-base" style={{ color: "#8A9BB5" }}>
               {step === "form"    && "Preencha os dados e veja sua projeção real em 3 cenários — comparando com o que o INSS vai te pagar."}
               {step === "contact" && "Deixe seus dados para receber o resultado completo com os 3 cenários de projeção."}
-              {step === "result"  && "Baseado no Método dos 3 Pilares — o quanto você investiria e onde chegaria."}
+              {step === "result"  && "Baseado na regra 50/30/20 — o quanto você investiria e onde chegaria."}
             </p>
           </div>
 
@@ -526,16 +526,16 @@ export default function Simulator() {
               {/* CTA */}
               <div className="rounded-2xl p-8 text-center" style={{ background: "rgba(201,168,76,0.07)", border: "1px solid rgba(201,168,76,0.35)" }}>
                 <TrendingUp className="w-10 h-10 mx-auto mb-4" style={{ color: "#C9A84C" }} />
-                <h3 className="text-xl font-bold mb-3" style={{ color: "#F0E6C8" }}>Os números são reais. O método também.</h3>
+                <h3 className="text-xl font-bold mb-3" style={{ color: "#F0E6C8" }}>Os números são reais. O sistema te ajuda a chegar lá.</h3>
                 <p className="text-sm mb-6 leading-relaxed" style={{ color: "#8A9BB5" }}>
-                  O Método dos 3 Pilares te ensina como guardar esse valor de forma consistente — controlando seu tempo, suas finanças e projetando seu futuro em um único sistema.
+                  O Gestor de Vida te ajuda a guardar esse valor de forma consistente — organizando seu orçamento pela regra 50/30/20 e projetando seu futuro em um único sistema.
                 </p>
                 <Button
                   onClick={() => navigate("/#planos")}
                   className="w-full sm:w-auto px-8 py-5 text-lg font-bold rounded-xl"
                   style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}
                 >
-                  Conheça o Método dos 3 Pilares <ArrowRight className="w-5 h-5 ml-2" />
+                  Conheça o Sistema <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <p className="text-xs mt-3" style={{ color: "#5A6A80" }}>R$59,90 · Acesso vitalício · Garantia de 7 dias</p>
               </div>
