@@ -3,37 +3,18 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Star,
   CheckCircle2,
   X,
   ArrowRight,
   Zap,
   ExternalLink,
-  BookOpen,
   Infinity,
 } from "lucide-react";
 import { trackInitiateCheckout } from "@/lib/pixel";
 
-const HOTMART_URL = "https://pay.hotmart.com/M105784997J?off=zys6qohw";
+const HOTMART_URL = "https://pay.hotmart.com/M105784997J?off=6vlpofwo";
 
 const PLANS = [
-  {
-    id: "time_management" as const,
-    name: "E-book",
-    price: "29,90",
-    priceLabel: "pagamento único",
-    description: "Método 3 Pilares da Vida — guia completo em PDF",
-    icon: BookOpen,
-    color: "from-blue-600 to-indigo-700",
-    badge: null,
-    features: [
-      "E-book: Método 3 Pilares da Vida",
-      "Gestão de Tempo, Dinheiro e Futuro",
-      "Estratégias práticas e aplicáveis",
-      "Acesso imediato ao PDF",
-    ],
-    notIncluded: ["Acesso ao sistema", "Dashboard interativo", "Projeção de aposentadoria"],
-  },
   {
     id: "budget" as const,
     name: "Sistema Vitalício",
@@ -49,26 +30,6 @@ const PLANS = [
       "Dashboard com gráficos",
       "Projeção de aposentadoria (3 cenários)",
       "Regra 50/30/20 automática",
-      "Score de produtividade",
-      "Pague uma vez, use para sempre",
-    ],
-    notIncluded: ["E-book não incluso"],
-  },
-  {
-    id: "combo" as const,
-    name: "Combo Promocional",
-    price: "59,90",
-    priceLabel: "acesso vitalício",
-    description: "E-book + Sistema — tudo por um preço especial",
-    icon: Star,
-    color: "from-amber-500 to-orange-600",
-    badge: "Melhor Oferta",
-    features: [
-      "E-book: Método 3 Pilares da Vida",
-      "Acesso vitalício ao sistema completo",
-      "Gestão do Tempo + Orçamento Doméstico",
-      "Dashboard com gráficos interativos",
-      "Projeção de aposentadoria (3 cenários)",
       "Score de produtividade",
       "Pague uma vez, use para sempre",
     ],
@@ -120,14 +81,7 @@ export default function Planos() {
           </div>
         )}
 
-        <div className="mb-6 p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 flex items-center gap-3">
-          <Star className="w-5 h-5 text-amber-400 flex-shrink-0" />
-          <p className="text-sm text-foreground">
-            <span className="font-bold text-amber-400">Melhor custo-benefício:</span> E-book + Sistema separados custam R$ 69,80 — no Combo você paga apenas <span className="font-bold text-amber-400">R$ 59,90</span> e economiza R$ 9,90.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 max-w-sm mx-auto gap-6">
           {PLANS.map((plan) => {
             const isCurrentPlan = currentPlan === plan.id;
             return (

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
-import { Wallet, CheckCircle2, Star, TrendingUp, Shield, ArrowRight, X, Lock, PiggyBank, Clock } from "lucide-react";
+import { Wallet, CheckCircle2, Star, TrendingUp, Shield, ArrowRight, X, Lock, PiggyBank, Clock, BookOpen } from "lucide-react";
 import { useLocation } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { trackInitiateCheckout, trackLead, trackViewContent } from "@/lib/pixel";
@@ -19,31 +19,15 @@ function LogoBadge({ size = 8 }: { size?: number }) {
     </div>
   );
 }
-const HOTMART_EBOOK  = "https://pay.hotmart.com/M105784997J?off=gqtt03zn";
 const HOTMART_SISTEMA = "https://pay.hotmart.com/M105784997J?off=6vlpofwo";
-const HOTMART_COMBO  = "https://pay.hotmart.com/M105784997J?off=zys6qohw";
+const EBOOK_GRATIS_URL = "https://www.barcellosinvestimentos.com.br/#produtos";
 
 const PLANS = [
-  {
-    id: "ebook", name: "E-book", price: "29,90", priceLabel: "pagamento único",
-    description: "Guia completo em PDF: como aplicar a regra 50/30/20 na prática",
-    icon: Clock, color: "from-amber-600 to-yellow-700", hotmartUrl: HOTMART_EBOOK,
-    features: ["E-book: guia prático de organização financeira", "Regra 50/30/20 passo a passo", "Estratégias simples de aplicar", "Acesso imediato ao PDF"],
-    notIncluded: ["Acesso ao sistema", "Dashboard interativo", "Projeção de aposentadoria"],
-  },
   {
     id: "sistema", name: "Sistema Vitalício", price: "39,90", priceLabel: "acesso vitalício",
     description: "O sistema completo de organização financeira do Gestor de Vida",
     icon: Wallet, color: "from-amber-700 to-amber-900", hotmartUrl: HOTMART_SISTEMA,
     features: ["Orçamento com Regra 50/30/20 automática", "Lançamento de gastos mais simples que planilha", "Projeção de aposentadoria (3 cenários)", "Gestão de tempo inclusa como bônus", "Dashboard com gráficos", "Pague uma vez, use para sempre"],
-    notIncluded: ["E-book não incluso"],
-  },
-  {
-    id: "combo", name: "Combo Promocional", price: "59,90", priceLabel: "acesso vitalício",
-    description: "E-book + Sistema — tudo por um preço especial",
-    icon: Star, color: "from-yellow-500 to-amber-600", hotmartUrl: HOTMART_COMBO,
-    badge: "Melhor Oferta",
-    features: ["E-book: guia de organização financeira", "Acesso vitalício ao sistema completo", "Regra 50/30/20 + Projeção de aposentadoria", "Gestão de tempo inclusa como bônus", "Dashboard com gráficos interativos", "Pague uma vez, use para sempre"],
     notIncluded: [],
   },
 ];
@@ -126,7 +110,7 @@ export default function HomeSimples() {
 
   const handleGetStarted = () => {
     if (isAuthenticated) { navigate("/dashboard"); return; }
-    openModal(HOTMART_COMBO, "Combo Promocional", "59,90");
+    openModal(HOTMART_SISTEMA, "Sistema Vitalício", "39,90");
   };
 
   const handlePlanClick = (hotmartUrl: string, planName: string, price: string) => {
@@ -531,7 +515,7 @@ export default function HomeSimples() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#F0E6C8" }}>Escolha como começar</h2>
             <p className="text-lg" style={{ color: "#8A9BB5" }}>Pagamento único. Sem mensalidade. Pague uma vez e use para sempre.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
             {PLANS.map((plan) => (
               <div key={plan.id} className="relative rounded-2xl p-6 sm:p-8 flex flex-col"
                 style={{ background: (plan as any).badge ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.04)", border: (plan as any).badge ? "2px solid rgba(201,168,76,0.6)" : "1px solid rgba(201,168,76,0.15)" }}>
@@ -576,6 +560,20 @@ export default function HomeSimples() {
               </div>
             ))}
           </div>
+
+          <div className="mt-10 max-w-2xl mx-auto rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left"
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(201,168,76,0.3)" }}>
+            <BookOpen className="w-9 h-9 flex-shrink-0" style={{ color: gold }} />
+            <div className="flex-1">
+              <p className="font-semibold mb-1" style={{ color: "#F0E6C8" }}>Ainda não tem certeza? Baixe grátis o guia da regra 50/30/20</p>
+              <p className="text-sm" style={{ color: "#8A9BB5" }}>PDF gratuito, sem compromisso — só deixar nome e email.</p>
+            </div>
+            <a href={EBOOK_GRATIS_URL} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm font-semibold rounded-xl px-5 py-3 whitespace-nowrap"
+              style={{ background: "rgba(201,168,76,0.15)", color: gold, border: "1px solid rgba(201,168,76,0.4)" }}>
+              Baixar e-book grátis <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </section>
 
@@ -587,11 +585,11 @@ export default function HomeSimples() {
             <span style={{ color: gold }}>Precisa saber onde você vai chegar.</span>
           </h2>
           <p className="text-lg mb-10" style={{ color: "#8A9BB5" }}>
-            Dinheiro organizado. Aposentadoria projetada. Tudo em um sistema. R$59,90 — uma vez só.
+            Dinheiro organizado. Aposentadoria projetada. Tudo em um sistema. R$39,90 — uma vez só.
           </p>
           <Button size="lg" onClick={handleGetStarted} className="px-10 py-6 text-lg rounded-xl font-semibold"
             style={{ background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }}>
-            Quero o Combo — R$ 59,90 <ArrowRight className="w-5 h-5 ml-2" />
+            Quero o Sistema — R$ 39,90 <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
           <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>Pagamento único · Acesso vitalício · Garantia de 7 dias</p>
         </div>
