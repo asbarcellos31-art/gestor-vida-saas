@@ -182,7 +182,7 @@ export default function HomeSimples() {
             <LogoBadge size={8} />
             <div className="flex flex-col leading-none">
               <span className="font-bold text-lg" style={{ color: gold }}>Gestor de Vida</span>
-              <a href="https://barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="text-[10px] hidden sm:block hover:underline" style={{ color: "#8A9BB5" }}>
+              <a href="https://www.barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="text-[10px] hidden sm:block hover:underline" style={{ color: "#8A9BB5" }}>
                 por Barcellos Investimentos
               </a>
             </div>
@@ -479,7 +479,7 @@ export default function HomeSimples() {
               <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: gold }}>Idealizador</p>
               <h3 className="text-lg font-bold mb-1" style={{ color: "#F0E6C8" }}>Anderson Barcellos</h3>
               <p className="text-sm mb-3" style={{ color: "#8A9BB5" }}>Consultor de Valores Mobiliários registrado na CVM · Barcellos Investimentos</p>
-              <a href="https://barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-semibold hover:underline" style={{ color: gold }}>
+              <a href="https://www.barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-semibold hover:underline" style={{ color: gold }}>
                 Conhecer a Barcellos Investimentos <ArrowRight className="w-4 h-4" />
               </a>
             </div>
@@ -496,7 +496,7 @@ export default function HomeSimples() {
           </div>
           <div className="space-y-3">
             {[
-              { q: "Quem é o idealizador do Gestor de Vida?", a: "O Gestor de Vida foi idealizado por Anderson Barcellos, Consultor de Valores Mobiliários registrado na CVM (Comissão de Valores Mobiliários), à frente da Barcellos Investimentos — consultoria de investimentos independente e fee-only.", link: "https://barcellosinvestimentos.com.br", linkLabel: "Conhecer a Barcellos Investimentos →" },
+              { q: "Quem é o idealizador do Gestor de Vida?", a: "O Gestor de Vida foi idealizado por Anderson Barcellos, Consultor de Valores Mobiliários registrado na CVM (Comissão de Valores Mobiliários), à frente da Barcellos Investimentos — consultoria de investimentos independente e fee-only.", link: "https://www.barcellosinvestimentos.com.br", linkLabel: "Conhecer a Barcellos Investimentos →" },
               { q: "O que exatamente é o Gestor de Vida?", a: "É um sistema de organização financeira: você lança seus gastos, ele aplica a Regra 50/30/20 sozinho e mostra sua projeção de aposentadoria em 3 cenários. A gestão de tempo vem incluída como bônus." },
               { q: "Por que não tem integração com banco?", a: "Porque integração automática não muda comportamento. Quando o app importa tudo sozinho, você olha os números como dados de outra pessoa. O ato de lançar manualmente cria consciência — e consciência muda hábito." },
               { q: "É mais difícil que uma planilha?", a: "Não — é o contrário. Não tem fórmula pra quebrar nem célula errada. Você só lança o gasto e escolhe a categoria; o resto (50/30/20, gráficos, projeção) o sistema calcula sozinho." },
@@ -615,7 +615,7 @@ export default function HomeSimples() {
         <div className="container text-center mt-6 pt-6" style={{ borderTop: "1px solid rgba(201,168,76,0.08)" }}>
           <p className="text-xs" style={{ color: "#3A4A60" }}>
             Um produto de Anderson Barcellos, Consultor de Valores Mobiliários registrado na CVM · {" "}
-            <a href="https://barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="transition-colors" style={{ color: "#5A6A80" }}>barcellosinvestimentos.com.br</a>
+            <a href="https://www.barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="transition-colors" style={{ color: "#5A6A80" }}>barcellosinvestimentos.com.br</a>
           </p>
         </div>
       </footer>
