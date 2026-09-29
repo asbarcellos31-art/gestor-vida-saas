@@ -238,7 +238,7 @@ export default function HomeSimples() {
             </video>
           </div>
           <p className="text-xs" style={{ color: "#5A6A80" }}>
-            Exemplo com dados fictícios ("Carlos Mendes") só para ilustrar o funcionamento do sistema.
+            Exemplo com dados fictícios ("Marcos Almeida") só para ilustrar o funcionamento do sistema.
           </p>
         </div>
       </section>
