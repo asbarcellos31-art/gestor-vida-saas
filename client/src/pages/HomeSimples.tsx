@@ -14,8 +14,8 @@ import { trpc } from "@/lib/trpc";
 function LogoBadge({ size = 8 }: { size?: number }) {
   const px = size * 4;
   return (
-    <div style={{ width: px, height: px, borderRadius: 8, background: "linear-gradient(135deg,#C9A84C,#E2C97E)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-      <span style={{ color: "#0B1437", fontWeight: 800, fontSize: px * 0.38, letterSpacing: -0.5 }}>GV</span>
+    <div style={{ width: px, height: px, borderRadius: 8, background: "linear-gradient(135deg,#8B6F2E,#A6863F)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+      <span style={{ color: "#FCFBF9", fontWeight: 800, fontSize: px * 0.38, letterSpacing: -0.5 }}>GV</span>
     </div>
   );
 }
@@ -32,21 +32,21 @@ const PLANS = [
   },
 ];
 
-const gold = "#C9A84C";
-const navy = "#0B1437";
+const gold = "#8B6F2E";
+const navy = "#FCFBF9";
 
 function MockScreen({ children, label }: { children: React.ReactNode; label: string }) {
   return (
-    <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(201,168,76,0.25)", background: "#070E26" }}>
-      <div className="px-4 py-2 flex items-center gap-2" style={{ background: "rgba(201,168,76,0.08)", borderBottom: "1px solid rgba(201,168,76,0.15)" }}>
+    <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(139,111,46,0.25)", background: "#FFFFFF" }}>
+      <div className="px-4 py-2 flex items-center gap-2" style={{ background: "rgba(139,111,46,0.08)", borderBottom: "1px solid rgba(139,111,46,0.15)" }}>
         <div className="w-3 h-3 rounded-full" style={{ background: "#ef4444" }} />
         <div className="w-3 h-3 rounded-full" style={{ background: "#f59e0b" }} />
         <div className="w-3 h-3 rounded-full" style={{ background: "#10b981" }} />
-        <span className="text-xs ml-2" style={{ color: "#5A6A80" }}>gestordevida.com.br</span>
+        <span className="text-xs ml-2" style={{ color: "#9C9688" }}>gestordevida.com.br</span>
       </div>
       <div className="p-5">{children}</div>
-      <div className="px-4 py-2" style={{ borderTop: "1px solid rgba(201,168,76,0.1)" }}>
-        <p className="text-xs" style={{ color: "#5A6A80" }}>{label}</p>
+      <div className="px-4 py-2" style={{ borderTop: "1px solid rgba(139,111,46,0.1)" }}>
+        <p className="text-xs" style={{ color: "#9C9688" }}>{label}</p>
       </div>
     </div>
   );
@@ -123,10 +123,10 @@ export default function HomeSimples() {
 
       {/* Modal */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-w-md" style={{ background: "#0D1B4B", border: "1px solid rgba(201,168,76,0.4)", color: "#F0E6C8" }}>
+        <DialogContent className="max-w-md" style={{ background: "#F4F3EF", border: "1px solid rgba(139,111,46,0.4)", color: "#1C1A14" }}>
           <DialogHeader>
-            <DialogTitle style={{ color: "#E2C97E" }}>Antes de continuar...</DialogTitle>
-            <DialogDescription style={{ color: "#8A9BB5" }}>
+            <DialogTitle style={{ color: "#A6863F" }}>Antes de continuar...</DialogTitle>
+            <DialogDescription style={{ color: "#5C5748" }}>
               Deixe seu email para receber a confirmação de acesso e dicas exclusivas.
             </DialogDescription>
           </DialogHeader>
@@ -134,24 +134,24 @@ export default function HomeSimples() {
             <div>
               <label className="text-xs font-semibold mb-1 block" style={{ color: gold }}>Seu nome</label>
               <Input placeholder="Como posso te chamar?" value={leadName} onChange={e => setLeadName(e.target.value)}
-                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(201,168,76,0.3)", color: "#F0E6C8" }} />
+                style={{ background: "rgba(28,26,20,0.06)", border: "1px solid rgba(139,111,46,0.3)", color: "#1C1A14" }} />
             </div>
             <div>
               <label className="text-xs font-semibold mb-1 block" style={{ color: gold }}>Seu melhor email *</label>
               <Input type="email" placeholder="email@exemplo.com" value={leadEmail}
                 onChange={e => setLeadEmail(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleModalSubmit()}
-                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(201,168,76,0.3)", color: "#F0E6C8" }} />
+                style={{ background: "rgba(28,26,20,0.06)", border: "1px solid rgba(139,111,46,0.3)", color: "#1C1A14" }} />
             </div>
             <Button className="w-full py-5 font-semibold text-base rounded-xl mt-2"
-              style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: navy }}
+              style={{ background: "linear-gradient(135deg,#8B6F2E,#A6863F)", color: navy }}
               disabled={!leadEmail.trim() || submitting} onClick={handleModalSubmit}>
               {submitting ? "Aguarde..." : `Continuar para o pagamento — R$ ${pendingPlan.price}`}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
             <div className="flex items-center justify-center gap-2 mt-1">
-              <Lock className="w-3 h-3" style={{ color: "#5A6A80" }} />
-              <p className="text-xs text-center" style={{ color: "#5A6A80" }}>
+              <Lock className="w-3 h-3" style={{ color: "#9C9688" }} />
+              <p className="text-xs text-center" style={{ color: "#9C9688" }}>
                 Pagamento seguro via Hotmart · Garantia de 7 dias · Sem mensalidade
               </p>
             </div>
@@ -160,26 +160,26 @@ export default function HomeSimples() {
       </Dialog>
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b" style={{ background: "rgba(11,20,55,0.92)", borderColor: "rgba(201,168,76,0.2)" }}>
+      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b" style={{ background: "rgba(250,247,240,0.92)", borderColor: "rgba(139,111,46,0.2)" }}>
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
             <LogoBadge size={8} />
             <div className="flex flex-col leading-none">
               <span className="font-bold text-lg" style={{ color: gold }}>Gestor de Vida</span>
-              <a href="https://www.barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="text-[10px] hidden sm:block hover:underline" style={{ color: "#8A9BB5" }}>
+              <a href="https://www.barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="text-[10px] hidden sm:block hover:underline" style={{ color: "#5C5748" }}>
                 por Barcellos Investimentos
               </a>
             </div>
           </div>
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
-              <Button onClick={() => navigate("/dashboard")} style={{ background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }} className="font-semibold">
+              <Button onClick={() => navigate("/dashboard")} style={{ background: `linear-gradient(135deg,#8B6F2E,#A6863F)`, color: navy }} className="font-semibold">
                 Acessar Dashboard <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             ) : (
               <>
                 <Button variant="ghost" onClick={() => navigate("/login")} style={{ color: gold }}>Entrar</Button>
-                <Button onClick={handleGetStarted} style={{ background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }} className="font-semibold hidden sm:flex">
+                <Button onClick={handleGetStarted} style={{ background: `linear-gradient(135deg,#8B6F2E,#A6863F)`, color: navy }} className="font-semibold hidden sm:flex">
                   Começar agora
                 </Button>
               </>
@@ -189,44 +189,44 @@ export default function HomeSimples() {
       </nav>
 
       {/* HERO — vende o resultado, não o sistema */}
-      <section className="pt-36 pb-20 px-4" style={{ background: "linear-gradient(180deg,#0D1B4B 0%,#0B1437 100%)" }}>
+      <section className="pt-36 pb-20 px-4" style={{ background: "linear-gradient(180deg,#F4F3EF 0%,#FCFBF9 100%)" }}>
         <div className="container text-center max-w-3xl mx-auto">
-          <Badge className="mb-6 border" style={{ background: "rgba(201,168,76,0.15)", color: "#E2C97E", borderColor: "rgba(201,168,76,0.4)" }}>
+          <Badge className="mb-6 border" style={{ background: "rgba(139,111,46,0.15)", color: "#A6863F", borderColor: "rgba(139,111,46,0.4)" }}>
             Mais simples que planilha · Pagamento único · Sem mensalidade
           </Badge>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight" style={{ color: "#F0E6C8" }}>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight" style={{ color: "#1C1A14" }}>
             Saiba pra onde vai<br />
             cada real do seu dinheiro.<br />
             <span style={{ color: gold }}>E com que idade você se aposenta.</span>
           </h1>
-          <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: "#8A9BB5" }}>
+          <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: "#5C5748" }}>
             Organize suas finanças pela regra 50/30/20 — mais fácil que montar uma planilha — e veja na hora sua projeção de aposentadoria.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => navigate("/simulador")} className="px-8 py-6 text-lg rounded-xl font-semibold"
-              style={{ background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }}>
+              style={{ background: `linear-gradient(135deg,#8B6F2E,#A6863F)`, color: navy }}>
               Simular minha aposentadoria <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <Button size="lg" variant="outline" className="px-8 py-6 text-lg rounded-xl"
-              style={{ borderColor: "rgba(201,168,76,0.5)", color: gold, background: "transparent" }}
+              style={{ borderColor: "rgba(139,111,46,0.5)", color: gold, background: "transparent" }}
               onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}>
               Ver como funciona
             </Button>
           </div>
-          <p className="mt-5 text-sm" style={{ color: "#5A6A80" }}>
+          <p className="mt-5 text-sm" style={{ color: "#9C9688" }}>
             Simulador gratuito · Sistema a partir de R$59,90 · Garantia de 7 dias
           </p>
         </div>
       </section>
 
       {/* VÍDEO DEMONSTRATIVO */}
-      <section className="py-16 px-4" style={{ background: "#0D1B4B" }}>
+      <section className="py-16 px-4" style={{ background: "#F4F3EF" }}>
         <div className="container max-w-3xl mx-auto text-center">
           <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: gold }}>Veja funcionando</p>
-          <h2 className="text-2xl md:text-3xl font-bold mb-6" style={{ color: "#F0E6C8" }}>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6" style={{ color: "#1C1A14" }}>
             O sistema por dentro, do orçamento à aposentadoria
           </h2>
-          <div className="rounded-2xl overflow-hidden mb-3" style={{ border: "1px solid rgba(201,168,76,0.3)" }}>
+          <div className="rounded-2xl overflow-hidden mb-3" style={{ border: "1px solid rgba(139,111,46,0.3)" }}>
             <video
               src="/demo/sistema-demo.mp4"
               controls
@@ -237,21 +237,21 @@ export default function HomeSimples() {
               Seu navegador não suporta vídeo.
             </video>
           </div>
-          <p className="text-xs" style={{ color: "#5A6A80" }}>
+          <p className="text-xs" style={{ color: "#9C9688" }}>
             Exemplo com dados fictícios ("Marcos Almeida") só para ilustrar o funcionamento do sistema.
           </p>
         </div>
       </section>
 
       {/* COMO FUNCIONA — 2 passos, foco em dinheiro */}
-      <section id="como-funciona" className="py-20 px-4" style={{ background: "#070E26" }}>
+      <section id="como-funciona" className="py-20 px-4" style={{ background: "#FFFFFF" }}>
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: gold }}>Como funciona</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#F0E6C8" }}>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#1C1A14" }}>
               Dois passos. Sem fórmula. Sem trava.
             </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: "#8A9BB5" }}>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: "#5C5748" }}>
               Você lança seus gastos — mais simples que abrir uma planilha. O sistema aplica a regra 50/30/20 sozinho e mostra onde isso te leva.
             </p>
           </div>
@@ -263,20 +263,20 @@ export default function HomeSimples() {
               <MockScreen label="Orçamento — Regra 50/30/20 e lançamento de despesas">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-bold" style={{ color: "#F0E6C8" }}>Agosto · R$5.000</span>
+                    <span className="text-sm font-bold" style={{ color: "#1C1A14" }}>Agosto · R$5.000</span>
                     <span className="text-xs px-2 py-1 rounded-full font-semibold" style={{ background: "rgba(16,185,129,0.15)", color: "#10b981" }}>No controle</span>
                   </div>
                   {[
-                    { label: "Necessidades (50%)", valor: "R$2.500", max: "R$2.500", pct: 100, color: "#8A9BB5" },
+                    { label: "Necessidades (50%)", valor: "R$2.500", max: "R$2.500", pct: 100, color: "#5C5748" },
                     { label: "Lazer (30%)", valor: "R$1.100", max: "R$1.500", pct: 73, color: "#3B82F6" },
                     { label: "Futuro (20%)", valor: "R$1.000", max: "R$1.000", pct: 100, color: "#10b981" },
                   ].map(c => (
-                    <div key={c.label} className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.04)" }}>
+                    <div key={c.label} className="p-3 rounded-xl" style={{ background: "rgba(28,26,20,0.04)" }}>
                       <div className="flex justify-between text-xs mb-2">
-                        <span style={{ color: "#8A9BB5" }}>{c.label}</span>
-                        <span style={{ color: "#F0E6C8" }}>{c.valor} <span style={{ color: "#5A6A80" }}>/ {c.max}</span></span>
+                        <span style={{ color: "#5C5748" }}>{c.label}</span>
+                        <span style={{ color: "#1C1A14" }}>{c.valor} <span style={{ color: "#9C9688" }}>/ {c.max}</span></span>
                       </div>
-                      <div className="w-full h-2 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
+                      <div className="w-full h-2 rounded-full" style={{ background: "rgba(28,26,20,0.08)" }}>
                         <div className="h-2 rounded-full transition-all" style={{ width: `${c.pct}%`, background: c.color }} />
                       </div>
                     </div>
@@ -293,15 +293,15 @@ export default function HomeSimples() {
                   </div>
                   <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#10b981" }}>Passo 1</span>
                 </div>
-                <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: "#F0E6C8" }}>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: "#1C1A14" }}>
                   Mais simples que montar uma planilha.
                 </h3>
-                <p className="text-base leading-relaxed mb-5" style={{ color: "#8A9BB5" }}>
+                <p className="text-base leading-relaxed mb-5" style={{ color: "#5C5748" }}>
                   Você lança cada gasto — sem fórmula pra quebrar, sem célula errada. A Regra 50/30/20 é automática: 50% para necessidades, 30% para lazer, 20% para o futuro.
                 </p>
                 <ul className="space-y-2">
                   {["Lançamento de gastos por categoria", "Regra 50/30/20 calculada sozinha", "Controle de contas fixas e parcelamentos", "Visão mensal de onde vai cada real"].map(f => (
-                    <li key={f} className="flex items-center gap-2 text-sm" style={{ color: "#C8D8E8" }}>
+                    <li key={f} className="flex items-center gap-2 text-sm" style={{ color: "#4A4536" }}>
                       <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#10b981" }} />{f}
                     </li>
                   ))}
@@ -313,26 +313,26 @@ export default function HomeSimples() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.3)" }}>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "rgba(139,111,46,0.15)", border: "1px solid rgba(139,111,46,0.3)" }}>
                     <PiggyBank className="w-6 h-6" style={{ color: gold }} />
                   </div>
                   <span className="text-xs font-bold uppercase tracking-widest" style={{ color: gold }}>Passo 2</span>
                 </div>
-                <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: "#F0E6C8" }}>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: "#1C1A14" }}>
                   Veja com que idade você se aposenta.
                 </h3>
-                <p className="text-base leading-relaxed mb-5" style={{ color: "#8A9BB5" }}>
+                <p className="text-base leading-relaxed mb-5" style={{ color: "#5C5748" }}>
                   Com os mesmos 20% que você já separou, o sistema mostra o que isso vira lá na frente — em 3 cenários simples, sem promessa, só matemática.
                 </p>
                 <ul className="space-y-2">
                   {["Simulação em 3 cenários (conservador, regular, otimista)", "Comparativo com o benefício do INSS", "Quanto sobra por mês na aposentadoria", "Simulador gratuito em gestordevida.com.br/simulador"].map(f => (
-                    <li key={f} className="flex items-center gap-2 text-sm" style={{ color: "#C8D8E8" }}>
+                    <li key={f} className="flex items-center gap-2 text-sm" style={{ color: "#4A4536" }}>
                       <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: gold }} />{f}
                     </li>
                   ))}
                 </ul>
                 <Button className="mt-6 px-6 py-4 font-semibold rounded-xl"
-                  style={{ background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }}
+                  style={{ background: `linear-gradient(135deg,#8B6F2E,#A6863F)`, color: navy }}
                   onClick={() => navigate("/simulador")}>
                   Simular gratuitamente <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -340,24 +340,24 @@ export default function HomeSimples() {
               <MockScreen label="Projeção de Aposentadoria — 3 cenários">
                 <div className="space-y-3">
                   <div className="mb-4">
-                    <p className="text-xs" style={{ color: "#5A6A80" }}>Renda R$5.000 · Investindo R$1.000/mês · 30 anos</p>
+                    <p className="text-xs" style={{ color: "#9C9688" }}>Renda R$5.000 · Investindo R$1.000/mês · 30 anos</p>
                   </div>
                   {[
                     { label: "Conservador", capital: "R$2,4M", renda: "R$8.100/mês", color: "#ef4444" },
                     { label: "Regular", capital: "R$3,6M", renda: "R$12.000/mês", color: gold },
                     { label: "Otimista", capital: "R$5,6M", renda: "R$18.600/mês", color: "#10b981" },
                   ].map(s => (
-                    <div key={s.label} className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${s.color}33` }}>
+                    <div key={s.label} className="p-3 rounded-xl" style={{ background: "rgba(28,26,20,0.04)", border: `1px solid ${s.color}33` }}>
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-bold" style={{ color: s.color }}>{s.label}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <p className="text-xs" style={{ color: "#5A6A80" }}>Capital acumulado</p>
-                          <p className="text-sm font-bold" style={{ color: "#F0E6C8" }}>{s.capital}</p>
+                          <p className="text-xs" style={{ color: "#9C9688" }}>Capital acumulado</p>
+                          <p className="text-sm font-bold" style={{ color: "#1C1A14" }}>{s.capital}</p>
                         </div>
                         <div>
-                          <p className="text-xs" style={{ color: "#5A6A80" }}>Renda mensal</p>
+                          <p className="text-xs" style={{ color: "#9C9688" }}>Renda mensal</p>
                           <p className="text-sm font-bold" style={{ color: s.color }}>{s.renda}</p>
                         </div>
                       </div>
@@ -374,8 +374,8 @@ export default function HomeSimples() {
               <Clock className="w-5 h-5" style={{ color: "#3B82F6" }} />
             </div>
             <div>
-              <p className="text-sm font-bold mb-1" style={{ color: "#F0E6C8" }}>Bônus incluso: gestão do tempo</p>
-              <p className="text-sm" style={{ color: "#8A9BB5" }}>
+              <p className="text-sm font-bold mb-1" style={{ color: "#1C1A14" }}>Bônus incluso: gestão do tempo</p>
+              <p className="text-sm" style={{ color: "#5C5748" }}>
                 O sistema também organiza suas tarefas do dia a dia — vem junto, sem custo extra, pra quando você quiser usar.
               </p>
             </div>
@@ -384,34 +384,34 @@ export default function HomeSimples() {
       </section>
 
       {/* SIMULADOR CTA */}
-      <section className="py-16 px-4" style={{ background: "#0D1B4B" }}>
+      <section className="py-16 px-4" style={{ background: "#F4F3EF" }}>
         <div className="container max-w-3xl mx-auto text-center">
           <PiggyBank className="w-10 h-10 mx-auto mb-4" style={{ color: gold }} />
-          <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ color: "#F0E6C8" }}>
+          <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ color: "#1C1A14" }}>
             Descubra quanto você vai ter na aposentadoria
           </h2>
-          <p className="text-base mb-6" style={{ color: "#8A9BB5" }}>
+          <p className="text-base mb-6" style={{ color: "#5C5748" }}>
             Simulação gratuita em 30 segundos. Sem cadastro. Sem compromisso.
           </p>
           <Button size="lg" className="px-8 py-5 text-base rounded-xl font-semibold"
-            style={{ background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }}
+            style={{ background: `linear-gradient(135deg,#8B6F2E,#A6863F)`, color: navy }}
             onClick={() => navigate("/simulador")}>
             Simular agora — é gratuito <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
-          <p className="mt-3 text-xs" style={{ color: "#5A6A80" }}>30 segundos · gestordevida.com.br/simulador</p>
+          <p className="mt-3 text-xs" style={{ color: "#9C9688" }}>30 segundos · gestordevida.com.br/simulador</p>
         </div>
       </section>
 
       {/* DEPOIMENTOS — inalterado */}
-      <section ref={testRef} className="py-20 px-4" style={{ background: "#070E26" }}>
+      <section ref={testRef} className="py-20 px-4" style={{ background: "#FFFFFF" }}>
         <div className="container max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: gold }}>Quem já usa</p>
-            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#F0E6C8" }}>Pessoas reais. Rotinas reais.</h2>
+            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#1C1A14" }}>Pessoas reais. Rotinas reais.</h2>
           </div>
 
-          <div className="max-w-2xl mx-auto mb-10 p-6 rounded-2xl text-center" style={{ background: "rgba(201,168,76,0.07)", border: "1px solid rgba(201,168,76,0.35)" }}>
-            <p className="text-lg md:text-xl font-semibold leading-relaxed italic" style={{ color: "#E2C97E" }}>
+          <div className="max-w-2xl mx-auto mb-10 p-6 rounded-2xl text-center" style={{ background: "rgba(139,111,46,0.07)", border: "1px solid rgba(139,111,46,0.35)" }}>
+            <p className="text-lg md:text-xl font-semibold leading-relaxed italic" style={{ color: "#A6863F" }}>
               "Comprei achando que era mais um app de finanças complicado. Não é. É mais simples que a planilha que eu tinha antes."
             </p>
             <p className="text-sm mt-3 font-semibold" style={{ color: gold }}>— Juliana Castro, Psicóloga · Curitiba</p>
@@ -436,17 +436,17 @@ export default function HomeSimples() {
                 name: "Juliana Castro", role: "Psicóloga · Curitiba", handle: "usuário verificado", link: null,
               },
             ].map((t) => (
-              <div key={t.name} className="p-7 rounded-2xl flex flex-col" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
+              <div key={t.name} className="p-7 rounded-2xl flex flex-col" style={{ background: "rgba(28,26,20,0.04)", border: "1px solid rgba(139,111,46,0.2)" }}>
                 <div className="flex gap-1 mb-4">{Array.from({ length: 5 }).map((_, s) => (<Star key={s} className="w-4 h-4 fill-current" style={{ color: gold }} />))}</div>
-                <p className="text-sm leading-relaxed flex-1 mb-5" style={{ color: "#C8D8E8" }}>"{t.text}"</p>
+                <p className="text-sm leading-relaxed flex-1 mb-5" style={{ color: "#4A4536" }}>"{t.text}"</p>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-bold" style={{ color: "#F0E6C8" }}>{t.name}</p>
-                    <p className="text-xs mt-0.5" style={{ color: "#8A9BB5" }}>{t.role}</p>
+                    <p className="text-sm font-bold" style={{ color: "#1C1A14" }}>{t.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "#5C5748" }}>{t.role}</p>
                   </div>
                   {t.link
                     ? <a href={t.link} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold" style={{ color: gold }}>{t.handle}</a>
-                    : <span className="text-xs" style={{ color: "#5A6A80" }}>{t.handle}</span>}
+                    : <span className="text-xs" style={{ color: "#9C9688" }}>{t.handle}</span>}
                 </div>
               </div>
             ))}
@@ -455,14 +455,14 @@ export default function HomeSimples() {
       </section>
 
       {/* IDEALIZADOR */}
-      <section className="py-16 px-4" style={{ background: "#070E26" }}>
+      <section className="py-16 px-4" style={{ background: "#FFFFFF" }}>
         <div className="container max-w-3xl mx-auto">
-          <div className="rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left" style={{ background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.25)" }}>
-            <img src="/idealizador/anderson.png" alt="Anderson Barcellos" className="w-24 h-24 rounded-full object-cover flex-shrink-0" style={{ border: "2px solid rgba(201,168,76,0.4)" }} />
+          <div className="rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left" style={{ background: "rgba(139,111,46,0.06)", border: "1px solid rgba(139,111,46,0.25)" }}>
+            <img src="/idealizador/anderson.png" alt="Anderson Barcellos" className="w-24 h-24 rounded-full object-cover flex-shrink-0" style={{ border: "2px solid rgba(139,111,46,0.4)" }} />
             <div className="flex-1">
               <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: gold }}>Idealizador</p>
-              <h3 className="text-lg font-bold mb-1" style={{ color: "#F0E6C8" }}>Anderson Barcellos</h3>
-              <p className="text-sm mb-3" style={{ color: "#8A9BB5" }}>Consultor de Valores Mobiliários registrado na CVM · Barcellos Investimentos</p>
+              <h3 className="text-lg font-bold mb-1" style={{ color: "#1C1A14" }}>Anderson Barcellos</h3>
+              <p className="text-sm mb-3" style={{ color: "#5C5748" }}>Consultor de Valores Mobiliários registrado na CVM · Barcellos Investimentos</p>
               <a href="https://www.barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-semibold hover:underline" style={{ color: gold }}>
                 Conhecer a Barcellos Investimentos <ArrowRight className="w-4 h-4" />
               </a>
@@ -472,11 +472,11 @@ export default function HomeSimples() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-20 px-4" style={{ background: "#0D1B4B" }}>
+      <section id="faq" className="py-20 px-4" style={{ background: "#F4F3EF" }}>
         <div className="container max-w-3xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs font-bold tracking-widest mb-3" style={{ color: gold }}>PERGUNTAS FREQUENTES</p>
-            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#F0E6C8" }}>Antes de decidir</h2>
+            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#1C1A14" }}>Antes de decidir</h2>
           </div>
           <div className="space-y-3">
             {[
@@ -488,12 +488,12 @@ export default function HomeSimples() {
               { q: "O pagamento é único mesmo?", a: "Sim. Pague uma vez e use para sempre. Sem assinatura, sem cobrança recorrente." },
               { q: "E se eu não gostar?", a: "Garantia de 7 dias. Se por qualquer motivo não ficar satisfeito, o valor é devolvido integralmente, sem perguntas." },
             ].map((item, i) => (
-              <details key={i} className="group rounded-xl overflow-hidden" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.15)" }}>
-                <summary className="flex items-center justify-between p-5 cursor-pointer list-none" style={{ color: "#E8E0CC" }}>
+              <details key={i} className="group rounded-xl overflow-hidden" style={{ background: "rgba(28,26,20,0.04)", border: "1px solid rgba(139,111,46,0.15)" }}>
+                <summary className="flex items-center justify-between p-5 cursor-pointer list-none" style={{ color: "#1C1A14" }}>
                   <span className="font-semibold pr-4">{item.q}</span>
                   <span className="text-xl flex-shrink-0 transition-transform group-open:rotate-45" style={{ color: gold }}>+</span>
                 </summary>
-                <div className="px-5 pb-5 text-sm leading-relaxed" style={{ color: "rgba(232,224,204,0.75)" }}>
+                <div className="px-5 pb-5 text-sm leading-relaxed" style={{ color: "rgba(28,26,20,0.75)" }}>
                   {item.a}
                   {(item as any).link && (
                     <a href={(item as any).link} target="_blank" rel="noopener noreferrer" className="block mt-2 font-semibold hover:underline" style={{ color: gold }}>
@@ -508,69 +508,69 @@ export default function HomeSimples() {
       </section>
 
       {/* PLANOS */}
-      <section ref={planosRef} id="planos" className="py-20 px-4" style={{ background: "#070E26" }}>
+      <section ref={planosRef} id="planos" className="py-20 px-4" style={{ background: "#FFFFFF" }}>
         <div className="container">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: gold }}>Investimento</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#F0E6C8" }}>Escolha como começar</h2>
-            <p className="text-lg" style={{ color: "#8A9BB5" }}>Pagamento único. Sem mensalidade. Pague uma vez e use para sempre.</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#1C1A14" }}>Escolha como começar</h2>
+            <p className="text-lg" style={{ color: "#5C5748" }}>Pagamento único. Sem mensalidade. Pague uma vez e use para sempre.</p>
           </div>
           <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
             {PLANS.map((plan) => (
               <div key={plan.id} className="relative rounded-2xl p-6 sm:p-8 flex flex-col"
-                style={{ background: (plan as any).badge ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.04)", border: (plan as any).badge ? "2px solid rgba(201,168,76,0.6)" : "1px solid rgba(201,168,76,0.15)" }}>
+                style={{ background: (plan as any).badge ? "rgba(139,111,46,0.08)" : "rgba(28,26,20,0.04)", border: (plan as any).badge ? "2px solid rgba(139,111,46,0.6)" : "1px solid rgba(139,111,46,0.15)" }}>
                 {(plan as any).badge && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="border-0 px-4 py-1 text-sm font-semibold" style={{ background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }}>{(plan as any).badge}</Badge>
+                    <Badge className="border-0 px-4 py-1 text-sm font-semibold" style={{ background: `linear-gradient(135deg,#8B6F2E,#A6863F)`, color: navy }}>{(plan as any).badge}</Badge>
                   </div>
                 )}
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${plan.color} flex items-center justify-center mb-5`}>
                   <plan.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-1" style={{ color: "#F0E6C8" }}>{plan.name}</h3>
-                <p className="text-sm mb-5" style={{ color: "#8A9BB5" }}>{plan.description}</p>
+                <h3 className="text-xl font-bold mb-1" style={{ color: "#1C1A14" }}>{plan.name}</h3>
+                <p className="text-sm mb-5" style={{ color: "#5C5748" }}>{plan.description}</p>
                 <div className="mb-6">
                   <span className="text-4xl font-extrabold" style={{ color: gold }}>R$ {plan.price}</span>
-                  <span className="text-sm ml-2" style={{ color: "#8A9BB5" }}>{(plan as any).priceLabel}</span>
+                  <span className="text-sm ml-2" style={{ color: "#5C5748" }}>{(plan as any).priceLabel}</span>
                   {(plan as any).badge && <p className="text-xs mt-1 font-semibold" style={{ color: "#ef4444" }}>⚡ Preço promocional por tempo limitado</p>}
                 </div>
                 <ul className="space-y-2 mb-8 flex-1">
                   {plan.features.map(f => (
-                    <li key={f} className="flex items-start gap-2 text-sm" style={{ color: "#C8D8E8" }}>
+                    <li key={f} className="flex items-start gap-2 text-sm" style={{ color: "#4A4536" }}>
                       <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: gold }} />{f}
                     </li>
                   ))}
                   {plan.notIncluded.map(f => (
-                    <li key={f} className="flex items-start gap-2 text-sm" style={{ color: "#3A4A60" }}>
-                      <X className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#3A4A60" }} />{f}
+                    <li key={f} className="flex items-start gap-2 text-sm" style={{ color: "#C4BEAE" }}>
+                      <X className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#C4BEAE" }} />{f}
                     </li>
                   ))}
                 </ul>
                 <Button onClick={() => handlePlanClick(plan.hotmartUrl, plan.name, plan.price)}
                   className="w-full rounded-xl py-5 font-semibold"
                   style={(plan as any).badge
-                    ? { background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }
-                    : { background: "rgba(201,168,76,0.15)", color: gold, border: "1px solid rgba(201,168,76,0.4)" }}>
+                    ? { background: `linear-gradient(135deg,#8B6F2E,#A6863F)`, color: navy }
+                    : { background: "rgba(139,111,46,0.15)", color: gold, border: "1px solid rgba(139,111,46,0.4)" }}>
                   Comprar agora <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
                 <div className="flex items-center justify-center gap-1.5 mt-3">
                   <Shield className="w-3 h-3" style={{ color: "#10b981" }} />
-                  <span className="text-xs" style={{ color: "#5A6A80" }}>Garantia de 7 dias — dinheiro de volta sem perguntas</span>
+                  <span className="text-xs" style={{ color: "#9C9688" }}>Garantia de 7 dias — dinheiro de volta sem perguntas</span>
                 </div>
               </div>
             ))}
           </div>
 
           <div className="mt-10 max-w-2xl mx-auto rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left"
-            style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(201,168,76,0.3)" }}>
+            style={{ background: "rgba(28,26,20,0.03)", border: "1px dashed rgba(139,111,46,0.3)" }}>
             <BookOpen className="w-9 h-9 flex-shrink-0" style={{ color: gold }} />
             <div className="flex-1">
-              <p className="font-semibold mb-1" style={{ color: "#F0E6C8" }}>Ainda não tem certeza? Baixe grátis o guia da regra 50/30/20</p>
-              <p className="text-sm" style={{ color: "#8A9BB5" }}>PDF gratuito, sem compromisso — só deixar nome e email.</p>
+              <p className="font-semibold mb-1" style={{ color: "#1C1A14" }}>Ainda não tem certeza? Baixe grátis o guia da regra 50/30/20</p>
+              <p className="text-sm" style={{ color: "#5C5748" }}>PDF gratuito, sem compromisso — só deixar nome e email.</p>
             </div>
             <a href={EBOOK_GRATIS_URL} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-sm font-semibold rounded-xl px-5 py-3 whitespace-nowrap"
-              style={{ background: "rgba(201,168,76,0.15)", color: gold, border: "1px solid rgba(201,168,76,0.4)" }}>
+              style={{ background: "rgba(139,111,46,0.15)", color: gold, border: "1px solid rgba(139,111,46,0.4)" }}>
               Baixar e-book grátis <ArrowRight className="w-4 h-4" />
             </a>
           </div>
@@ -578,42 +578,42 @@ export default function HomeSimples() {
       </section>
 
       {/* CTA FINAL */}
-      <section className="py-24 px-4" style={{ background: "linear-gradient(135deg,#0D1B4B 0%,#1A2B5E 100%)", borderTop: "1px solid rgba(201,168,76,0.2)" }}>
+      <section className="py-24 px-4" style={{ background: "linear-gradient(135deg,#F4F3EF 0%,#F0EEE7 100%)", borderTop: "1px solid rgba(139,111,46,0.2)" }}>
         <div className="container text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight" style={{ color: "#F0E6C8" }}>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight" style={{ color: "#1C1A14" }}>
             Você não precisa de mais uma planilha.<br />
             <span style={{ color: gold }}>Precisa saber onde você vai chegar.</span>
           </h2>
-          <p className="text-lg mb-10" style={{ color: "#8A9BB5" }}>
+          <p className="text-lg mb-10" style={{ color: "#5C5748" }}>
             Dinheiro organizado. Aposentadoria projetada. Tudo em um sistema. R$59,90 — uma vez só.
           </p>
           <Button size="lg" onClick={handleGetStarted} className="px-10 py-6 text-lg rounded-xl font-semibold"
-            style={{ background: `linear-gradient(135deg,#C9A84C,#E2C97E)`, color: navy }}>
+            style={{ background: `linear-gradient(135deg,#8B6F2E,#A6863F)`, color: navy }}>
             Quero o Gestor de Vida — R$ 59,90 <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
-          <p className="mt-4 text-sm" style={{ color: "#5A6A80" }}>Pagamento único · Acesso vitalício · Garantia de 7 dias</p>
+          <p className="mt-4 text-sm" style={{ color: "#9C9688" }}>Pagamento único · Acesso vitalício · Garantia de 7 dias</p>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="py-10 px-4 text-sm" style={{ background: "#070E26", borderTop: "1px solid rgba(201,168,76,0.15)" }}>
+      <footer className="py-10 px-4 text-sm" style={{ background: "#FFFFFF", borderTop: "1px solid rgba(139,111,46,0.15)" }}>
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <LogoBadge size={6} />
             <span className="font-semibold" style={{ color: gold }}>Gestor de Vida</span>
           </div>
-          <p style={{ color: "#3A4A60" }}>© {new Date().getFullYear()} Gestor de Vida. Todos os direitos reservados.</p>
+          <p style={{ color: "#C4BEAE" }}>© {new Date().getFullYear()} Gestor de Vida. Todos os direitos reservados.</p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <a href="mailto:contato@gestordevida.com.br" className="transition-colors" style={{ color: "#5A6A80" }}>Suporte</a>
-            <a href="#planos" className="transition-colors" style={{ color: "#5A6A80" }}>Planos</a>
-            <a href="/politica-de-privacidade" className="transition-colors" style={{ color: "#5A6A80" }}>Privacidade</a>
-            <a href="/termos-de-uso" className="transition-colors" style={{ color: "#5A6A80" }}>Termos de Uso</a>
+            <a href="mailto:contato@gestordevida.com.br" className="transition-colors" style={{ color: "#9C9688" }}>Suporte</a>
+            <a href="#planos" className="transition-colors" style={{ color: "#9C9688" }}>Planos</a>
+            <a href="/politica-de-privacidade" className="transition-colors" style={{ color: "#9C9688" }}>Privacidade</a>
+            <a href="/termos-de-uso" className="transition-colors" style={{ color: "#9C9688" }}>Termos de Uso</a>
           </div>
         </div>
-        <div className="container text-center mt-6 pt-6" style={{ borderTop: "1px solid rgba(201,168,76,0.08)" }}>
-          <p className="text-xs" style={{ color: "#3A4A60" }}>
+        <div className="container text-center mt-6 pt-6" style={{ borderTop: "1px solid rgba(139,111,46,0.08)" }}>
+          <p className="text-xs" style={{ color: "#C4BEAE" }}>
             Um produto de Anderson Barcellos, Consultor de Valores Mobiliários registrado na CVM · {" "}
-            <a href="https://www.barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="transition-colors" style={{ color: "#5A6A80" }}>barcellosinvestimentos.com.br</a>
+            <a href="https://www.barcellosinvestimentos.com.br" target="_blank" rel="noopener noreferrer" className="transition-colors" style={{ color: "#9C9688" }}>barcellosinvestimentos.com.br</a>
           </p>
         </div>
       </footer>

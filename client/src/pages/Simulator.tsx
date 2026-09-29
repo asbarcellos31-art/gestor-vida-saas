@@ -68,7 +68,7 @@ const IPCA = 0.045; // premissa IPCA 4,5% a.a.
 // Convertidas para nominal via Fisher: (1 + real) * (1 + IPCA) - 1
 const SCENARIOS_DEF = [
   { label: "Pessimista", realRate: 0.06, color: "#ef4444" },
-  { label: "Regular",    realRate: 0.08, color: "#C9A84C" },
+  { label: "Regular",    realRate: 0.08, color: "#8B6F2E" },
   { label: "Otimista",   realRate: 0.10, color: "#10b981" },
 ];
 
@@ -202,9 +202,9 @@ export default function Simulator() {
   };
 
   const inputStyle = {
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(201,168,76,0.3)",
-    color: "#F0E6C8",
+    background: "rgba(28,26,20,0.06)",
+    border: "1px solid rgba(139,111,46,0.3)",
+    color: "#1C1A14",
     height: "52px",
     fontSize: "1rem",
   };
@@ -217,11 +217,11 @@ export default function Simulator() {
 
   // ── Cenários panel (reutilizável) ─────────────────────────────────
   const ScenariosPanel = ({ r, label }: { r: SimResult; label?: string }) => (
-    <div className="rounded-2xl p-6" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
-      {label && <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>{label}</p>}
+    <div className="rounded-2xl p-6" style={{ background: "rgba(28,26,20,0.04)", border: "1px solid rgba(139,111,46,0.2)" }}>
+      {label && <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#8B6F2E" }}>{label}</p>}
       <div className="space-y-3">
         {r.scenarios.map((s) => (
-          <div key={s.label} className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${s.color}33` }}>
+          <div key={s.label} className="rounded-xl p-4" style={{ background: "rgba(28,26,20,0.04)", border: `1px solid ${s.color}33` }}>
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-bold" style={{ color: s.color }}>
                 {s.label} (IPCA+{(s.rate * 100).toFixed(0)}%)
@@ -229,33 +229,33 @@ export default function Simulator() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <p className="text-xs" style={{ color: "#5A6A80" }}>Capital acumulado</p>
-                <p className="text-base font-extrabold" style={{ color: "#F0E6C8" }}>{fmt(s.fv)}</p>
+                <p className="text-xs" style={{ color: "#9C9688" }}>Capital acumulado</p>
+                <p className="text-base font-extrabold" style={{ color: "#1C1A14" }}>{fmt(s.fv)}</p>
               </div>
               <div>
-                <p className="text-xs" style={{ color: "#5A6A80" }}>Renda mensal gerada</p>
+                <p className="text-xs" style={{ color: "#9C9688" }}>Renda mensal gerada</p>
                 <p className="text-base font-extrabold" style={{ color: s.color }}>{fmt(s.monthlyFromFv)}/mês</p>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <p className="text-xs mt-3 text-center" style={{ color: "#5A6A80" }}>
+      <p className="text-xs mt-3 text-center" style={{ color: "#9C9688" }}>
         Guardando {fmt(r.savingsUsed)}/mês · Renda calculada com 4% de retirada anual
       </p>
     </div>
   );
 
   return (
-    <div className="min-h-screen" style={{ background: "#0B1437" }}>
+    <div className="min-h-screen" style={{ background: "#FCFBF9" }}>
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b" style={{ background: "rgba(11,20,55,0.92)", borderColor: "rgba(201,168,76,0.2)" }}>
+      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b" style={{ background: "rgba(250,247,240,0.92)", borderColor: "rgba(139,111,46,0.2)" }}>
         <div className="container flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
             <img src={ICON_URL} alt="Gestor de Vida" className="w-8 h-8 rounded-lg object-cover" />
-            <span className="font-bold text-lg" style={{ color: "#C9A84C" }}>Gestor de Vida</span>
+            <span className="font-bold text-lg" style={{ color: "#8B6F2E" }}>Gestor de Vida</span>
           </div>
-          <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: "rgba(201,168,76,0.15)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.3)" }}>
+          <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: "rgba(139,111,46,0.15)", color: "#8B6F2E", border: "1px solid rgba(139,111,46,0.3)" }}>
             Simulador Gratuito
           </span>
         </div>
@@ -266,13 +266,13 @@ export default function Simulator() {
 
           {/* Header */}
           <div className="text-center mb-10">
-            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#C9A84C" }}>Simulador Gestor de Vida</p>
-            <h1 className="text-3xl sm:text-4xl font-extrabold mb-4 leading-tight" style={{ color: "#F0E6C8" }}>
-              {step === "form"    && <>Quanto você vai ter<br /><span style={{ color: "#C9A84C" }}>na aposentadoria?</span></>}
-              {step === "contact" && <>Sua simulação está<br /><span style={{ color: "#C9A84C" }}>pronta.</span></>}
-              {step === "result"  && <>Seu resultado,<br /><span style={{ color: "#C9A84C" }}>{name.split(" ")[0]}.</span></>}
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#8B6F2E" }}>Simulador Gestor de Vida</p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold mb-4 leading-tight" style={{ color: "#1C1A14" }}>
+              {step === "form"    && <>Quanto você vai ter<br /><span style={{ color: "#8B6F2E" }}>na aposentadoria?</span></>}
+              {step === "contact" && <>Sua simulação está<br /><span style={{ color: "#8B6F2E" }}>pronta.</span></>}
+              {step === "result"  && <>Seu resultado,<br /><span style={{ color: "#8B6F2E" }}>{name.split(" ")[0]}.</span></>}
             </h1>
-            <p className="text-base" style={{ color: "#8A9BB5" }}>
+            <p className="text-base" style={{ color: "#5C5748" }}>
               {step === "form"    && "Preencha os dados e veja sua projeção real em 3 cenários — comparando com o que o INSS vai te pagar."}
               {step === "contact" && "Deixe seus dados para receber o resultado completo com os 3 cenários de projeção."}
               {step === "result"  && "Baseado na regra 50/30/20 — o quanto você investiria e onde chegaria."}
@@ -281,33 +281,33 @@ export default function Simulator() {
 
           {/* ── STEP 1: Formulário ── */}
           {step === "form" && (
-            <div className="rounded-2xl p-6 sm:p-8 space-y-5" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
+            <div className="rounded-2xl p-6 sm:p-8 space-y-5" style={{ background: "rgba(28,26,20,0.04)", border: "1px solid rgba(139,111,46,0.2)" }}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#C9A84C" }}>Sua idade atual</label>
+                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#8B6F2E" }}>Sua idade atual</label>
                   <Input type="number" placeholder="Ex: 32" value={currentAge} onChange={e => setCurrentAge(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#C9A84C" }}>Quer se aposentar com</label>
+                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#8B6F2E" }}>Quer se aposentar com</label>
                   <Input type="number" placeholder="Ex: 60" value={retirementAge} onChange={e => setRetirementAge(e.target.value)} style={inputStyle} />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold mb-2 block" style={{ color: "#C9A84C" }}>Sua renda mensal atual (R$)</label>
+                <label className="text-xs font-semibold mb-2 block" style={{ color: "#8B6F2E" }}>Sua renda mensal atual (R$)</label>
                 <Input type="number" placeholder="Ex: 5000" value={monthlyIncome} onChange={e => setMonthlyIncome(e.target.value)} style={inputStyle} />
-                <p className="text-xs mt-1" style={{ color: "#5A6A80" }}>Usamos a Regra 50/30/20 para calcular quanto você poderia guardar.</p>
+                <p className="text-xs mt-1" style={{ color: "#9C9688" }}>Usamos a Regra 50/30/20 para calcular quanto você poderia guardar.</p>
               </div>
               <div>
-                <label className="text-xs font-semibold mb-2 block" style={{ color: "#C9A84C" }}>Quanto quer receber por mês na aposentadoria (R$)</label>
+                <label className="text-xs font-semibold mb-2 block" style={{ color: "#8B6F2E" }}>Quanto quer receber por mês na aposentadoria (R$)</label>
                 <Input type="number" placeholder="Ex: 3000" value={desiredIncome} onChange={e => setDesiredIncome(e.target.value)} style={inputStyle} />
               </div>
               {error && <p className="text-sm text-red-400">{error}</p>}
-              <Button onClick={handleCalculate} className="w-full py-6 text-lg font-bold rounded-xl" style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}>
+              <Button onClick={handleCalculate} className="w-full py-6 text-lg font-bold rounded-xl" style={{ background: "linear-gradient(135deg,#8B6F2E,#A6863F)", color: "#FCFBF9" }}>
                 Simular minha aposentadoria <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <div className="flex items-center justify-center gap-2">
-                <Lock className="w-3 h-3" style={{ color: "#5A6A80" }} />
-                <p className="text-xs" style={{ color: "#5A6A80" }}>Gratuito · Sem compromisso · Dados protegidos</p>
+                <Lock className="w-3 h-3" style={{ color: "#9C9688" }} />
+                <p className="text-xs" style={{ color: "#9C9688" }}>Gratuito · Sem compromisso · Dados protegidos</p>
               </div>
             </div>
           )}
@@ -316,68 +316,68 @@ export default function Simulator() {
           {step === "contact" && result && (
             <div className="space-y-6">
               {/* 50/30/20 visível */}
-              <div className="rounded-2xl p-6" style={{ background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.25)" }}>
-                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>Regra 50/30/20 — sua renda de {fmt(income)}</p>
+              <div className="rounded-2xl p-6" style={{ background: "rgba(139,111,46,0.06)", border: "1px solid rgba(139,111,46,0.25)" }}>
+                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#8B6F2E" }}>Regra 50/30/20 — sua renda de {fmt(income)}</p>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   {[
                     { label: "Necessidades", pct: "50%", val: result.breakdown.needs,   highlight: false },
                     { label: "Lazer",        pct: "30%", val: result.breakdown.wants,   highlight: false },
                     { label: "Futuro",       pct: "20%", val: result.breakdown.savings, highlight: true  },
                   ].map((item) => (
-                    <div key={item.label} className="rounded-xl p-3" style={{ background: item.highlight ? "rgba(201,168,76,0.12)" : "rgba(255,255,255,0.04)", border: item.highlight ? "1px solid rgba(201,168,76,0.4)" : "none" }}>
-                      <p className="text-xs mb-1" style={{ color: item.highlight ? "#C9A84C" : "#8A9BB5" }}>{item.pct}</p>
-                      <p className="text-lg font-bold" style={{ color: item.highlight ? "#C9A84C" : "#F0E6C8" }}>{fmt(item.val)}</p>
-                      <p className="text-xs mt-1" style={{ color: "#5A6A80" }}>{item.label}</p>
+                    <div key={item.label} className="rounded-xl p-3" style={{ background: item.highlight ? "rgba(139,111,46,0.12)" : "rgba(28,26,20,0.04)", border: item.highlight ? "1px solid rgba(139,111,46,0.4)" : "none" }}>
+                      <p className="text-xs mb-1" style={{ color: item.highlight ? "#8B6F2E" : "#5C5748" }}>{item.pct}</p>
+                      <p className="text-lg font-bold" style={{ color: item.highlight ? "#8B6F2E" : "#1C1A14" }}>{fmt(item.val)}</p>
+                      <p className="text-xs mt-1" style={{ color: "#9C9688" }}>{item.label}</p>
                     </div>
                   ))}
                 </div>
-                <p className="text-sm mt-4 text-center font-semibold" style={{ color: "#C9A84C" }}>
+                <p className="text-sm mt-4 text-center font-semibold" style={{ color: "#8B6F2E" }}>
                   Você poderia estar guardando {fmt(result.breakdown.savings)}/mês para o futuro.
                 </p>
               </div>
 
               {/* Cenários borrados */}
-              <div className="relative rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(201,168,76,0.2)" }}>
-                <div className="p-6 blur-sm select-none pointer-events-none" style={{ background: "rgba(255,255,255,0.04)" }}>
-                  <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>Sua projeção em 3 cenários</p>
+              <div className="relative rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(139,111,46,0.2)" }}>
+                <div className="p-6 blur-sm select-none pointer-events-none" style={{ background: "rgba(28,26,20,0.04)" }}>
+                  <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#8B6F2E" }}>Sua projeção em 3 cenários</p>
                   <div className="space-y-3">
                     {["Pessimista","Regular","Otimista"].map((l) => (
-                      <div key={l} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.05)" }}>
-                        <span className="font-semibold" style={{ color: "#C9A84C" }}>{l}</span>
-                        <span className="text-lg font-bold" style={{ color: "#F0E6C8" }}>R$ ██████</span>
-                        <span className="text-sm" style={{ color: "#8A9BB5" }}>██████/mês</span>
+                      <div key={l} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "rgba(28,26,20,0.05)" }}>
+                        <span className="font-semibold" style={{ color: "#8B6F2E" }}>{l}</span>
+                        <span className="text-lg font-bold" style={{ color: "#1C1A14" }}>R$ ██████</span>
+                        <span className="text-sm" style={{ color: "#5C5748" }}>██████/mês</span>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "rgba(11,20,55,0.85)" }}>
-                  <Lock className="w-8 h-8 mb-2" style={{ color: "#C9A84C" }} />
-                  <p className="text-sm font-bold" style={{ color: "#F0E6C8" }}>Deixe seus dados para ver</p>
+                <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "rgba(250,247,240,0.85)" }}>
+                  <Lock className="w-8 h-8 mb-2" style={{ color: "#8B6F2E" }} />
+                  <p className="text-sm font-bold" style={{ color: "#1C1A14" }}>Deixe seus dados para ver</p>
                 </div>
               </div>
 
               {/* Formulário contato */}
-              <div className="rounded-2xl p-6 sm:p-8 space-y-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.3)" }}>
-                <p className="text-sm font-semibold text-center" style={{ color: "#8A9BB5" }}>Onde enviamos sua análise completa?</p>
+              <div className="rounded-2xl p-6 sm:p-8 space-y-4" style={{ background: "rgba(28,26,20,0.04)", border: "1px solid rgba(139,111,46,0.3)" }}>
+                <p className="text-sm font-semibold text-center" style={{ color: "#5C5748" }}>Onde enviamos sua análise completa?</p>
                 <div>
-                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#C9A84C" }}>Seu nome</label>
+                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#8B6F2E" }}>Seu nome</label>
                   <Input placeholder="Como posso te chamar?" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#C9A84C" }}>Seu melhor email</label>
+                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#8B6F2E" }}>Seu melhor email</label>
                   <Input type="email" placeholder="email@exemplo.com" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#C9A84C" }}>Seu WhatsApp</label>
+                  <label className="text-xs font-semibold mb-2 block" style={{ color: "#8B6F2E" }}>Seu WhatsApp</label>
                   <Input type="tel" placeholder="(00) 00000-0000" value={phone} onChange={e => setPhone(e.target.value)} onKeyDown={e => e.key === "Enter" && handleContactSubmit()} style={inputStyle} />
                 </div>
                 {error && <p className="text-sm text-red-400">{error}</p>}
-                <Button onClick={handleContactSubmit} disabled={submitting} className="w-full py-6 text-lg font-bold rounded-xl" style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}>
+                <Button onClick={handleContactSubmit} disabled={submitting} className="w-full py-6 text-lg font-bold rounded-xl" style={{ background: "linear-gradient(135deg,#8B6F2E,#A6863F)", color: "#FCFBF9" }}>
                   {submitting ? "Calculando..." : "Ver minha projeção completa"} <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <div className="flex items-center justify-center gap-2">
-                  <Shield className="w-3 h-3" style={{ color: "#5A6A80" }} />
-                  <p className="text-xs" style={{ color: "#5A6A80" }}>Seus dados não serão compartilhados com terceiros</p>
+                  <Shield className="w-3 h-3" style={{ color: "#9C9688" }} />
+                  <p className="text-xs" style={{ color: "#9C9688" }}>Seus dados não serão compartilhados com terceiros</p>
                 </div>
               </div>
             </div>
@@ -388,18 +388,18 @@ export default function Simulator() {
             <div className="space-y-6">
 
               {/* 50/30/20 */}
-              <div className="rounded-2xl p-6" style={{ background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.25)" }}>
-                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#C9A84C" }}>Regra 50/30/20 — sua renda de {fmt(income)}</p>
+              <div className="rounded-2xl p-6" style={{ background: "rgba(139,111,46,0.06)", border: "1px solid rgba(139,111,46,0.25)" }}>
+                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#8B6F2E" }}>Regra 50/30/20 — sua renda de {fmt(income)}</p>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   {[
                     { label: "Necessidades", pct: "50%", val: result.breakdown.needs,   highlight: false },
                     { label: "Lazer",        pct: "30%", val: result.breakdown.wants,   highlight: false },
                     { label: "Futuro",       pct: "20%", val: result.breakdown.savings, highlight: true  },
                   ].map((item) => (
-                    <div key={item.label} className="rounded-xl p-3" style={{ background: item.highlight ? "rgba(201,168,76,0.12)" : "rgba(255,255,255,0.04)", border: item.highlight ? "1px solid rgba(201,168,76,0.4)" : "none" }}>
-                      <p className="text-xs mb-1" style={{ color: item.highlight ? "#C9A84C" : "#8A9BB5" }}>{item.pct}</p>
-                      <p className="text-lg font-bold" style={{ color: item.highlight ? "#C9A84C" : "#F0E6C8" }}>{fmt(item.val)}</p>
-                      <p className="text-xs mt-1" style={{ color: "#5A6A80" }}>{item.label}</p>
+                    <div key={item.label} className="rounded-xl p-3" style={{ background: item.highlight ? "rgba(139,111,46,0.12)" : "rgba(28,26,20,0.04)", border: item.highlight ? "1px solid rgba(139,111,46,0.4)" : "none" }}>
+                      <p className="text-xs mb-1" style={{ color: item.highlight ? "#8B6F2E" : "#5C5748" }}>{item.pct}</p>
+                      <p className="text-lg font-bold" style={{ color: item.highlight ? "#8B6F2E" : "#1C1A14" }}>{fmt(item.val)}</p>
+                      <p className="text-xs mt-1" style={{ color: "#9C9688" }}>{item.label}</p>
                     </div>
                   ))}
                 </div>
@@ -409,38 +409,38 @@ export default function Simulator() {
               <ScenariosPanel r={result} label={`Se você investir ${fmt(result.breakdown.savings)}/mês (seus 20%) por ${result.years} anos`} />
 
               {/* INSS vs Investimento — o comparativo principal */}
-              <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(201,168,76,0.25)" }}>
-                <div className="px-6 py-4" style={{ background: "rgba(201,168,76,0.08)", borderBottom: "1px solid rgba(201,168,76,0.2)" }}>
-                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#C9A84C" }}>
+              <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(139,111,46,0.25)" }}>
+                <div className="px-6 py-4" style={{ background: "rgba(139,111,46,0.08)", borderBottom: "1px solid rgba(139,111,46,0.2)" }}>
+                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#8B6F2E" }}>
                     INSS vs Investimento — o mesmo dinheiro, destinos diferentes
                   </p>
                 </div>
 
                 {/* Valor de referência */}
-                <div className="px-6 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                  <p className="text-xs mb-3" style={{ color: "#8A9BB5" }}>Valor de referência — seus 20% mensais:</p>
-                  <p className="text-3xl font-extrabold" style={{ color: "#F0E6C8" }}>{fmt(result.savingsUsed)}<span className="text-base font-normal" style={{ color: "#8A9BB5" }}>/mês</span></p>
-                  <p className="text-xs mt-2" style={{ color: "#5A6A80" }}>
+                <div className="px-6 py-5" style={{ borderBottom: "1px solid rgba(28,26,20,0.06)" }}>
+                  <p className="text-xs mb-3" style={{ color: "#5C5748" }}>Valor de referência — seus 20% mensais:</p>
+                  <p className="text-3xl font-extrabold" style={{ color: "#1C1A14" }}>{fmt(result.savingsUsed)}<span className="text-base font-normal" style={{ color: "#5C5748" }}>/mês</span></p>
+                  <p className="text-xs mt-2" style={{ color: "#9C9688" }}>
                     O que você receberia se destinasse esse mesmo valor ao INSS vs. investimento privado.
                   </p>
                 </div>
 
                 {/* Duas colunas: INSS vs Investimento */}
-                <div className="grid grid-cols-2 divide-x" style={{ divideColor: "rgba(255,255,255,0.06)" }}>
+                <div className="grid grid-cols-2 divide-x" style={{ divideColor: "rgba(28,26,20,0.06)" }}>
                   {/* Coluna INSS */}
                   <div className="p-5 space-y-3" style={{ background: "rgba(239,68,68,0.04)" }}>
                     <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#ef4444" }}>Com o INSS</p>
                     <div>
-                      <p className="text-xs" style={{ color: "#8A9BB5" }}>Benefício estimado</p>
+                      <p className="text-xs" style={{ color: "#5C5748" }}>Benefício estimado</p>
                       <p className="text-2xl font-extrabold" style={{ color: "#ef4444" }}>{fmt(inssEstimated)}/mês</p>
                     </div>
                     <div>
-                      <p className="text-xs" style={{ color: "#8A9BB5" }}>Teto máximo INSS</p>
-                      <p className="text-base font-bold" style={{ color: "#8A9BB5" }}>{fmt(INSS_BENEFIT_TETO)}/mês</p>
+                      <p className="text-xs" style={{ color: "#5C5748" }}>Teto máximo INSS</p>
+                      <p className="text-base font-bold" style={{ color: "#5C5748" }}>{fmt(INSS_BENEFIT_TETO)}/mês</p>
                     </div>
                     {result.gap > 0 && (
                       <div className="rounded-lg p-3" style={{ background: "rgba(239,68,68,0.1)" }}>
-                        <p className="text-xs" style={{ color: "#8A9BB5" }}>Falta para sua meta</p>
+                        <p className="text-xs" style={{ color: "#5C5748" }}>Falta para sua meta</p>
                         <p className="text-base font-bold" style={{ color: "#ef4444" }}>−{fmt(result.gap)}/mês</p>
                       </div>
                     )}
@@ -451,16 +451,16 @@ export default function Simulator() {
                     <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#10b981" }}>Se investir o mesmo valor</p>
                     {result.inssScenarios.map((s) => (
                       <div key={s.label}>
-                        <p className="text-xs" style={{ color: "#5A6A80" }}>{s.label} (IPCA+{(s.rate * 100).toFixed(0)}%)</p>
+                        <p className="text-xs" style={{ color: "#9C9688" }}>{s.label} (IPCA+{(s.rate * 100).toFixed(0)}%)</p>
                         <p className="text-base font-bold" style={{ color: s.color }}>{fmt(s.monthlyFromFv)}/mês</p>
                       </div>
                     ))}
-                    <p className="text-xs" style={{ color: "#5A6A80" }}>Capital acumulado (cenário regular): {fmt(result.inssScenarios[1].fv)}</p>
+                    <p className="text-xs" style={{ color: "#9C9688" }}>Capital acumulado (cenário regular): {fmt(result.inssScenarios[1].fv)}</p>
                   </div>
                 </div>
 
-                <div className="px-6 py-4 text-center" style={{ background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                  <p className="text-xs" style={{ color: "#5A6A80" }}>
+                <div className="px-6 py-4 text-center" style={{ background: "rgba(28,26,20,0.02)", borderTop: "1px solid rgba(28,26,20,0.06)" }}>
+                  <p className="text-xs" style={{ color: "#9C9688" }}>
                     * Simulação educacional. O INSS é obrigatório e cobre riscos como invalidez e morte. Valores são estimativas simplificadas.
                   </p>
                 </div>
@@ -475,13 +475,13 @@ export default function Simulator() {
                 >
                   <div className="flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" style={{ color: "#10b981" }} />
-                    <span className="text-sm font-bold" style={{ color: "#F0E6C8" }}>Recalcular com outras premissas</span>
+                    <span className="text-sm font-bold" style={{ color: "#1C1A14" }}>Recalcular com outras premissas</span>
                   </div>
                   <span style={{ color: "#10b981", fontSize: "1.2rem" }}>{showEditPanel ? "−" : "+"}</span>
                 </button>
 
                 {showEditPanel && (
-                  <div className="p-6 space-y-4" style={{ background: "rgba(255,255,255,0.03)" }}>
+                  <div className="p-6 space-y-4" style={{ background: "rgba(28,26,20,0.03)" }}>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs font-semibold mb-2 block" style={{ color: "#10b981" }}>Idade atual</label>
@@ -524,20 +524,20 @@ export default function Simulator() {
               </div>
 
               {/* CTA */}
-              <div className="rounded-2xl p-8 text-center" style={{ background: "rgba(201,168,76,0.07)", border: "1px solid rgba(201,168,76,0.35)" }}>
-                <TrendingUp className="w-10 h-10 mx-auto mb-4" style={{ color: "#C9A84C" }} />
-                <h3 className="text-xl font-bold mb-3" style={{ color: "#F0E6C8" }}>Os números são reais. O sistema te ajuda a chegar lá.</h3>
-                <p className="text-sm mb-6 leading-relaxed" style={{ color: "#8A9BB5" }}>
+              <div className="rounded-2xl p-8 text-center" style={{ background: "rgba(139,111,46,0.07)", border: "1px solid rgba(139,111,46,0.35)" }}>
+                <TrendingUp className="w-10 h-10 mx-auto mb-4" style={{ color: "#8B6F2E" }} />
+                <h3 className="text-xl font-bold mb-3" style={{ color: "#1C1A14" }}>Os números são reais. O sistema te ajuda a chegar lá.</h3>
+                <p className="text-sm mb-6 leading-relaxed" style={{ color: "#5C5748" }}>
                   O Gestor de Vida te ajuda a guardar esse valor de forma consistente — organizando seu orçamento pela regra 50/30/20 e projetando seu futuro em um único sistema.
                 </p>
                 <Button
                   onClick={() => navigate("/#planos")}
                   className="w-full sm:w-auto px-8 py-5 text-lg font-bold rounded-xl"
-                  style={{ background: "linear-gradient(135deg,#C9A84C,#E2C97E)", color: "#0B1437" }}
+                  style={{ background: "linear-gradient(135deg,#8B6F2E,#A6863F)", color: "#FCFBF9" }}
                 >
                   Conheça o Sistema <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                <p className="text-xs mt-3" style={{ color: "#5A6A80" }}>R$59,90 · Acesso vitalício · Garantia de 7 dias</p>
+                <p className="text-xs mt-3" style={{ color: "#9C9688" }}>R$59,90 · Acesso vitalício · Garantia de 7 dias</p>
               </div>
             </div>
           )}
@@ -545,7 +545,7 @@ export default function Simulator() {
         </div>
       </div>
 
-      <footer className="py-6 px-4 text-center text-xs border-t" style={{ color: "#3A4A60", borderColor: "rgba(201,168,76,0.1)" }}>
+      <footer className="py-6 px-4 text-center text-xs border-t" style={{ color: "#C4BEAE", borderColor: "rgba(139,111,46,0.1)" }}>
         © {new Date().getFullYear()} Gestor de Vida · Simulação meramente educacional · Valores do INSS são estimativas simplificadas.
       </footer>
     </div>
